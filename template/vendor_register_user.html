@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor User Registration</title>
+    <link rel="stylesheet" href="{% static 'login/css/style.css' %}">
+    <!<link rel="stylesheet" href="{% static 'login/css/style.css'%}">
+                
+    <!-- Boxicons CSS -->
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        .container {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url('/static/login/images/vendor.jpg'); /* Background image */
+            background-size: cover; /* Cover the container */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* No repeat */
+        }
+        .form{
+            position: absolute;
+            max-width: 430px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, .7); /* White background with 80% opacity */
+            /* Or use a hex value with alpha: background: #FFFFFFCC; */
+}
+.form-content {
+            padding: 20px;
+        }
+
+        .field.input-field {
+            margin-bottom: 25px; /* Increased from 20px to 25px */
+        }
+
+        .field.input-field label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .field.input-field input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .error {
+            color: #d32f2f;
+            font-size: 14px;
+            margin-top: 5px;
+            padding: 5px;
+            background-color: #ffebee;
+            border-radius: 4px;
+        }
+
+        .field.button-field {
+            margin-top: 30px;
+        }
+</style>
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form register">
+            <div class="form-content">
+                <h2>Vendor User Registration</h2>
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <form method="post" action="{% url 'vendor_register_user' %}">
+                    {% csrf_token %}
+                    {% for field in user_form %}
+                    <div class="field input-field">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="error">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <div class="field button-field">
+                        <button type="submit">Next</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

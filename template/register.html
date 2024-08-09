@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'login/css/style.css' %}">
+    <style>
+       .container {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url('/static/login/images/car-background.png'); /* Background image */
+            background-size: cover; /* Cover the container */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* No repeat */
+            padding: 20px; /* Add padding to the container */
+        }
+        .form {
+            position: absolute;
+            max-width: 480px; /* Slightly increase max-width for better readability */
+            width: 100%;
+            padding: 40px; /* Increase padding for more space inside the form */
+            border-radius: 6px;
+            background: rgba(255, 255, 255, .8); /* White background with 80% opacity */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Add some shadow for depth */
+        }
+        .form-content header {
+            font-size: 1.5em;
+            margin-bottom: 30px; /* Increase bottom margin for the header */
+            text-align: center;
+        }
+        .field {
+            margin-bottom: 25px; /* Increase margin between fields */
+        }
+        .field.last-input {
+            margin-bottom: 35px; /* Add extra margin to the last input field */
+        }
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+        .input-field label {
+            margin-bottom: 8px; /* Increase space between label and input */
+            font-weight: bold; /* Make labels bold for better visibility */
+        }
+        .input-field input {
+            padding: 12px; /* Increase padding inside input fields */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        .button-field {
+            text-align: center;
+            margin-top: 40px; /* Increase top margin for more space above the button */
+        }
+        .button-field button {
+            padding: 12px 20px; /* Increase button padding */
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold; /* Make button text bold */
+        }
+        .button-field button:hover {
+            background-color: #0056b3;
+        }
+        .form-link {
+            margin-top: 25px; /* Increase space above the form link */
+            text-align: center;
+        }
+        .form-link .link {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .form-link .link:hover {
+            text-decoration: underline;
+        }
+        .errors {
+            color: red;
+            margin-top: 10px;
+            margin-bottom: 20px; /* Add space below error messages */
+        }
+        .errors p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <section class="container forms">
+        <div class="form register">
+            <div class="form-content">
+                <header>Signup</header>
+                <form action="{% url 'user_register' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="field input-field">
+                        {{ form.fullname.label_tag }} {{ form.fullname}}
+                    </div>
+                    <div class="field input-field">
+                        {{ form.email.label_tag }} {{ form.email }}
+                    </div>
+                   
+                    <div class="field input-field">
+                            {{ form.username.label_tag }} {{ form.username }}
+                    </div>
+                    <div class="field input-field last-input">
+                        {{ form.password.label_tag }} {{ form.password }}
+                    </div>
+                    <div class="field button-field">
+                        <button type="submit">Signup</button>
+                    </div>
+                </form>
+
+                {% if form.errors %}
+                    <div class="errors">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if form.errors %}
+                    <div class="errors">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="form-link">
+                    <span>Already have an account? <a href="{% url 'user_login' %}" class="link signup-link">Signin</a></span>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

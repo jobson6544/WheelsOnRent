@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Profile</title>
+    <link rel="stylesheet" href="{% static 'indexall/css/style.css' %}">
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+.site-section {
+    padding: 50px 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #333;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+.btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.py-3 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+
+.px-5 {
+    padding-left: 3rem !important;
+    padding-right: 3rem !important;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="site-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <h2 class="mb-5 text-center">Complete Your Profile</h2>
+                <form action="{% url 'complete_profile' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone_number" name="phone_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="license_number">License Number</label>
+                        <input type="text" class="form-control" id="license_number" name="license_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" class="form-control" id="city" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pin_code">Pin Code</label>
+                        <input type="text" class="form-control" id="pin_code" name="pin_code" required>
+                    </div>
+                    <div class="form-group text-center">
+                        <input type="submit" value="Complete Profile" class="btn py-3 px-5">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
