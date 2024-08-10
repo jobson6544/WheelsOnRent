@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+
+{% block extra_css %}
+<style>
+    .application-review-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 60px - 60px); /* Adjust 60px to match your navbar and footer heights */
+        padding: 20px;
+    }
+
+    .application-review-content {
+        text-align: center;
+        max-width: 600px;
+        padding: 30px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .application-review-content h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .application-review-content p {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #545b62;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="application-review-container">
+    <div class="application-review-content">
+        <h2>Application Under Review</h2>
+        <p>Your vendor application is currently under review. We'll notify you once a decision has been made.</p>
+        <div class="button-container">
+            <a href="{% url 'index' %}" class="btn btn-primary">Go Back to Home</a>
+            <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

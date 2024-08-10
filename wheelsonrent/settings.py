@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'social_django',
     'mainapp',
+    'vendor',
     'crispy_forms',
     'crispy_bootstrap4',
 ]

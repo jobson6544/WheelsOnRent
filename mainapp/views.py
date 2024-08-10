@@ -3,8 +3,8 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import VendorUserForm, VendorForm, UserRegistrationForm, UserProfileForm, VendorLoginForm
-from .models import UserProfile, Vendor  # Import UserProfile and Vendor here
+from .forms import UserRegistrationForm, UserProfileForm
+from .models import UserProfile  # Import UserProfile here
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
@@ -52,45 +52,6 @@ def complete_profile(request):
         'profile_form': profile_form,
     }
     return render(request, 'complete_profile.html', context)
-
-    
-
-def vendor_register_user(request):
-    if request.method == 'POST':
-        user_form = VendorUserForm(request.POST)
-        if user_form.is_valid():
-            user = user_form.save()  # Save the user
-            # Log the user in directly, specifying the backend
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            messages.success(request, 'User registration successful. Please complete your vendor profile.')
-            return redirect(reverse('vendor_register_profile'))  # Redirect to vendor profile completion
-        else:
-            # Print form errors to the console for debugging
-            print(user_form.errors)
-            messages.error(request, 'Please correct the errors below.')
-    else:
-        user_form = VendorUserForm()
-    
-    return render(request, 'vendor_register_user.html', {'user_form': user_form})
-
-def vendor_register_profile(request):
-    if request.method == 'POST':
-        vendor_form = VendorForm(request.POST)
-        if vendor_form.is_valid():
-            vendor = vendor_form.save(commit=False)
-            vendor.user = request.user
-            vendor.status = 'pending'  # Set initial status to pending
-            vendor.save()
-            messages.success(request, 'Vendor registration completed successfully. Your application is under review.')
-            return redirect('vendor_pending')  # Redirect to pending status page
-        else:
-            messages.error(request, 'Please correct the errors below.')
-    else:
-        vendor_form = VendorForm()
-    
-    return render(request, 'vendor_register_profile.html', {'vendor_form': vendor_form})
-
-
 
 def login_view(request):
     if request.method == 'POST':
@@ -158,10 +119,6 @@ def profile(request):
     }
     return render(request, 'profile.html', context)
 
-
-def vendor_success(request):
-    return render(request, 'vendor_success.html')
-
 def vendor_login(request):
     if request.method == 'POST':
         form = VendorLoginForm(request.POST)
@@ -192,13 +149,3 @@ def vendor_login(request):
         form = VendorLoginForm()
     
     return render(request, 'vendor_login.html', {'form': form})
-
-def vendor_dashboard(request):
-    return render(request, 'vendor_dashboard.html')
-
-# New views for pending and rejected status
-def vendor_pending(request):
-    return render(request, 'vendor_pending.html')  # Create this template
-
-def vendor_rejected(request):
-    return render(request, 'vendor_rejected.html')  # Create this template

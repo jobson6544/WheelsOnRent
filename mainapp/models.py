@@ -10,7 +10,7 @@ class User(AbstractUser):
         ('vendor', 'Vendor'),
     )
     
-    fullname = models.CharField(max_length=255)
+    full_name = models.CharField(max_length=255, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
     is_staff = models.BooleanField(default=False)
@@ -25,6 +25,11 @@ class User(AbstractUser):
 
     def _str_(self):
         return self.email
+        
+    def save(self, *args, **kwargs):
+        if not self.full_name:
+            self.full_name = f"{self.first_name} {self.last_name}".strip()
+        super().save(*args, **kwargs)
         
 # Model for storing additional user details
 # class Customer(models.Model):
@@ -71,22 +76,22 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
-class Vendor(models.Model):
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
-    ]
+# class Vendor(models.Model):
+#     STATUS_CHOICES = [
+#         ('pending', 'Pending'),
+#         ('approved', 'Approved'),
+#         ('rejected', 'Rejected'),
+#     ]
 
-    vendor_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    business_name = models.CharField(max_length=255)
-    address = models.TextField(blank=True, null=True)
-    city = models.CharField(max_length=255)
-    state = models.CharField(max_length=255)
-    zip_code = models.CharField(max_length=10)
-    contact_number = models.CharField(max_length=15)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+#     vendor_id = models.AutoField(primary_key=True)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     business_name = models.CharField(max_length=255)
+#     address = models.TextField(blank=True, null=True)
+#     city = models.CharField(max_length=255)
+#     state = models.CharField(max_length=255)
+#     zip_code = models.CharField(max_length=10)
+#     contact_number = models.CharField(max_length=15)
+#     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 
-    def __str__(self):
-        return self.business_name
+#     def __str__(self):
+#         return self.business_name
