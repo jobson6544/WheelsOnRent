@@ -1,35 +1,66 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Your Vehicles</h2>
-<a href="{% url 'vendor:add_vehicle' %}" class="btn btn-primary">Add New Vehicle</a>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Model</th>
-            <th>Registration</th>
-            <th>Availability</th>
-            <th>Rental Rate</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for vehicle in vehicles %}
-        <tr>
-            <td>{{ vehicle.model }}</td>
-            <td>{{ vehicle.registration.registration_number }}</td>
-            <td>{{ vehicle.availability|yesno:"Available,Not Available" }}</td>
-            <td>{{ vehicle.rental_rate }}</td>
-            <td>
-                <a href="{% url 'vendor:update_vehicle' vehicle.id %}" class="btn btn-sm btn-secondary">Edit</a>
-                <a href="{% url 'vendor:delete_vehicle' vehicle.id %}" class="btn btn-sm btn-danger">Delete</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5">No vehicles added yet.</td>
-        </tr>
+<div class="container mt-4">
+    <h2 class="mb-4">Your Vehicles</h2>
+    <a href="{% url 'vendor:add_vehicle' %}" class="btn btn-primary mb-3">Add New Vehicle</a>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
         {% endfor %}
-    </tbody>
-</table>
+    {% endif %}
+    
+    {% if vehicles %}
+    <div class="row">
+        {% for vehicle in vehicles %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                {% if vehicle.image %}
+                    <img src="{{ vehicle.image.url }}" class="card-img-top" alt="{{ vehicle.model }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <span>No Image Available</span>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ vehicle.model }}</h5>
+                    <p class="card-text">
+                        <strong>Registration:</strong> {{ vehicle.registration.registration_number }}<br>
+                        <strong>Type:</strong> {{ vehicle.model.sub_category.category.category_name }}<br>
+                        <strong>Company:</strong> {{ vehicle.model.sub_category.company_name }}<br>
+                        <strong>Year:</strong> {{ vehicle.model.model_year }}<br>
+                        <strong>Availability:</strong> 
+                        {% if vehicle.availability %}
+                            <span class="badge bg-success">Available</span>
+                        {% else %}
+                            <span class="badge bg-danger">Not Available</span>
+                        {% endif %}<br>
+                        <strong>Rental Rate:</strong> ${{ vehicle.rental_rate }} per day
+                    </p>
+                    {% if vehicle.features.all %}
+                    <p class="card-text">
+                        <strong>Features:</strong>
+                        <ul class="list-unstyled">
+                            {% for feature in vehicle.features.all %}
+                                <li><small>• {{ feature.feature_name }}</small></li>
+                            {% endfor %}
+                        </ul>
+                    </p>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'vendor:update_vehicle' vehicle.vehicle_id %}" class="btn btn-sm btn-secondary">Edit</a>
+                    <a href="{% url 'vendor:delete_vehicle' vehicle.vehicle_id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this vehicle?')">Delete</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        No vehicles added yet. Click on "Add New Vehicle" to get started!
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

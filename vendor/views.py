@@ -1,10 +1,15 @@
-from django.shortcuts import render, redirect
+import logging
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Vendor
-from .forms import VendorUserForm, VendorProfileForm, VendorLoginForm
-from django.contrib.auth.backends import ModelBackend  # Add this import
+from django.db import IntegrityError, transaction
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from .models import Vendor, Vehicle, VehicleCompany, Model, Registration, Image, Features
+from .forms import VehicleForm
+
+logger = logging.getLogger(__name__)
 
 def vendor_login(request):
     if request.method == 'POST':
@@ -68,8 +73,135 @@ def vendor_dashboard(request):
         vendor = None
     return render(request, 'vendor/dashboard.html', {'vendor': vendor, 'user': request.user})
 
+@login_required
+def add_vehicle(request):
+    if request.method == 'POST':
+        form = VehicleForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    # Get or create vendor
+                    vendor, created = Vendor.objects.get_or_create(user=request.user)
+                    
+                    # Get or create Registration
+                    registration, created = Registration.objects.get_or_create(
+                        registration_number=form.cleaned_data['registration_number'],
+                        defaults={
+                            'registration_date': form.cleaned_data['registration_date'],
+                            'registration_end_date': form.cleaned_data['registration_end_date']
+                        }
+                    )
+                    
+                    if not created:
+                        # Update the registration dates if it already exists
+                        registration.registration_date = form.cleaned_data['registration_date']
+                        registration.registration_end_date = form.cleaned_data['registration_end_date']
+                        registration.save()
+
+                    # Create Vehicle
+                    vehicle = Vehicle.objects.create(
+                        model=form.cleaned_data['model'],
+                        vendor=vendor,
+                        registration=registration,
+                        rental_rate=form.cleaned_data['rental_rate'],
+                        availability=form.cleaned_data['availability']
+                    )
+
+                    # Add features
+                    vehicle.features.set(form.cleaned_data['features'])
+
+                    # Handle image upload
+                    if 'image' in request.FILES:
+                        Image.objects.create(vehicle=vehicle, image=request.FILES['image'])
+
+                messages.success(request, 'Vehicle added successfully.')
+                return redirect('vendor:vendor_vehicles')
+            except Exception as e:
+                messages.error(request, f"An error occurred: {str(e)}")
+    else:
+        form = VehicleForm()
+    
+    return render(request, 'vendor/add_vehicle.html', {'form': form})
+
+@login_required
+def vendor_vehicles(request):
+    vehicles = Vehicle.objects.filter(vendor__user=request.user, status=1).select_related(
+        'model__sub_category__category', 'registration'
+    ).prefetch_related('features')
+    for vehicle in vehicles:
+        print(f"Vehicle ID: {vehicle.vehicle_id}")  # Add this line for debugging
+    return render(request, 'vendor/vehicle_list.html', {'vehicles': vehicles})
+
+@login_required
+def update_vehicle(request, vehicle_id):
+    vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user, status=1)
+    if request.method == 'POST':
+        form = VehicleForm(request.POST, request.FILES, instance=vehicle)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    vehicle = form.save(commit=False)
+                    
+                    # Update registration
+                    vehicle.registration.registration_number = form.cleaned_data['registration_number']
+                    vehicle.registration.registration_date = form.cleaned_data['registration_date']
+                    vehicle.registration.registration_end_date = form.cleaned_data['registration_end_date']
+                    vehicle.registration.save()
+
+                    vehicle.save()
+                    form.save_m2m()  # Save many-to-many relationships
+
+                    if 'image' in request.FILES:
+                        # Delete old image if exists
+                        if vehicle.image:
+                            vehicle.image.delete()
+                        vehicle.image = request.FILES['image']
+                        vehicle.save()
+
+                messages.success(request, 'Vehicle updated successfully.')
+                return redirect('vendor:vendor_vehicles')
+            except Exception as e:
+                messages.error(request, f"An error occurred: {str(e)}")
+    else:
+        form = VehicleForm(instance=vehicle)
+    return render(request, 'vendor/update_vehicle.html', {'form': form, 'vehicle': vehicle})
+
+@login_required
+def delete_vehicle(request, vehicle_id):
+    vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user)
+    vehicle.status = 0
+    vehicle.save()
+    messages.success(request, 'Vehicle has been successfully deleted.')
+    return redirect('vendor:vendor_vehicles')
+
+@login_required
+def edit_vehicle(request, vehicle_id):
+    vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user, status=1)
+    if request.method == 'POST':
+        form = VehicleForm(request.POST, request.FILES, instance=vehicle)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Vehicle has been successfully updated.')
+            return redirect('vendor:vendor_vehicles')
+    else:
+        form = VehicleForm(instance=vehicle)
+    return render(request, 'vendor/edit_vehicle.html', {'form': form, 'vehicle': vehicle})
+
+@login_required
+def vehicle_detail(request, vehicle_id):
+    vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user, status=1)
+    return render(request, 'vendor/vehicle_detail.html', {'vehicle': vehicle})
+
 def application_under_review(request):
     return render(request, 'vendor/application_under_review.html')
 
 def application_rejected(request):
     return render(request, 'vendor/application_rejected.html')
+
+def get_companies(request, vehicle_type_id):
+    companies = VehicleCompany.objects.filter(category_id=vehicle_type_id).values('sub_category_id', 'company_name')
+    return JsonResponse(list(companies), safe=False)
+
+def get_models(request, company_id):
+    models = Model.objects.filter(sub_category_id=company_id).values('model_id', 'model_name')
+    return JsonResponse(list(models), safe=False)

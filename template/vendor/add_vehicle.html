@@ -2,28 +2,74 @@
 {% load static %}
 
 {% block content %}
-<h2>Add New Vehicle</h2>
-
-{% if messages %}
-<div class="messages">
-    {% for message in messages %}
-    <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-    {% endfor %}
-</div>
-{% endif %}
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    {% for field in form %}
-    <div class="form-group">
-        {{ field.label_tag }}
-        {{ field }}
-        {{ field.errors }}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Add New Vehicle</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="vehicleForm">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger">
+                                        {% for error in field.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Add Vehicle</button>
+                            <a href="{% url 'vendor:vendor_vehicles' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    {% endfor %}
-    <button type="submit" class="btn btn-primary">Add Vehicle</button>
-</form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const vehicleTypeSelect = document.getElementById('id_vehicle_type');
+    const vehicleCompanySelect = document.getElementById('id_vehicle_company');
+    const modelSelect = document.getElementById('id_model');
+
+    vehicleTypeSelect.addEventListener('change', function() {
+        const vehicleTypeId = this.value;
+        fetch(`/vendor/api/get_companies/${vehicleTypeId}/`)
+            .then(response => response.json())
+            .then(data => {
+                vehicleCompanySelect.innerHTML = '<option value="">---------</option>';
+                data.forEach(company => {
+                    vehicleCompanySelect.innerHTML += `<option value="${company.sub_category_id}">${company.company_name}</option>`;
+                });
+                // Reset model select
+                modelSelect.innerHTML = '<option value="">---------</option>';
+            });
+    });
+
+    vehicleCompanySelect.addEventListener('change', function() {
+        const companyId = this.value;
+        fetch(`/vendor/api/get_models/${companyId}/`)
+            .then(response => response.json())
+            .then(data => {
+                modelSelect.innerHTML = '<option value="">---------</option>';
+                data.forEach(model => {
+                    modelSelect.innerHTML += `<option value="${model.model_id}">${model.model_name}</option>`;
+                });
+            });
+    });
+});
+</script>
 {% endblock %}
 
 {% block extra_js %}
@@ -60,8 +106,8 @@
 
         $('#id_vehicle_type').change(function() {
             const category = $(this).val();
-            const companySelect = $('#id_company');
-            const modelSelect = $('#id_model');
+            const companySelect = $('#id_vehicle_company');
+            const modelSelect = $('#id_model_name');
 
             if (category === '1') {  // Car
                 populateSelect(companySelect, carCompanies);
@@ -73,10 +119,10 @@
             populateSelect(modelSelect, []);
         });
 
-        $('#id_company').change(function() {
+        $('#id_vehicle_company').change(function() {
             const category = $('#id_vehicle_type').val();
             const companyId = $(this).val();
-            const modelSelect = $('#id_model');
+            const modelSelect = $('#id_model_name');
 
             if (category === '1') {  // Car
                 populateSelect(modelSelect, carModels[companyId] || []);
