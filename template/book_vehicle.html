@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="margin-top: 6rem;">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <h2 class="text-center mb-4">Book {{ vehicle.model }}</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        {% if vehicle.image %}
+                            <img src="{{ vehicle.image.url }}" class="card-img-top" alt="{{ vehicle.model }}">
+                        {% else %}
+                            <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span>No Image Available</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ vehicle.model }}</h5>
+                            <p class="card-text">
+                                <strong>Type:</strong> {{ vehicle.model.sub_category.category.category_name }}<br>
+                                <strong>Company:</strong> {{ vehicle.model.sub_category.company_name }}<br>
+                                <strong>Year:</strong> {{ vehicle.model.model_year }}<br>
+                                <strong>Daily Rate:</strong> ${{ vehicle.rental_rate }}<br>
+                            </p>
+                            <h6>Features:</h6>
+                            <ul>
+                                {% for feature in vehicle.features.all %}
+                                    <li>{{ feature.feature_name }}</li>
+                                {% empty %}
+                                    <li>No features listed</li>
+                                {% endfor %}
+                            </ul>
+                            <h6>Vendor Information:</h6>
+                            <p>
+                                <strong>Company:</strong> {{ vehicle.vendor.company_name }}<br>
+                                <strong>Phone:</strong> {{ vehicle.vendor.phone_number }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Booking Details</h5>
+                            <form method="post" id="bookingForm">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="start_date">Start Date and Time</label>
+                                    <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="end_date">End Date and Time</label>
+                                    <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+                                </div>
+                                <div id="rateDetails" class="mt-3 mb-3" style="display: none;">
+                                    <h6>Rate Details</h6>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td>Number of days:</td>
+                                            <td><span id="numberOfDays"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Daily rate:</td>
+                                            <td>$<span id="dailyRate">{{ vehicle.rental_rate }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total cost:</td>
+                                            <td>$<span id="totalCost"></span></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Confirm Booking</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h5>Booking Policy</h5>
+                        <ul>
+                            <li>Cancellations made 24 hours before the start date are eligible for a full refund.</li>
+                            <li>A security deposit may be required at the time of pickup.</li>
+                            <li>Please bring a valid driver's license and credit card for the rental.</li>
+                            <li>Fuel and mileage policies may vary. Please check with the vendor.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    const rateDetails = document.getElementById('rateDetails');
+    const numberOfDaysSpan = document.getElementById('numberOfDays');
+    const dailyRateSpan = document.getElementById('dailyRate');
+    const totalCostSpan = document.getElementById('totalCost');
+
+    function calculateRates() {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+
+        if (startDate && endDate && startDate < endDate) {
+            const diffTime = Math.abs(endDate - startDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const dailyRate = parseFloat(dailyRateSpan.textContent);
+            const totalCost = diffDays * dailyRate;
+
+            numberOfDaysSpan.textContent = diffDays;
+            totalCostSpan.textContent = totalCost.toFixed(2);
+            rateDetails.style.display = 'block';
+        } else {
+            rateDetails.style.display = 'none';
+        }
+    }
+
+    startDateInput.addEventListener('change', calculateRates);
+    endDateInput.addEventListener('change', calculateRates);
+
+    // Set minimum date for start_date to today
+    const today = new Date();
+    const todayString = today.toISOString().slice(0, 16);
+    startDateInput.setAttribute('min', todayString);
+
+    // Update end_date min attribute when start_date changes
+    startDateInput.addEventListener('change', function() {
+        endDateInput.setAttribute('min', this.value);
+    });
+});
+</script>
+{% endblock %}

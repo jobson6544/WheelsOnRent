@@ -67,7 +67,7 @@ class Features(models.Model):
 class Vehicle(models.Model):
     vehicle_id = models.AutoField(primary_key=True)
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
-    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='vehicles')
     registration = models.ForeignKey(Registration, on_delete=models.CASCADE)
     features = models.ManyToManyField(Features)
     availability = models.BooleanField(default=True)

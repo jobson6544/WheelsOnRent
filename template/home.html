@@ -1,3 +1,4 @@
+{% extends 'base.html' %}
 {% load static %}
 <!doctype html>
 <html lang="en">
@@ -122,6 +123,7 @@
         }
     </style>
 </head>
+{% block content %}
 <body>
      
     <div class="site-wrap" id="home-section">
@@ -318,43 +320,66 @@
                         <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>    
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="listing d-block align-items-stretch">
-                            <div class="listing-img h-100 mr-4">
-                                <img src="{% static 'indexall/images/car_6.jpg' %}" alt="Image" class="img-fluid">
+                    <div class="container mt-4">
+                        <!-- <h1 class="mb-4">Available Vehicles</h1> -->
+                        <div class="row">
+                            {% for vehicle in vehicles %}
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100">
+                                    {% if vehicle.image %}
+                                        <img src="{{ vehicle.image.url }}" class="card-img-top" alt="{{ vehicle.model }}" style="height: 200px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                            <span>No Image Available</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ vehicle.model }}</h5>
+                                        <p class="card-text">
+                                            <strong>Type:</strong> {{ vehicle.model.sub_category.category.category_name }}<br>
+                                            <strong>Company:</strong> {{ vehicle.model.sub_category.company_name }}<br>
+                                            <strong>Year:</strong> {{ vehicle.model.model_year }}<br>
+                                            <strong>Rental Rate:</strong> ${{ vehicle.rental_rate }} per day
+                                        </p>
+                                        <h6>Features:</h6>
+                                        <ul class="list-unstyled">
+                                            {% for feature in vehicle.features.all|slice:":3" %}
+                                                <li>{{ feature.feature_name }}</li>
+                                            {% empty %}
+                                                <li>No features listed</li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% if vehicle.features.count > 3 %}
+                                            <small>and {{ vehicle.features.count|add:"-3" }} more...</small>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-footer">
+                                        {% if vehicle.vendor %}
+                                            <h6>Vendor: {{ vehicle.vendor.business_name }}</h6>
+                                            <p class="small">
+                                                <strong>Phone:</strong> {{ vehicle.vendor.contact_number }}
+                                            </p>
+                                        {% else %}
+                                            <p>Vendor information not available</p>
+                                        {% endif %}
+                                        <a href="{% url 'book_vehicle' vehicle.vehicle_id %}" class="btn btn-primary btn-block">Book Now</a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="listing-contents h-100">
-                                <h3>Mitsubishi Pajero</h3>
-                                <div class="rent-price">
-                                    <strong>$389.00</strong><span class="mx-1">/</span>day
-                                </div>
-                                <div class="d-block d-md-flex mb-3 border-bottom pb-3">
-                                    <div class="listing-feature pr-4">
-                                        <span class="caption">Luggage:</span>
-                                        <span class="number">8</span>
-                                    </div>
-                                    <div class="listing-feature pr-4">
-                                        <span class="caption">Doors:</span>
-                                        <span class="number">4</span>
-                                    </div>
-                                    <div class="listing-feature pr-4">
-                                        <span class="caption">Passenger:</span>
-                                        <span class="number">4</span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos eos at eum, voluptatem quibusdam.</p>
-                                    <p><a href="#" class="btn btn-primary btn-sm">Rent Now</a></p>
-                                </div>
+                            {% empty %}
+                            <div class="col-12">
+                                <p>No vehicles available at the moment.</p>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
+            
                     <!-- Repeat similar blocks for other car listings -->
                 </div>
             </div>
         </div>
 
+       
         <div class="site-section">
             <div class="container">
                 <div class="row">
@@ -584,7 +609,7 @@
       </footer>
       
       </div>
-      
+      {% endblock %}
       <script src="{%static 'indexall/js/jquery-3.3.1.min.js' %}"></script>
       <script src="{%static 'indexall/js/popper.min.js' %}"></script>
       <script src="{%static 'indexall/js/bootstrap.min.js' %}"></script>

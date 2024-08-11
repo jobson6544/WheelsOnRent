@@ -197,7 +197,7 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'home'
 LOGIN_REDIRECT_URL = 'home'
 
 # Redirect to login page if not logged in
-LOGIN_URL = 'login'
+LOGIN_URL = 'user_login'
 
 # URL to redirect after logout
 LOGOUT_REDIRECT_URL = 'index'

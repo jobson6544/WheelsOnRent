@@ -10,4 +10,8 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('profile/', views.profile, name='profile'),
     path('logout/', views.logout_view, name='logout'),
+    path('home/', views.home, name='home'),
+    path('book/<int:vehicle_id>/', views.book_vehicle, name='book_vehicle'),
+    path('booking-history/', views.user_booking_history, name='user_booking_history'),
+    path('cancel-booking/<int:booking_id>/', views.cancel_booking, name='cancel_booking'),
 ]

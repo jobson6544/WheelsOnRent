@@ -1,14 +1,15 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import UserRegistrationForm, UserProfileForm
-from .models import UserProfile  # Import UserProfile here
+from .models import UserProfile, Booking  # Import UserProfile here
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import logout  # Ensure this import is present
+from vendor.models import Vehicle
+from django.utils import timezone  # Add this import
 
 User = get_user_model()
 
@@ -55,25 +56,20 @@ def complete_profile(request):
 
 def login_view(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                if user.is_first_login:
-                    user.is_first_login = False
-                    user.save()
-                    return redirect('complete_profile')
-                return redirect('home')
-            else:
-                messages.error(request, "Invalid username or password.")
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, f"Welcome back, {user.username}!")
+            if hasattr(user, 'is_first_login') and user.is_first_login:
+                user.is_first_login = False
+                user.save()
+                return redirect('complete_profile')
+            return redirect('home')
         else:
-            messages.error(request, "Invalid username or password.")
-    else:
-        form = AuthenticationForm()
-    return render(request, 'user_login.html', {'form': form})
+            messages.error(request, "Invalid email or password.")
+    return render(request, 'user_login.html')
 
 def redirect_after_login(user):
     try:
@@ -85,7 +81,8 @@ def redirect_after_login(user):
     return redirect('home')
 
 def home(request):
-    return render(request, 'home.html')
+    vehicles = Vehicle.objects.filter(status=1).select_related('vendor', 'model__sub_category__category').prefetch_related('features')
+    return render(request, 'home.html', {'vehicles': vehicles})
 
 def success(request):
     return render(request, 'success.html')
@@ -149,3 +146,47 @@ def vendor_login(request):
         form = VendorLoginForm()
     
     return render(request, 'vendor_login.html', {'form': form})
+
+@login_required
+def book_vehicle(request, vehicle_id):
+    vehicle = get_object_or_404(Vehicle.objects.select_related('model__sub_category__category', 'vendor').prefetch_related('features'), vehicle_id=vehicle_id, status=1)
+    if request.method == 'POST':
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        
+        # Create a new booking
+        booking = Booking.objects.create(
+            user=request.user,
+            vehicle=vehicle,
+            start_date=start_date,
+            end_date=end_date,
+            status='pending'
+        )
+        
+        messages.success(request, 'Booking request submitted successfully!')
+        return redirect('user_booking_history')  # Redirect to the new booking history page
+    
+    return render(request, 'book_vehicle.html', {'vehicle': vehicle})
+
+@login_required
+def user_booking_history(request):
+    bookings = Booking.objects.filter(user=request.user).order_by('-start_date')
+    return render(request, 'user_booking_history.html', {'bookings': bookings})
+
+@login_required
+def cancel_booking(request, booking_id):
+    booking = get_object_or_404(Booking, booking_id=booking_id, user=request.user)
+    
+    if request.method == 'POST':
+        if booking.status in ['pending', 'confirmed']:
+            # Check if the booking start date is more than 24 hours away
+            if booking.start_date > timezone.now() + timezone.timedelta(hours=24):
+                booking.status = 'cancelled'
+                booking.save()
+                messages.success(request, 'Your booking has been successfully cancelled.')
+            else:
+                messages.error(request, 'Bookings can only be cancelled more than 24 hours before the start time.')
+        else:
+            messages.error(request, 'This booking cannot be cancelled.')
+    
+    return redirect('user_booking_history')

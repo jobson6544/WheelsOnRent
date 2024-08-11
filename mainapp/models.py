@@ -95,3 +95,24 @@ class UserProfile(models.Model):
 
 #     def __str__(self):
 #         return self.business_name
+
+class Booking(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+
+    booking_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookings')
+    vehicle = models.ForeignKey('vendor.Vehicle', on_delete=models.CASCADE, related_name='bookings')
+    start_date = models.DateTimeField(null=False)
+    end_date = models.DateTimeField(null=False)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+
+    def __str__(self):
+        return f"Booking {self.booking_id} - {self.user.username} - {self.vehicle}"
+
+    class Meta:
+        db_table = 'bookings'

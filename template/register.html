@@ -101,7 +101,7 @@
                 <form action="{% url 'user_register' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="field input-field">
-                        {{ form.fullname.label_tag }} {{ form.fullname}}
+                        {{ form.full_name.label_tag }} {{ form.full_name}}
                     </div>
                     <div class="field input-field">
                         {{ form.email.label_tag }} {{ form.email }}
