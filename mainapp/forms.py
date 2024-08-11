@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import make_password
 from .models import User, UserProfile
 
 class UserRegistrationForm(forms.ModelForm):
-    fullname = forms.CharField(max_length=100, required=True)
+    full_name = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(required=True)
     password = forms.CharField(widget=forms.PasswordInput())
 

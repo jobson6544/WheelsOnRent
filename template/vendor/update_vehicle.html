@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Update Vehicle</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Update Vehicle</button>
+</form>
+<a href="{% url 'vehicle_detail' vehicle.vehicle_id %}">Cancel</a>
+{% endblock %}

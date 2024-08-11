@@ -21,7 +21,7 @@ class User(AbstractUser):
 
     # If you want to use email for login instead of username
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'fullname']
+    REQUIRED_FIELDS = ['username', 'full_name']
 
     def _str_(self):
         return self.email

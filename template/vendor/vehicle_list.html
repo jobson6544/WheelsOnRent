@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Your Vehicles</h2>
+<a href="{% url 'vendor:add_vehicle' %}" class="btn btn-primary">Add New Vehicle</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Model</th>
+            <th>Registration</th>
+            <th>Availability</th>
+            <th>Rental Rate</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vehicle in vehicles %}
+        <tr>
+            <td>{{ vehicle.model }}</td>
+            <td>{{ vehicle.registration.registration_number }}</td>
+            <td>{{ vehicle.availability|yesno:"Available,Not Available" }}</td>
+            <td>{{ vehicle.rental_rate }}</td>
+            <td>
+                <a href="{% url 'vendor:update_vehicle' vehicle.id %}" class="btn btn-sm btn-secondary">Edit</a>
+                <a href="{% url 'vendor:delete_vehicle' vehicle.id %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No vehicles added yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

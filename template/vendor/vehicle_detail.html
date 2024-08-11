@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Vehicle Details</h2>
+<p>Model: {{ vehicle.model }}</p>
+<p>Registration: {{ vehicle.registration }}</p>
+<p>Features: 
+    {% for feature in vehicle.features.all %}
+    {{ feature }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+</p>
+<p>Availability: {{ vehicle.availability|yesno:"Available,Not Available" }}</p>
+<p>Rental Rate: ${{ vehicle.rental_rate }}</p>
+
+<a href="{% url 'update_vehicle' vehicle.vehicle_id %}">Update Vehicle</a>
+<a href="{% url 'delete_vehicle' vehicle.vehicle_id %}">Delete Vehicle</a>
+<a href="{% url 'vehicle_list' %}">Back to Vehicle List</a>
+{% endblock %}

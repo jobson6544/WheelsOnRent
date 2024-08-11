@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Add New Vehicle</h2>
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    <div class="form-group">
+        {{ field.label_tag }}
+        {{ field }}
+        {{ field.errors }}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Add Vehicle</button>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        const carCompanies = [
+            ['1', 'Toyota'],
+            ['2', 'Honda'],
+            ['3', 'Ford']
+        ];
+        const bikeCompanies = [
+            ['4', 'Harley-Davidson'],
+            ['5', 'Yamaha'],
+            ['6', 'Honda']
+        ];
+        const carModels = {
+            '1': [['1', 'Camry'], ['2', 'Corolla'], ['3', 'RAV4']],
+            '2': [['4', 'Civic'], ['5', 'Accord'], ['6', 'CR-V']],
+            '3': [['7', 'F-150'], ['8', 'Mustang'], ['9', 'Explorer']]
+        };
+        const bikeModels = {
+            '4': [['10', 'Street 750'], ['11', 'Iron 883'], ['12', 'Fat Boy']],
+            '5': [['13', 'YZF-R1'], ['14', 'MT-09'], ['15', 'YZF-R6']],
+            '6': [['16', 'CBR1000RR'], ['17', 'CB500F'], ['18', 'Gold Wing']]
+        };
+
+        function populateSelect(select, options) {
+            select.html('<option value="">Select</option>');
+            $.each(options, function(index, option) {
+                select.append($('<option></option>').attr('value', option[0]).text(option[1]));
+            });
+        }
+
+        $('#id_vehicle_type').change(function() {
+            const category = $(this).val();
+            const companySelect = $('#id_company');
+            const modelSelect = $('#id_model');
+
+            if (category === '1') {  // Car
+                populateSelect(companySelect, carCompanies);
+            } else if (category === '2') {  // Bike
+                populateSelect(companySelect, bikeCompanies);
+            } else {
+                populateSelect(companySelect, []);
+            }
+            populateSelect(modelSelect, []);
+        });
+
+        $('#id_company').change(function() {
+            const category = $('#id_vehicle_type').val();
+            const companyId = $(this).val();
+            const modelSelect = $('#id_model');
+
+            if (category === '1') {  // Car
+                populateSelect(modelSelect, carModels[companyId] || []);
+            } else if (category === '2') {  // Bike
+                populateSelect(modelSelect, bikeModels[companyId] || []);
+            } else {
+                populateSelect(modelSelect, []);
+            }
+        });
+    });
+</script>
+{% endblock %}
