@@ -124,6 +124,7 @@
     </style>
 </head>
 {% block content %}
+{% include 'nav.html' %}
 <body>
      
     <div class="site-wrap" id="home-section">
@@ -139,42 +140,7 @@
   
   
   
-        <header class="site-navbar site-navbar-target" role="banner">
-  
-          <div class="container">
-            <div class="row align-items-center position-relative">
-  
-              <div class="col-3">
-                <div class="site-logo">
-                  <a href="index.html"><strong>WheelsOnRent</strong></a>
-                </div>
-              </div>
-  
-              <div class="col-9  text-right">
-                
-                <span class="d-inline-block d-lg-none"><a href="#" class=" site-menu-toggle js-menu-toggle py-5 "><span class="icon-menu h3 text-black"></span></a></span>
-  
-                <nav class="site-navigation text-right ml-auto d-none d-lg-block" role="navigation">
-                  <ul class="site-menu main-menu js-clone-nav ml-auto">
-                    <li class="active"><a href="index.html" class="nav-link">Home</a></li>
-       
-
-                    <!-- <li><a href="blog.html" class="nav-link">Blog</a></li>
-                    <li><a href="about.html" class="nav-link">About</a></li> -->
-                    <li><a href="contact.html" class="nav-link">Contact</a></li>
-                    <li><a href="{% url 'logout' %}" class="nav-link">Logout</a></li>
-                    <li><a class="nav-link nav-profile d-flex align-items-center pe-0" href="#">
-                        <strong><span class="d-none d-md-block"> {{ user.first_name }}</span></strong>
-                      </a></li>
-                  </ul>
-                </nav>
-              </div>
-  
-              
-            </div>
-          </div>
-  
-        </header>
+    
     <!-- Navigation Bar -->
     <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">WheelsOnRent</a>
@@ -316,7 +282,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-7">
-                        <h2 class="section-heading"><strong>Car Listings</strong></h2>
+                        <h2 class="section-heading"><strong>Vehicle Listings</strong></h2>
                         <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>    
                     </div>
                 </div>

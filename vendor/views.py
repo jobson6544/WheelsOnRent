@@ -6,8 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
+from django.db.models import Sum, Count
+from django.utils import timezone
 from .models import Vendor, Vehicle, VehicleCompany, Model, Registration, Image, Features
-from .forms import VehicleForm
+from .forms import VehicleForm, VendorUserForm, VendorProfileForm
+from mainapp.models import Booking
 
 logger = logging.getLogger(__name__)
 
@@ -69,9 +72,42 @@ def vendor_register_profile(request):
 def vendor_dashboard(request):
     try:
         vendor = Vendor.objects.get(user=request.user)
+        vehicles = Vehicle.objects.filter(vendor=vendor)
+        
+        # Count total bookings for this vendor
+        total_bookings = Booking.objects.filter(vehicle__in=vehicles).count()
+        
+        # Count total unique customers
+        total_customers = Booking.objects.filter(vehicle__in=vehicles).values('user').distinct().count()
+        
+        # Fetch recent bookings
+        recent_bookings = Booking.objects.filter(vehicle__in=vehicles).select_related('user', 'vehicle').order_by('-start_date')[:10]
+        
+        # Calculate the sum of active bookings
+        active_bookings_sum = Booking.objects.filter(
+            vehicle__in=vehicles,
+            status='confirmed',
+            start_date__lte=timezone.now(),
+            end_date__gte=timezone.now()
+        ).aggregate(total=Sum('vehicle__rental_rate'))['total'] or 0
+
     except Vendor.DoesNotExist:
         vendor = None
-    return render(request, 'vendor/dashboard.html', {'vendor': vendor, 'user': request.user})
+        vehicles = []
+        total_bookings = 0
+        total_customers = 0
+        recent_bookings = []
+        active_bookings_sum = 0
+
+    context = {
+        'vendor': vendor,
+        'vehicles': vehicles,
+        'total_bookings': total_bookings,
+        'total_customers': total_customers,
+        'bookings': recent_bookings,
+        'active_bookings_sum': active_bookings_sum,
+    }
+    return render(request, 'vendor/dashboard.html', context)
 
 @login_required
 def add_vehicle(request):
@@ -104,7 +140,8 @@ def add_vehicle(request):
                         vendor=vendor,
                         registration=registration,
                         rental_rate=form.cleaned_data['rental_rate'],
-                        availability=form.cleaned_data['availability']
+                        availability=form.cleaned_data['availability'],
+                        image=form.cleaned_data['image']
                     )
 
                     # Add features
@@ -163,7 +200,15 @@ def update_vehicle(request, vehicle_id):
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
     else:
-        form = VehicleForm(instance=vehicle)
+        initial_data = {
+            'vehicle_type': vehicle.model.sub_category.category.category_id,
+            'vehicle_company': vehicle.model.sub_category.sub_category_id,
+            'registration_number': vehicle.registration.registration_number,
+            'registration_date': vehicle.registration.registration_date,
+            'registration_end_date': vehicle.registration.registration_end_date,
+        }
+        form = VehicleForm(instance=vehicle, initial=initial_data)
+    
     return render(request, 'vendor/update_vehicle.html', {'form': form, 'vehicle': vehicle})
 
 @login_required

@@ -4,6 +4,11 @@
 <div class="container mt-4">
     <h2>Vehicle Details</h2>
     <div class="card">
+        {% if vehicle.image %}
+            <img src="{{ vehicle.image.url }}" class="card-img-top" alt="{{ vehicle.model }}">
+        {% else %}
+            <img src="{% static 'images/default_vehicle.jpg' %}" class="card-img-top" alt="Default Vehicle Image">
+        {% endif %}
         <div class="card-body">
             <h5 class="card-title">{{ vehicle.model }}</h5>
             <p class="card-text">

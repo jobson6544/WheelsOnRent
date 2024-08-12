@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'vendor',
     'crispy_forms',
     'crispy_bootstrap4',
+    'widget_tweaks'
 ]
 
 

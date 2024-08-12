@@ -31,8 +31,9 @@ class VendorLoginForm(forms.Form):
 class VehicleForm(forms.ModelForm):
     class Meta:
         model = Vehicle
-        fields = ['model', 'rental_rate', 'features', 'availability']
+        fields = ['model', 'rental_rate', 'features', 'availability', 'image']
         widgets = {
+            'availability': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'features': forms.CheckboxSelectMultiple(),
         }
 

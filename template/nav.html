@@ -17,9 +17,14 @@
           <nav class="site-navigation text-right ml-auto d-none d-lg-block" role="navigation">
             <ul class="site-menu main-menu js-clone-nav ml-auto ">
               <li class="active"><a href="{% url 'home' %}" class="nav-link font-weight-bold">Home</a></li>
+              {% if user.is_authenticated %}
+                <li><a href="{% url 'logout' %}" class="nav-link font-weight-bold">Logout</a></li>
+                <li>{{user.first_name}} {{user.last_name}}</li>
+              {% else %}
               <li><a href="{% url 'user_login' %}" class="nav-link font-weight-bold">login</a></li>
               <li><a href="{% url 'vendor:vendor_login' %}" class="nav-link font-weight-bold">Join With Us</a></li>
-              <li><a href="{% url 'contact' %}" class="nav-link font-weight-bold">Contact</a></li>
+              {% endif %}
+              <li><a href="#" class="nav-link font-weight-bold">Contact</a></li>
               {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link font-weight-bold" href="{% url 'user_booking_history' %}">My Bookings</a>
