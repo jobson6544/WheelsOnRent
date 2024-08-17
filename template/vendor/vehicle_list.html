@@ -226,12 +226,12 @@
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
               <h6>{{ user.full_name }} </h6>
-              <span>Web Designer</span>
+              <!-- <span>Web Designer</span> -->
             </li>
             <li>  
               <hr class="dropdown-divider">
             </li>
-
+<!-- 
             <li>
               <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
                 <i class="bi bi-person"></i>
@@ -260,7 +260,7 @@
             </li>
             <li>
               <hr class="dropdown-divider">
-            </li>
+            </li> -->
 
             <li>
               <a class="dropdown-item d-flex align-items-center" href="{% url 'logout' %}">
@@ -304,11 +304,11 @@
               <i class="bi bi-circle"></i><span>View Vehicles</span>
             </a>
           </li>
-          <li>
+          <!-- <li>
             <a href="components-badges.html">
               <i class="bi bi-circle"></i><span>Bookings</span>
             </a>
-          </li>
+          </li> -->
         </ul>
       </li><!-- End Components Nav -->
 
@@ -377,7 +377,7 @@
                         {% else %}
                             <span class="badge bg-danger">Not Available</span>
                         {% endif %}<br>
-                        <strong>Rental Rate:</strong> ${{ vehicle.rental_rate }} per day
+                        <strong>Rental Rate:</strong> {{ vehicle.rental_rate }} per day
                     </p>
                     {% if vehicle.features.all %}
                     <p class="card-text">

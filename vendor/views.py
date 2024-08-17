@@ -11,9 +11,11 @@ from django.utils import timezone
 from .models import Vendor, Vehicle, VehicleCompany, Model, Registration, Image, Features
 from .forms import VehicleForm, VendorUserForm, VendorProfileForm
 from mainapp.models import Booking
+from django.views.decorators.cache import never_cache
 
 logger = logging.getLogger(__name__)
 
+@never_cache
 def vendor_login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -39,6 +41,7 @@ def vendor_login(request):
     
     return render(request, 'vendor/vendor_login.html')
 
+@never_cache
 def vendor_register_user(request):
     if request.method == 'POST':
         user_form = VendorUserForm(request.POST)
@@ -53,6 +56,7 @@ def vendor_register_user(request):
         user_form = VendorUserForm()
     return render(request, 'vendor/vendor_register_user.html', {'user_form': user_form})
 
+@never_cache
 @login_required
 def vendor_register_profile(request):
     if request.method == 'POST':
@@ -64,10 +68,12 @@ def vendor_register_profile(request):
             vendor.save()
             messages.success(request, 'Vendor registration completed successfully. Your application is under review.')
             return redirect('vendor:application_under_review')
+            
     else:
         vendor_form = VendorProfileForm()
     return render(request, 'vendor/vendor_register_profile.html', {'vendor_form': vendor_form})
 
+@never_cache
 @login_required
 def vendor_dashboard(request):
     try:
@@ -109,6 +115,7 @@ def vendor_dashboard(request):
     }
     return render(request, 'vendor/dashboard.html', context)
 
+@never_cache
 @login_required
 def add_vehicle(request):
     if request.method == 'POST':
@@ -160,6 +167,7 @@ def add_vehicle(request):
     
     return render(request, 'vendor/add_vehicle.html', {'form': form})
 
+@never_cache
 @login_required
 def vendor_vehicles(request):
     vehicles = Vehicle.objects.filter(vendor__user=request.user, status=1).select_related(
@@ -169,6 +177,7 @@ def vendor_vehicles(request):
         print(f"Vehicle ID: {vehicle.vehicle_id}")  # Add this line for debugging
     return render(request, 'vendor/vehicle_list.html', {'vehicles': vehicles})
 
+@never_cache
 @login_required
 def update_vehicle(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user, status=1)
@@ -211,6 +220,7 @@ def update_vehicle(request, vehicle_id):
     
     return render(request, 'vendor/update_vehicle.html', {'form': form, 'vehicle': vehicle})
 
+@never_cache
 @login_required
 def delete_vehicle(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user)
@@ -219,6 +229,7 @@ def delete_vehicle(request, vehicle_id):
     messages.success(request, 'Vehicle has been successfully deleted.')
     return redirect('vendor:vendor_vehicles')
 
+@never_cache
 @login_required
 def edit_vehicle(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user, status=1)
@@ -232,21 +243,26 @@ def edit_vehicle(request, vehicle_id):
         form = VehicleForm(instance=vehicle)
     return render(request, 'vendor/edit_vehicle.html', {'form': form, 'vehicle': vehicle})
 
+@never_cache
 @login_required
 def vehicle_detail(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user, status=1)
     return render(request, 'vendor/vehicle_detail.html', {'vehicle': vehicle})
 
+@never_cache
 def application_under_review(request):
     return render(request, 'vendor/application_under_review.html')
 
+@never_cache
 def application_rejected(request):
     return render(request, 'vendor/application_rejected.html')
 
+@never_cache
 def get_companies(request, vehicle_type_id):
     companies = VehicleCompany.objects.filter(category_id=vehicle_type_id).values('sub_category_id', 'company_name')
     return JsonResponse(list(companies), safe=False)
 
+@never_cache
 def get_models(request, company_id):
     models = Model.objects.filter(sub_category_id=company_id).values('model_id', 'model_name')
     return JsonResponse(list(models), safe=False)

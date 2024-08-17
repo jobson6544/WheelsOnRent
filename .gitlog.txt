@@ -1,0 +1,35 @@
+commit 0c319c0c96e1f52db090ddfa2f15ccd2853abd77
+Author: jobson6544 <93664691+jobson6544@users.noreply.github.com>
+Date:   Tue Aug 13 03:56:55 2024 +0530
+
+    Design and correct the error in image retrival
+
+commit bc029eaa654000ca0a13d951cd66213e07aef621
+Author: jobson6544 <93664691+jobson6544@users.noreply.github.com>
+Date:   Mon Aug 12 04:18:13 2024 +0530
+
+     Booking completed, some style in index & base page is changed
+
+commit 6329c01857554472449e321d7187d47198e98935
+Author: jobson6544 <93664691+jobson6544@users.noreply.github.com>
+Date:   Mon Aug 12 01:17:52 2024 +0530
+
+    Vehicle added by vendor
+
+commit e4bf4dbb1fdb233463a07309f27b7b03fb99467c
+Author: jobson6544 <93664691+jobson6544@users.noreply.github.com>
+Date:   Sun Aug 11 18:26:39 2024 +0530
+
+    corrected the error in usermodel
+
+commit b5fdfd27a2b0b281230c895ee2017a91b064fdd9
+Author: jobson6544 <93664691+jobson6544@users.noreply.github.com>
+Date:   Sat Aug 10 17:41:07 2024 +0530
+
+    I have change the vendor function to vendor app
+
+commit db49f4c7e6ead34edc27aad921b59b1a742944b6
+Author: jobson6544 <93664691+jobson6544@users.noreply.github.com>
+Date:   Fri Aug 9 15:09:23 2024 +0530
+
+    login, register, sign with google completed
