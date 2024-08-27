@@ -75,3 +75,8 @@ class VehicleForm(forms.ModelForm):
                 raise forms.ValidationError("Selected model does not belong to the selected company.")
 
         return cleaned_data
+
+class VehicleCompanyForm(forms.ModelForm):
+    class Meta:
+        model = VehicleCompany
+        fields = ['category', 'company_name', 'is_active']

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'social_django',
     'mainapp',
+    'adminapp',
     'vendor',
     'crispy_forms',
     'crispy_bootstrap4',
@@ -234,3 +235,12 @@ LOGGING = {
 }
 
 print(f"MEDIA_ROOT is set to: {MEDIA_ROOT}")  # Add this line for debugging
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'sinju641@gmail.com'
+EMAIL_HOST_PASSWORD = 'lzur nqtk elun snru'
+
+DEFAULT_FROM_EMAIL = 'sinju641@gmail.com'

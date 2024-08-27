@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.db.models import Sum, Count
 from django.utils import timezone
 from .models import Vendor, Vehicle, VehicleCompany, Model, Registration, Image, Features
-from .forms import VehicleForm, VendorUserForm, VendorProfileForm
+from .forms import VehicleForm, VendorUserForm, VendorProfileForm, VehicleCompanyForm
 from mainapp.models import Booking
 from django.views.decorators.cache import never_cache
 
@@ -266,3 +266,14 @@ def get_companies(request, vehicle_type_id):
 def get_models(request, company_id):
     models = Model.objects.filter(sub_category_id=company_id).values('model_id', 'model_name')
     return JsonResponse(list(models), safe=False)
+
+@never_cache
+def add_vehicle_company(request):
+    if request.method == 'POST':
+        form = VehicleCompanyForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('vehicle_company_list')  # Redirect to a list view
+    else:
+        form = VehicleCompanyForm()
+    return render(request, 'vendor/add_vehicle_company.html', {'form': form})

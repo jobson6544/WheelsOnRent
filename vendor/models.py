@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
 
 class Vendor(models.Model):
     STATUS_CHOICES = [
@@ -24,6 +25,7 @@ class Vendor(models.Model):
 class VehicleType(models.Model):
     category_id = models.AutoField(primary_key=True)
     category_name = models.CharField(max_length=255, unique=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.category_name
@@ -32,6 +34,7 @@ class VehicleCompany(models.Model):
     sub_category_id = models.AutoField(primary_key=True)
     category = models.ForeignKey(VehicleType, on_delete=models.CASCADE)
     company_name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('category', 'company_name')
@@ -44,6 +47,7 @@ class Model(models.Model):
     sub_category = models.ForeignKey(VehicleCompany, on_delete=models.CASCADE)
     model_name = models.CharField(max_length=255)
     model_year = models.IntegerField()  # Using IntegerField as Django doesn't have a YEAR field
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.model_name} ({self.model_year})"
@@ -60,6 +64,7 @@ class Registration(models.Model):
 class Features(models.Model):
     feature_id = models.AutoField(primary_key=True)
     feature_name = models.CharField(max_length=255, unique=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.feature_name
