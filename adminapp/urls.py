@@ -4,7 +4,9 @@ from . import views
 app_name = 'adminapp'
 
 urlpatterns = [
-    path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('login/', views.admin_login, name='login'),
+    path('logout/', views.admin_logout, name='logout'),
+    path('dashboard/', views.admin_dashboard, name='dashboard'),
     path('vehicle-management/', views.vehicle_management, name='vehicle_management'),
     path('add-vehicle-type/', views.add_vehicle_type, name='add_vehicle_type'),
     path('add-vehicle-company/', views.add_vehicle_company, name='add_vehicle_company'),
@@ -18,4 +20,9 @@ urlpatterns = [
     path('manage-vendor-applications/', views.manage_vendor_applications, name='manage_vendor_applications'),
     path('approve-vendor/<int:vendor_id>/', views.approve_vendor, name='approve_vendor'),
     path('reject-vendor/<int:vendor_id>/', views.reject_vendor, name='reject_vendor'),
+    path('active-vendors/', views.active_vendors, name='active_vendors'),
+    path('deactivate-vendor/<int:vendor_id>/', views.deactivate_vendor, name='deactivate_vendor'),
+    path('deactivated-vendors/', views.deactivated_vendors, name='deactivated_vendors'),
+    path('activate-vendor/<int:vendor_id>/', views.activate_vendor, name='activate_vendor'),
+    path('all-vendors/', views.all_vendors, name='all_vendors'),
 ]
