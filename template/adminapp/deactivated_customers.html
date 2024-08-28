@@ -1,0 +1,107 @@
+{% extends 'adminapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Deactivated Customers</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'adminapp:dashboard' %}">Home</a></li>
+                <li class="breadcrumb-item active">Deactivated Customers</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Deactivated Customers List</h5>
+                        <p>Total deactivated customers: {{ total_customers }}</p>
+                        
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        {% if customers %}
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <th>Email</th>
+                                        <th>Date Joined</th>
+                                        <th>Last Login</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for customer in customers %}
+                                        <tr>
+                                            <td>{{ customer.full_name }}</td>
+                                            <td>{{ customer.email }}</td>
+                                            <td>{{ customer.date_joined|date:"F d, Y" }}</td>
+                                            <td>{{ customer.last_login|date:"F d, Y H:i" }}</td>
+                                            <td>
+                                                <form method="post" action="{% url 'adminapp:reactivate_customer' customer.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to reactivate this customer?');">Reactivate</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            
+                            {% if customers.has_other_pages %}
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center">
+                                        {% if customers.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ customers.previous_page_number }}">&laquo;</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">&laquo;</span>
+                                            </li>
+                                        {% endif %}
+                                        
+                                        {% for i in customers.paginator.page_range %}
+                                            {% if customers.number == i %}
+                                                <li class="page-item active">
+                                                    <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+                                                </li>
+                                            {% else %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if customers.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ customers.next_page_number }}">&raquo;</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">&raquo;</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            {% endif %}
+                        {% else %}
+                            <p>No deactivated customers found.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

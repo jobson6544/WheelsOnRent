@@ -14,6 +14,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
 import logging
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.urls import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -342,4 +345,131 @@ def approve_vendor(request, vendor_id):
     pass
 
 # Apply this to all your admin views
+
+
+
+@login_required
+def active_customers(request):
+    customers = User.objects.filter(role='user', is_active=True).order_by('-date_joined')
+    
+    paginator = Paginator(customers, 20)  # Show 20 customers per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'customers': page_obj,
+        'total_customers': customers.count(),
+    }
+    
+    return render(request, 'adminapp/active_customers.html', context)
+
+@login_required
+def deactivate_customer(request, user_id):
+    customer = get_object_or_404(User, id=user_id, role='user')
+    if request.method == 'POST':
+        customer.is_active = False
+        customer.save()
+        
+        # Send email notification
+        subject = 'Your account has been deactivated'
+        html_message = render_to_string('adminapp/email/account_deactivated.html', {'user': customer})
+        plain_message = strip_tags(html_message)
+        from_email = settings.EMAIL_HOST_USER
+        to_email = customer.email
+        
+        try:
+            send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
+            messages.success(request, f"Customer {customer.full_name} has been deactivated and notified via email.")
+        except Exception as e:
+            messages.warning(request, f"Customer {customer.full_name} has been deactivated, but there was an error sending the email notification.")
+            print(f"Email sending error: {str(e)}")
+        
+        return redirect('adminapp:active_customers')
+    return redirect('adminapp:active_customers')
+
+@login_required
+def deactivated_customers(request):
+    customers = User.objects.filter(role='user', is_active=False).order_by('-date_joined')
+    
+    paginator = Paginator(customers, 20)  # Show 20 customers per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'customers': page_obj,
+        'total_customers': customers.count(),
+    }
+    
+    return render(request, 'adminapp/deactivated_customers.html', context)
+
+@login_required
+def reactivate_customer(request, user_id):
+    customer = get_object_or_404(User, id=user_id, role='user')
+    if request.method == 'POST':
+        customer.is_active = True
+        customer.save()
+        
+        # Send email notification
+        subject = 'Your account has been reactivated'
+        html_message = render_to_string('adminapp/email/account_reactivated.html', {'user': customer})
+        plain_message = strip_tags(html_message)
+        from_email = settings.EMAIL_HOST_USER
+        to_email = customer.email
+        
+        try:
+            send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
+            messages.success(request, f"Customer {customer.full_name} has been reactivated and notified via email.")
+        except Exception as e:
+            messages.warning(request, f"Customer {customer.full_name} has been reactivated, but there was an error sending the email notification.")
+            print(f"Email sending error: {str(e)}")
+        
+        return redirect('adminapp:deactivated_customers')
+    return redirect('adminapp:deactivated_customers')
+
+@login_required
+def all_customers(request):
+    customers = User.objects.filter(role='user').order_by('-date_joined')
+    
+    paginator = Paginator(customers, 20)  # Show 20 customers per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'customers': page_obj,
+        'total_customers': customers.count(),
+    }
+    
+    return render(request, 'adminapp/all_customers.html', context)
+
+@login_required
+def toggle_customer_status(request, user_id):
+    customer = get_object_or_404(User, id=user_id, role='user')
+    if request.method == 'POST':
+        customer.is_active = not customer.is_active
+        customer.save()
+        
+        # Prepare email notification
+        if customer.is_active:
+            subject = 'Your account has been reactivated'
+            template = 'adminapp/email/account_reactivated.html'
+            success_message = f"Customer {customer.full_name} has been reactivated and notified via email."
+        else:
+            subject = 'Your account has been deactivated'
+            template = 'adminapp/email/account_deactivated.html'
+            success_message = f"Customer {customer.full_name} has been deactivated and notified via email."
+        
+        html_message = render_to_string(template, {'user': customer})
+        plain_message = strip_tags(html_message)
+        from_email = settings.EMAIL_HOST_USER
+        to_email = customer.email
+        
+        try:
+            send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
+            messages.success(request, success_message)
+        except Exception as e:
+            messages.warning(request, f"Customer status changed, but there was an error sending the email notification.")
+            print(f"Email sending error: {str(e)}")
+        
+        return redirect('adminapp:all_customers')
+    return redirect('adminapp:all_customers')
 

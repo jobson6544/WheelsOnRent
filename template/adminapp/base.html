@@ -150,17 +150,17 @@
         </a>
         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="components-buttons.html">
+            <a href="{% url 'adminapp:active_customers' %}">
               <i class="bi bi-circle"></i><span>Active Customer</span>
             </a>
           </li>
           <li>
-            <a href="components-cards.html">
+            <a href="{% url 'adminapp:deactivated_customers' %}">
               <i class="bi bi-circle"></i><span>Deactive Customer</span>
             </a>
           </li>
           <li>
-            <a href="components-carousel.html">
+            <a href="{% url 'adminapp:all_customers' %}">
               <i class="bi bi-circle"></i><span>All Customer</span>
             </a>
           </li>

@@ -24,5 +24,11 @@ urlpatterns = [
     path('deactivate-vendor/<int:vendor_id>/', views.deactivate_vendor, name='deactivate_vendor'),
     path('deactivated-vendors/', views.deactivated_vendors, name='deactivated_vendors'),
     path('activate-vendor/<int:vendor_id>/', views.activate_vendor, name='activate_vendor'),
+    path('all-customers/', views.all_customers, name='all_customers'),
+    path('toggle-customer-status/<int:user_id>/', views.toggle_customer_status, name='toggle_customer_status'),
     path('all-vendors/', views.all_vendors, name='all_vendors'),
+    path('active-customers/', views.active_customers, name='active_customers'),
+    path('deactivate-customer/<int:user_id>/', views.deactivate_customer, name='deactivate_customer'),
+    path('deactivated-customers/', views.deactivated_customers, name='deactivated_customers'),
+    path('reactivate-customer/<int:user_id>/', views.reactivate_customer, name='reactivate_customer'),
 ]
