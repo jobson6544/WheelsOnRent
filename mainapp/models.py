@@ -1,7 +1,19 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import os
 
+def profile_photo_path(instance, filename):
+    # File will be uploaded to MEDIA_ROOT/profile_photos/user_<id>/<filename>
+    return os.path.join('profile_photos', f'user_{instance.user.id}', filename)
+
+def license_front_path(instance, filename):
+    # File will be uploaded to MEDIA_ROOT/license_photos/user_<id>/front/<filename>
+    return os.path.join('license_photos', f'user_{instance.user.id}', 'front', filename)
+
+def license_back_path(instance, filename):
+    # File will be uploaded to MEDIA_ROOT/license_photos/user_<id>/back/<filename>
+    return os.path.join('license_photos', f'user_{instance.user.id}', 'back', filename)
 
 class User(AbstractUser):
     ROLE_CHOICES = (
@@ -71,7 +83,10 @@ class UserProfile(models.Model):
     address = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
     pin_code = models.CharField(max_length=10)
-    is_complete = models.BooleanField(default=False)  # Added this line
+    is_complete = models.BooleanField(default=False)
+    profile_photo = models.ImageField(upload_to=profile_photo_path, null=True, blank=True)
+    license_front = models.ImageField(upload_to=license_front_path, null=True, blank=True)
+    license_back = models.ImageField(upload_to=license_back_path, null=True, blank=True)
 
     def __str__(self):
         return self.user.username

@@ -17,6 +17,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.urls import reverse
+from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
@@ -195,10 +196,7 @@ def admin_required(view_func):
     decorated_view_func = user_passes_test(is_admin, login_url='adminapp:login')(view_func)
     return decorated_view_func
 
-@admin_required
-def some_admin_view(request):
-    # Your view logic here
-    pass
+
 @staff_member_required(login_url='adminapp:login')
 def manage_vendor_applications(request):
     pending_vendors = Vendor.objects.filter(status='pending')
@@ -206,28 +204,42 @@ def manage_vendor_applications(request):
 
 @staff_member_required(login_url='adminapp:login')
 def approve_vendor(request, vendor_id):
-    vendor = get_object_or_404(Vendor, vendor_id=vendor_id)
-    vendor.status = 'approved'
-    vendor.save()
+    try:
+        vendor = get_object_or_404(Vendor, vendor_id=vendor_id)
+        
+        vendor.status = 'approved'
+        vendor.save()
 
-    # Send approval email
-    subject = 'Your Vendor Application Has Been Approved'
-    html_message = render_to_string('adminapp/email/vendor_approval.html', {'vendor': vendor})
-    plain_message = strip_tags(html_message)
-    from_email = settings.DEFAULT_FROM_EMAIL
-    to_email = vendor.user.email
+        try:
+            # Send approval email
+            subject = 'Your Vendor Application Has Been Approved'
+            html_message = render_to_string('adminapp/email/vendor_approval.html', {'vendor': vendor})
+            plain_message = strip_tags(html_message)
+            from_email = settings.DEFAULT_FROM_EMAIL
+            to_email = vendor.user.email
 
-    send_mail(
-        subject,
-        plain_message,
-        from_email,
-        [to_email],
-        html_message=html_message,
-        fail_silently=False,
-    )
+            send_mail(
+                subject,
+                plain_message,
+                from_email,
+                [to_email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+            print("Approval email sent successfully")
+        except Exception as e:
+            print(f"Error sending approval email: {str(e)}")
+            messages.error(request, f"Error sending approval email: {str(e)}")
 
-    messages.success(request, f"Vendor {vendor.business_name} has been approved and notified via email.")
-    return redirect('adminapp:manage_vendor_applications')
+        messages.success(request, f"Vendor {vendor.business_name} has been approved and notified via email.")
+        return redirect('adminapp:manage_vendor_applications')
+    except Vendor.DoesNotExist:
+        messages.error(request, "Vendor not found.")
+        return redirect('adminapp:manage_vendor_applications')
+    except Exception as e:
+        print(f"Error in approve_vendor: {str(e)}")
+        messages.error(request, f"An error occurred: {str(e)}")
+        return HttpResponse("An error occurred while processing your request.", status=500)
 
 @staff_member_required(login_url='adminapp:login')
 def reject_vendor(request, vendor_id):
@@ -338,13 +350,6 @@ def all_vendors(request):
 def all_vendors(request):
     vendors = Vendor.objects.all().order_by('status', 'business_name')
     return render(request, 'adminapp/all_vendors.html', {'vendors': vendors})
-
-@admin_required
-def approve_vendor(request, vendor_id):
-    # Your view logic here
-    pass
-
-# Apply this to all your admin views
 
 
 

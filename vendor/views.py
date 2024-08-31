@@ -12,6 +12,7 @@ from .models import Vendor, Vehicle, VehicleCompany, Model, Registration, Image,
 from .forms import VehicleForm, VendorUserForm, VendorProfileForm, VehicleCompanyForm
 from mainapp.models import Booking
 from django.views.decorators.cache import never_cache
+from .decorators import vendor_required, vendor_status_check
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ def vendor_register_profile(request):
     return render(request, 'vendor/vendor_register_profile.html', {'vendor_form': vendor_form})
 
 @never_cache
-@login_required
+@vendor_status_check
 def vendor_dashboard(request):
     try:
         vendor = Vendor.objects.get(user=request.user)
@@ -116,7 +117,7 @@ def vendor_dashboard(request):
     return render(request, 'vendor/dashboard.html', context)
 
 @never_cache
-@login_required
+@vendor_required
 def add_vehicle(request):
     if request.method == 'POST':
         form = VehicleForm(request.POST, request.FILES)
@@ -168,7 +169,7 @@ def add_vehicle(request):
     return render(request, 'vendor/add_vehicle.html', {'form': form})
 
 @never_cache
-@login_required
+@vendor_required
 def vendor_vehicles(request):
     vehicles = Vehicle.objects.filter(vendor__user=request.user, status=1).select_related(
         'model__sub_category__category', 'registration'
@@ -178,7 +179,7 @@ def vendor_vehicles(request):
     return render(request, 'vendor/vehicle_list.html', {'vehicles': vehicles})
 
 @never_cache
-@login_required
+@vendor_required
 def update_vehicle(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user, status=1)
     if request.method == 'POST':
@@ -221,7 +222,7 @@ def update_vehicle(request, vehicle_id):
     return render(request, 'vendor/update_vehicle.html', {'form': form, 'vehicle': vehicle})
 
 @never_cache
-@login_required
+@vendor_required
 def delete_vehicle(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user)
     vehicle.status = 0
@@ -230,7 +231,7 @@ def delete_vehicle(request, vehicle_id):
     return redirect('vendor:vendor_vehicles')
 
 @never_cache
-@login_required
+@vendor_required
 def edit_vehicle(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user, status=1)
     if request.method == 'POST':
@@ -244,7 +245,7 @@ def edit_vehicle(request, vehicle_id):
     return render(request, 'vendor/edit_vehicle.html', {'form': form, 'vehicle': vehicle})
 
 @never_cache
-@login_required
+@vendor_required
 def vehicle_detail(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user, status=1)
     return render(request, 'vendor/vehicle_detail.html', {'vehicle': vehicle})
@@ -268,6 +269,7 @@ def get_models(request, company_id):
     return JsonResponse(list(models), safe=False)
 
 @never_cache
+@vendor_required
 def add_vehicle_company(request):
     if request.method == 'POST':
         form = VehicleCompanyForm(request.POST)

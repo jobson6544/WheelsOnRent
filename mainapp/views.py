@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import UserRegistrationForm, UserProfileForm
+from .forms import UserRegistrationForm, UserProfileForm, UserEditForm, UserProfileEditForm
 from .models import UserProfile, Booking  # Import UserProfile here
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -31,28 +31,21 @@ def customer_register(request):
 
 @login_required(login_url='login')
 def complete_profile(request):
-    # Attempt to get the user's profile or create a new one if it doesn't exist
-    try:
-        profile = request.user.profile
-    except UserProfile.DoesNotExist:
-        profile = UserProfile(user=request.user)
-        profile.save()  # Save the new profile instance
+    # Try to get the existing profile, or create a new one if it doesn't exist
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
-        profile_form = UserProfileForm(request.POST, instance=profile)
-        
-        if profile_form.is_valid():
-            profile = profile_form.save(commit=False)
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            profile = form.save(commit=False)
             profile.is_complete = True  # Mark the profile as complete
-            profile.save()  # Save the profile
-            return redirect('home')  # Redirect to the home page after saving
+            profile.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('home')  # or wherever you want to redirect after successful submission
     else:
-        profile_form = UserProfileForm(instance=profile)  # Pre-fill the form with existing profile data
-    
-    context = {
-        'profile_form': profile_form,
-    }
-    return render(request, 'complete_profile.html', context)
+        form = UserProfileForm(instance=profile)
+
+    return render(request, 'complete_profile.html', {'form': form})
 
 def login_view(request):
     if request.method == 'POST':
@@ -190,3 +183,29 @@ def cancel_booking(request, booking_id):
             messages.error(request, 'This booking cannot be cancelled.')
     
     return redirect('user_booking_history')
+
+@login_required
+def profile_view(request):
+    profile = request.user.profile
+    return render(request, 'profile_view.html', {'profile': profile})
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        user_form = UserEditForm(request.POST, instance=request.user)
+        profile_form = UserProfileEditForm(request.POST, request.FILES, instance=request.user.profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save()
+            profile = profile_form.save(commit=False)
+            profile.user = user
+            profile.save()
+            messages.success(request, 'Your profile was successfully updated!')
+            return redirect('profile_view')
+    else:
+        user_form = UserEditForm(instance=request.user)
+        profile_form = UserProfileEditForm(instance=request.user.profile)
+    
+    return render(request, 'edit_profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form
+    })

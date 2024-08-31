@@ -1,0 +1,109 @@
+{% extends 'adminapp/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<main id="main" class="main">
+<div class="container mt-5">
+
+    <!-- Vehicle Types -->
+    <h2>Vehicle Types</h2>
+    <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#vehicleTypeModal">Add Vehicle Type</button>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Category Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="vehicle-types-table">
+            {% for vehicle_type in vehicle_types %}
+            <tr>
+                <td>{{ vehicle_type.category_id }}</td>
+                <td>{{ vehicle_type.category_name }}</td>
+                <td>
+                    <form method="post" action="{% url 'adminapp:toggle_vehicle_type' vehicle_type.category_id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm 
+                            {% if vehicle_type.is_active %}
+                                btn-success
+                            {% else %}
+                                btn-secondary
+                            {% endif %}
+                        ">
+                            {% if vehicle_type.is_active %}
+                                Deactivate
+                            {% else %}
+                                Activate
+                            {% endif %}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Vehicle Type Modal -->
+    <div class="modal fade" id="vehicleTypeModal" tabindex="-1" role="dialog" aria-labelledby="vehicleTypeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="vehicleTypeModalLabel">Add Vehicle Type</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="vehicleTypeForm" method="post" action="{% url 'adminapp:add_vehicle_type' %}">
+                        {% csrf_token %}
+                        {{ vehicle_type_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include jQuery and Bootstrap JS for handling the modal and AJAX -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#vehicleTypeForm').on('submit', function(event) {
+                event.preventDefault();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',  // Ensure the request method is POST
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.success) {
+                            $('#vehicleTypeModal').modal('hide');
+                            // Update this part
+                            var toggleUrl = "{% url 'adminapp:toggle_vehicle_type' 999999 %}".replace('999999', response.category_id);
+                            $('#vehicle-types-table').append(
+                                '<tr>' +
+                                    '<td>' + response.category_id + '</td>' +
+                                    '<td>' + response.category_name + '</td>' +
+                                    '<td>' +
+                                        '<form method="post" action="' + toggleUrl + '" style="display:inline;">' +
+                                            '{% csrf_token %}' +
+                                            '<button type="submit" class="btn btn-sm btn-success">Deactivate</button>' +
+                                        '</form>' +
+                                    '</td>' +
+                                '</tr>'
+                            );
+                        } else {
+                            alert('Error: ' + JSON.stringify(response.errors));
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+</div>
+</main>
+
+{% endblock %}
