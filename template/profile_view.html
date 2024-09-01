@@ -99,3 +99,72 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Preview profile photo
+        const profilePhotoInput = document.getElementById('{{ profile_form.profile_photo.id_for_label }}');
+        const profileImg = document.querySelector('.profile-img');
+        
+        profilePhotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profileImg.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Preview license images
+        const licenseInputs = [
+            document.getElementById('{{ profile_form.license_front.id_for_label }}'),
+            document.getElementById('{{ profile_form.license_back.id_for_label }}')
+        ];
+        
+        licenseInputs.forEach(input => {
+            input.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    const imgContainer = this.closest('.card-body').querySelector('.license-img-container');
+                    reader.onload = function(e) {
+                        imgContainer.innerHTML = `<img src="${e.target.result}" alt="License" class="license-img">`;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            const requiredFields = form.querySelectorAll('input[required]');
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                    const errorDiv = field.nextElementSibling || document.createElement('div');
+                    errorDiv.className = 'invalid-feedback';
+                    errorDiv.textContent = 'This field is required.';
+                    field.parentNode.insertBefore(errorDiv, field.nextSibling);
+                } else {
+                    field.classList.remove('is-invalid');
+                    const errorDiv = field.nextElementSibling;
+                    if (errorDiv && errorDiv.className === 'invalid-feedback') {
+                        errorDiv.remove();
+                    }
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}
