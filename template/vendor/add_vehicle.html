@@ -1,5 +1,6 @@
 
 {% load static %}
+{% load form_tags %}
 {% load widget_tweaks %}
 
 {% block content %}
@@ -319,130 +320,156 @@
   </aside><!-- End Sidebar-->
   <main id="main" class="main">
   <div class="container mt-5 mb-5" style="margin-top: 8rem;">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center">Add New Vehicle</h2>
-                </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" id="vehicleForm">
-                        {% csrf_token %}
-                        {{ form.non_field_errors }}
-                        
-                        <!-- Vehicle Type -->
-                        <div class="mb-3 row justify-content-center">
-                            <label for="{{ form.vehicle_type.id_for_label }}" class="col-sm-3 col-form-label text-end">Vehicle Type</label>
-                            <div class="col-sm-6">
-                                {{ form.vehicle_type|add_class:"form-select" }}
-                                {% if form.vehicle_type.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.vehicle_type.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+    <div class="container mt-5">
+      <h2 class="mb-4">Add New Vehicle</h2>
+      <form method="post" enctype="multipart/form-data" id="vehicleForm">
+          {% csrf_token %}
+          <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Vehicle Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ vehicle_form.vehicle_type.label_tag }} {{ vehicle_form.vehicle_type|add_class:"form-control" }}
                         </div>
-
-                        <!-- Vehicle Company -->
-                        <div class="mb-3 row justify-content-center">
-                            <label for="{{ form.vehicle_company.id_for_label }}" class="col-sm-3 col-form-label text-end">Vehicle Company</label>
-                            <div class="col-sm-6">
-                                {{ form.vehicle_company|add_class:"form-select" }}
-                                {% if form.vehicle_company.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.vehicle_company.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.vehicle_company.label_tag }} {{ vehicle_form.vehicle_company|add_class:"form-control" }}
                         </div>
-
-                        <!-- Model -->
-                        <div class="mb-3 row justify-content-center">
-                            <label for="{{ form.model.id_for_label }}" class="col-sm-3 col-form-label text-end">Model</label>
-                            <div class="col-sm-6">
-                                {{ form.model|add_class:"form-select" }}
-                                {% if form.model.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.model.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.model.label_tag }} {{ vehicle_form.model|add_class:"form-control" }}
                         </div>
-
-                        <!-- Rental Rate -->
-                        <div class="mb-3 row justify-content-center">
-                            <label for="{{ form.rental_rate.id_for_label }}" class="col-sm-3 col-form-label text-end">Rental Rate</label>
-                            <div class="col-sm-6">
-                                {{ form.rental_rate|add_class:"form-control" }}
-                                {% if form.rental_rate.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.rental_rate.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                        <!-- Vendor field removed as per instructions -->
+                        <div class="mb-3">
+                            {{ vehicle_form.fuel_type.label_tag }} {{ vehicle_form.fuel_type|add_class:"form-control" }}
                         </div>
-
-                        <!-- Remaining Fields -->
-                        {% for field in form %}
-                            {% if field.name not in 'vehicle_type,vehicle_company,model,rental_rate,features,is_available' %}
-                                <div class="mb-3 row justify-content-center">
-                                    <label for="{{ field.id_for_label }}" class="col-sm-3 col-form-label text-end">{{ field.label }}</label>
-                                    <div class="col-sm-6">
-                                        {% if field.name == 'image' %}
-                                            <input type="file" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control">
-                                        {% else %}
-                                            {{ field|add_class:"form-control" }}
-                                        {% endif %}
-                                        {% if field.errors %}
-                                            <div class="text-danger">
-                                                {% for error in field.errors %}
-                                                    {{ error }}
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-
-                        <!-- Features -->
-                        <div class="mb-3 row justify-content-center">
-                            <label class="col-sm-3 col-form-label text-end">Features</label>
-                            <div class="col-sm-6">
-                                {% for value, text in form.features.field.choices %}
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="{{ form.features.name }}" value="{{ value }}" id="id_features_{{ forloop.counter }}" {% if value in form.features.value %}checked{% endif %}>
-                                        <label class="form-check-label" for="id_features_{{ forloop.counter }}">
-                                            {{ text }}
-                                        </label>
-                                    </div>
-                                {% endfor %}
-                                {% if form.features.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.features.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ vehicle_form.engine_number.label_tag }} {{ vehicle_form.engine_number|add_class:"form-control" }}
                         </div>
-              <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary">Add Vehicle</button>
-                            <a href="{% url 'vendor:vendor_vehicles' %}" class="btn btn-secondary">Cancel</a>
+                        <div class="mb-3">
+                            {{ vehicle_form.chassis_number.label_tag }} {{ vehicle_form.chassis_number|add_class:"form-control" }}
                         </div>
-                    </form>
+                        <div class="mb-3">
+                            {{ vehicle_form.rental_rate.label_tag }} {{ vehicle_form.rental_rate|add_class:"form-control" }}
+                        </div>
+                        <div class="form-check mb-3">
+                            {{ vehicle_form.availability|add_class:"form-check-input" }} {{ vehicle_form.availability.label_tag }}
+                        </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.image.label_tag }} {{ vehicle_form.image|add_class:"form-control" }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registration Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ vehicle_form.registration_number.label_tag }} {{ vehicle_form.registration_number|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ vehicle_form.registration_date.label_tag }} {{ vehicle_form.registration_date|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            {{ vehicle_form.registration_end_date.label_tag }} {{ vehicle_form.registration_end_date|add_class:"form-control" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Insurance Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ vehicle_form.policy_number.label_tag }} {{ vehicle_form.policy_number|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.policy_provider.label_tag }} {{ vehicle_form.policy_provider|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.coverage_type.label_tag }} {{ vehicle_form.coverage_type|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ vehicle_form.insurance_start_date.label_tag }} {{ vehicle_form.insurance_start_date|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.insurance_end_date.label_tag }} {{ vehicle_form.insurance_end_date|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.road_tax_details.label_tag }} {{ vehicle_form.road_tax_details|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.fitness_expiry_date.label_tag }} {{ vehicle_form.fitness_expiry_date|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.puc_expiry_date.label_tag }} {{ vehicle_form.puc_expiry_date|add_class:"form-control" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Upload Documents</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ document_form.rc_document.label_tag }} {{ document_form.rc_document|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ document_form.insurance_document.label_tag }} {{ document_form.insurance_document|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ document_form.puc_document.label_tag }} {{ document_form.puc_document|add_class:"form-control" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Features</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    {{ vehicle_form.features }}
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Vehicle</button>
+    </form>
+</div>
+</div>
+</div>
 </div>
 
 </div>

@@ -8,8 +8,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.db.models import Sum, Count
 from django.utils import timezone
-from .models import Vendor, Vehicle, VehicleCompany, Model, Registration, Image, Features
-from .forms import VehicleForm, VendorUserForm, VendorProfileForm, VehicleCompanyForm
+from .models import Vehicle, VehicleCompany, Model, Registration, Image, Features, VehicleDocument, Vendor, Insurance
+from .forms import VehicleForm, VendorUserForm, VendorProfileForm, VehicleCompanyForm, VehicleDocumentForm
 from mainapp.models import Booking
 from django.views.decorators.cache import never_cache
 from .decorators import vendor_required, vendor_status_check
@@ -117,56 +117,88 @@ def vendor_dashboard(request):
     return render(request, 'vendor/dashboard.html', context)
 
 @never_cache
-@vendor_required
+@vendor_required 
+@login_required
 def add_vehicle(request):
+    logger.debug("Entering add_vehicle view")
     if request.method == 'POST':
-        form = VehicleForm(request.POST, request.FILES)
-        if form.is_valid():
+        logger.debug("POST request received")
+        vehicle_form = VehicleForm(request.POST, request.FILES, vendor=request.user.vendor)
+        document_form = VehicleDocumentForm(request.POST, request.FILES)
+        
+        logger.debug(f"POST data: {request.POST}")
+        logger.debug(f"FILES data: {request.FILES}")
+        
+        if vehicle_form.is_valid() and document_form.is_valid():
+            logger.debug("Both forms are valid")
             try:
                 with transaction.atomic():
-                    # Get or create vendor
-                    vendor, created = Vendor.objects.get_or_create(user=request.user)
+                    # Save Vehicle
+                    vehicle = vehicle_form.save(commit=False)
+                    vehicle.vendor = request.user.vendor  # Set the vendor to the logged-in user
+                    vehicle.save()
+                    logger.info(f"Vehicle saved to database: {vehicle.id}")
+                    vehicle_form.save_m2m()  # Save many-to-many relationships
+                    logger.debug("Many-to-many relationships saved")
                     
-                    # Get or create Registration
-                    registration, created = Registration.objects.get_or_create(
-                        registration_number=form.cleaned_data['registration_number'],
-                        defaults={
-                            'registration_date': form.cleaned_data['registration_date'],
-                            'registration_end_date': form.cleaned_data['registration_end_date']
-                        }
+                    # Save Registration
+                    registration = Registration.objects.create(
+                        registration_number=vehicle_form.cleaned_data['registration_number'],
+                        registration_date=vehicle_form.cleaned_data['registration_date'],
+                        registration_end_date=vehicle_form.cleaned_data['registration_end_date']
                     )
+                    logger.debug(f"Registration created: {registration.__dict__}")
+                    vehicle.registration = registration
+                    vehicle.save()
                     
-                    if not created:
-                        # Update the registration dates if it already exists
-                        registration.registration_date = form.cleaned_data['registration_date']
-                        registration.registration_end_date = form.cleaned_data['registration_end_date']
-                        registration.save()
-
-                    # Create Vehicle
-                    vehicle = Vehicle.objects.create(
-                        model=form.cleaned_data['model'],
-                        vendor=vendor,
-                        registration=registration,
-                        rental_rate=form.cleaned_data['rental_rate'],
-                        availability=form.cleaned_data['availability'],
-                        image=form.cleaned_data['image']
+                    # Save Insurance
+                    insurance = Insurance.objects.create(
+                        vehicle=vehicle,
+                        policy_number=vehicle_form.cleaned_data['policy_number'],
+                        policy_provider=vehicle_form.cleaned_data['policy_provider'],
+                        coverage_type=vehicle_form.cleaned_data['coverage_type'],
+                        start_date=vehicle_form.cleaned_data['insurance_start_date'],
+                        end_date=vehicle_form.cleaned_data['insurance_end_date'],
+                        road_tax_details=vehicle_form.cleaned_data['road_tax_details'],
+                        fitness_expiry_date=vehicle_form.cleaned_data['fitness_expiry_date'],
+                        puc_expiry_date=vehicle_form.cleaned_data['puc_expiry_date']
                     )
-
-                    # Add features
-                    vehicle.features.set(form.cleaned_data['features'])
-
-                    # Handle image upload
-                    if 'image' in request.FILES:
-                        Image.objects.create(vehicle=vehicle, image=request.FILES['image'])
-
-                messages.success(request, 'Vehicle added successfully.')
-                return redirect('vendor:vendor_vehicles')
+                    logger.info(f"Insurance saved: {insurance.id}")
+                    
+                    # Update Vehicle with Insurance
+                    vehicle.insurance = insurance
+                    vehicle.save()
+                    logger.info(f"Vehicle updated with insurance: {vehicle.id}")
+                    
+                    # Save Documents
+                    document = document_form.save(commit=False)
+                    document.vehicle = vehicle
+                    document.save()
+                    logger.info(f"Document saved: {document.id}")
+                    
+                    messages.success(request, 'Vehicle added successfully!')
+                    logger.info("Vehicle addition process completed successfully")
+                    return redirect('vendor:vendor_vehicles')
             except Exception as e:
-                messages.error(request, f"An error occurred: {str(e)}")
+                logger.error(f"Error saving vehicle: {str(e)}", exc_info=True)
+                messages.error(request, f"An error occurred while saving the vehicle: {str(e)}")
+                # Rollback the vehicle save if any error occurs
+                if 'vehicle' in locals():
+                    vehicle.delete()
+        else:
+            logger.error(f"Form errors: {vehicle_form.errors}, {document_form.errors}")
+            messages.error(request, 'Please correct the errors in the form.')
     else:
-        form = VehicleForm()
+        logger.debug("GET request received, initializing forms")
+        vehicle_form = VehicleForm(vendor=request.user.vendor)
+        document_form = VehicleDocumentForm()
     
-    return render(request, 'vendor/add_vehicle.html', {'form': form})
+    context = {
+        'vehicle_form': vehicle_form,
+        'document_form': document_form
+    }
+    logger.debug("Rendering add_vehicle template")
+    return render(request, 'vendor/add_vehicle.html', context)
 
 @never_cache
 @vendor_required
@@ -175,7 +207,7 @@ def vendor_vehicles(request):
         'model__sub_category__category', 'registration'
     ).prefetch_related('features')
     for vehicle in vehicles:
-        print(f"Vehicle ID: {vehicle.vehicle_id}")  # Add this line for debugging
+        print(f"Vehicle ID: {vehicle.id}")  # Add this line for debugging
     return render(request, 'vendor/vehicle_list.html', {'vehicles': vehicles})
 
 @never_cache

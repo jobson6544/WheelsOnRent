@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 class Vendor(models.Model):
     STATUS_CHOICES = [
@@ -53,7 +54,7 @@ class Model(models.Model):
 
 class Registration(models.Model):
     registration_id = models.AutoField(primary_key=True)
-    registration_number = models.CharField(max_length=255, unique=True)
+    registration_number = models.CharField(max_length=255)  # Ensure unique=True is removed
     registration_date = models.DateField()
     registration_end_date = models.DateField()
 
@@ -69,18 +70,38 @@ class Features(models.Model):
         return self.feature_name
 
 class Vehicle(models.Model):
-    vehicle_id = models.AutoField(primary_key=True)
-    model = models.ForeignKey(Model, on_delete=models.CASCADE)
-    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='vehicles')
-    registration = models.ForeignKey(Registration, on_delete=models.CASCADE)
-    features = models.ManyToManyField(Features)
+    FUEL_CHOICES = [
+        ('petrol', 'Petrol'),
+        ('diesel', 'Diesel'),
+        ('electric', 'Electric'),
+        ('hybrid', 'Hybrid'),
+        ('cng', 'CNG'),
+        ('lpg', 'LPG'),
+    ]
+
+    vendor = models.ForeignKey('Vendor', on_delete=models.CASCADE, related_name='vehicles')
+    model = models.ForeignKey('Model', on_delete=models.CASCADE)
+    registration = models.OneToOneField('Registration', on_delete=models.CASCADE)
+    insurance = models.OneToOneField('Insurance', on_delete=models.CASCADE, null=True, blank=True, related_name='insured_vehicle')
+    features = models.ManyToManyField('Features')
     availability = models.BooleanField(default=True)
     rental_rate = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.IntegerField(default=1)  # 1 for active, 0 for deleted
+    fuel_type = models.CharField(max_length=20, choices=FUEL_CHOICES)
+    engine_number = models.CharField(max_length=50)
+    chassis_number = models.CharField(max_length=50)
     image = models.ImageField(upload_to='vehicle_images/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.model} - {self.registration.registration_number}"
+
+    def get_insurance(self):
+        try:
+            return self.insurance
+        except Insurance.DoesNotExist:
+            return None
 
 class Image(models.Model):
     image_id = models.AutoField(primary_key=True)
@@ -89,3 +110,43 @@ class Image(models.Model):
 
     def __str__(self):
         return f"Image for {self.vehicle}"
+
+class Insurance(models.Model):
+    COVERAGE_CHOICES = [
+        ('third_party', 'Third Party'),
+        ('comprehensive', 'Comprehensive'),
+        ('zero_dep', 'Zero Depreciation'),
+    ]
+
+    vehicle = models.OneToOneField('Vehicle', on_delete=models.CASCADE, related_name='vehicle_insurance')
+    policy_number = models.CharField(max_length=50, unique=True)
+    policy_provider = models.CharField(max_length=100)
+    coverage_type = models.CharField(max_length=20, choices=COVERAGE_CHOICES)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    road_tax_details = models.CharField(max_length=255)
+    fitness_expiry_date = models.DateField()
+    puc_expiry_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Insurance for {self.vehicle} (Policy: {self.policy_number})"
+
+    def is_fitness_valid(self):
+        return self.fitness_expiry_date > timezone.now().date()
+
+    def is_puc_valid(self):
+        return self.puc_expiry_date > timezone.now().date()
+
+    def is_insurance_valid(self):
+        return self.start_date <= timezone.now().date() <= self.end_date
+
+class VehicleDocument(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='documents')
+    rc_document = models.FileField(upload_to='documents/rc/', blank=True, null=True)
+    insurance_document = models.FileField(upload_to='documents/insurance/', blank=True, null=True)
+    puc_document = models.FileField(upload_to='documents/puc/', blank=True, null=True)
+
+    def __str__(self):
+        return f"Documents for {self.vehicle}"
