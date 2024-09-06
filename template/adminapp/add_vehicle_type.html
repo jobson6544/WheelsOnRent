@@ -8,7 +8,7 @@
 
     <!-- Vehicle Types -->
     <h2>Vehicle Types</h2>
-    <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#vehicleTypeModal">Add Vehicle Type</button>
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#vehicleTypeModal">Add Vehicle Type</button>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -23,22 +23,11 @@
                 <td>{{ vehicle_type.category_id }}</td>
                 <td>{{ vehicle_type.category_name }}</td>
                 <td>
-                    <form method="post" action="{% url 'adminapp:toggle_vehicle_type' vehicle_type.category_id %}" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-sm 
-                            {% if vehicle_type.is_active %}
-                                btn-success
-                            {% else %}
-                                btn-secondary
-                            {% endif %}
-                        ">
-                            {% if vehicle_type.is_active %}
-                                Deactivate
-                            {% else %}
-                                Activate
-                            {% endif %}
-                        </button>
-                    </form>
+                    <button id="toggle-button-{{ vehicle_type.category_id }}" 
+                            onclick="toggleVehicleType({{ vehicle_type.category_id }})" 
+                            class="btn {% if vehicle_type.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                        {% if vehicle_type.is_active %}Deactivate{% else %}Activate{% endif %}
+                    </button>
                 </td>
             </tr>
             {% endfor %}
@@ -70,37 +59,63 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#vehicleTypeForm').on('submit', function(event) {
-                event.preventDefault();
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',  // Ensure the request method is POST
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        if (response.success) {
-                            $('#vehicleTypeModal').modal('hide');
-                            // Update this part
-                            var toggleUrl = "{% url 'adminapp:toggle_vehicle_type' 999999 %}".replace('999999', response.category_id);
-                            $('#vehicle-types-table').append(
-                                '<tr>' +
-                                    '<td>' + response.category_id + '</td>' +
-                                    '<td>' + response.category_name + '</td>' +
-                                    '<td>' +
-                                        '<form method="post" action="' + toggleUrl + '" style="display:inline;">' +
-                                            '{% csrf_token %}' +
-                                            '<button type="submit" class="btn btn-sm btn-success">Deactivate</button>' +
-                                        '</form>' +
-                                    '</td>' +
-                                '</tr>'
-                            );
+        // $(document).ready(function() {
+        //     $('#vehicleTypeForm').on('submit', function(event) {
+        //         event.preventDefault();
+        //         $.ajax({
+        //             url: $(this).attr('action'),
+        //             type: 'POST',  // Ensure the request method is POST
+        //             data: $(this).serialize(),
+        //             success: function(response) {
+        //                 if (response.success) {
+        //                     $('#vehicleTypeModal').modal('hide');
+        //                     // Update this part
+        //                     var toggleUrl = "{% url 'adminapp:toggle_vehicle_type' 999999 %}".replace('999999', response.category_id);
+        //                     $('#vehicle-types-table').append(
+        //                         '<tr>' +
+        //                             '<td>' + response.category_id + '</td>' +
+        //                             '<td>' + response.category_name + '</td>' +
+        //                             '<td>' +
+        //                                 '<form method="post" action="' + toggleUrl + '" style="display:inline;">' +
+        //                                     '{% csrf_token %}' +
+        //                                     '<button type="submit" class="btn btn-sm btn-success">Deactivate</button>' +
+        //                                 '</form>' +
+        //                             '</td>' +
+        //                         '</tr>'
+        //                     );
+        //                 } else {
+        //                     alert('Error: ' + JSON.stringify(response.errors));
+        //                 }
+        //             }
+        //         });
+        //     });
+        // });
+
+        function toggleVehicleType(id) {
+            $.ajax({
+                url: `/adminapp/toggle-vehicle-type/${id}/`,
+                type: 'POST',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the button without reloading
+                        const button = $(`#toggle-button-${id}`);
+                        if (response.is_active) {
+                            button.text('Deactivate').removeClass('btn-success').addClass('btn-danger');
                         } else {
-                            alert('Error: ' + JSON.stringify(response.errors));
+                            button.text('Activate').removeClass('btn-danger').addClass('btn-success');
                         }
+                    } else {
+                        console.error('Error toggling vehicle type:', response.error);
                     }
-                });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
             });
-        });
+        }
     </script>
 
 </div>

@@ -1,0 +1,100 @@
+{% extends 'adminapp/base.html' %}
+ {% load static %}
+ {% block content %}
+ <main id="main" class="main">
+    <div class="container mt-5">
+ <!-- Features -->
+    <h2>Features</h2>
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#featuresModal">
+        Add Features
+      </button>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Feature Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feature in features %}
+            <tr>
+                <td>{{ feature.feature_id }}</td>
+                <td>{{ feature.feature_name }}</td>
+                <td>
+                    <form method="post" action="{% url 'adminapp:toggle_features' feature.feature_id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm 
+                            {% if feature.is_active %}
+                                btn-success
+                            {% else %}
+                                btn-secondary
+                            {% endif %}
+                        ">
+                            {% if feature.is_active %}
+                                Deactivate
+                            {% else %}
+                                Activate
+                            {% endif %}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Features Modal -->
+    <div class="modal fade" id="featuresModal" tabindex="-1" role="dialog" aria-labelledby="featuresModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="featuresModalLabel">Add Features</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="featuresForm" method="post" action="{% url 'adminapp:add_features' %}">
+                        {% csrf_token %}
+                        {{ features_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+         $('#featuresForm').on('submit', function(event) {
+            event.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        $('#featuresModal').modal('hide');
+                        // location.reload(); // Reload the page to see the new entry
+                        var toggleUrl = "{% url 'adminapp:toggle_features' 999999 %}".replace('999999', response.feature_id);
+                            $('#features-table').append(
+                                '<tr>' +
+                                    '<td>' + response.feature_id + '</td>' +
+                                    '<td>' + response.feature_name + '</td>' +
+                                    '<td>' +
+                                        '<form method="post" action="' + toggleUrl + '" style="display:inline;">' +
+                                            '{% csrf_token %}' +
+                                            '<button type="submit" class="btn btn-sm btn-success">Deactivate</button>' +
+                                        '</form>' +
+                                    '</td>' +
+                            '</tr>'
+                        );
+                    } else {
+                        alert('Error: ' + JSON.stringify(response.errors));
+                    }
+                }
+            });
+        });
+    </script>
+    </div>
+</main>
+{% endblock %}

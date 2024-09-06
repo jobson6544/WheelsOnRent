@@ -16,6 +16,30 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Print the current working directory and the BASE_DIR
+print(f"Current working directory: {os.getcwd()}")
+print(f"BASE_DIR: {BASE_DIR}")
+
+# Load environment variables from .env file
+env_file = os.path.join(BASE_DIR, '.env')
+print(f"Looking for .env file at: {env_file}")
+if os.path.exists(env_file):
+    print(".env file found")
+    load_dotenv(env_file)
+else:
+    print(".env file not found")
+
+# Print the environment variables
+print(f"STRIPE_SECRET_KEY: {os.getenv('STRIPE_SECRET_KEY')}")
+print(f"STRIPE_PUBLIC_KEY: {os.getenv('STRIPE_PUBLIC_KEY')}")
+
+# Stripe settings
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
+
+# Add this line to raise an error if the keys are not set
+if not STRIPE_SECRET_KEY or not STRIPE_PUBLIC_KEY:
+    raise ValueError("Stripe API keys are not set in the environment")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -125,6 +149,16 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+# Stripe settings
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
+
+
+# Add this line to raise an error if the keys are not set
+if not STRIPE_SECRET_KEY or not STRIPE_PUBLIC_KEY:
+    raise ValueError("Stripe API keys are not set in the environment")
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY='711904224209-t8ef1ribc5dn4ftspr4aai14gobhujl7.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET='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'
@@ -245,3 +279,4 @@ EMAIL_HOST_USER = 'sinju641@gmail.com'
 EMAIL_HOST_PASSWORD = 'lzur nqtk elun snru'
 
 DEFAULT_FROM_EMAIL = 'sinju641@gmail.com'
+

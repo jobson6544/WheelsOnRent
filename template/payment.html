@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Payment</h2>
+{% if session_id %}
+    <button id="checkout-button">Proceed to Checkout</button>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripe = Stripe('{{ stripe_public_key }}');
+        var checkoutButton = document.getElementById('checkout-button');
+
+        checkoutButton.addEventListener('click', function() {
+            stripe.redirectToCheckout({
+                sessionId: '{{ session_id }}'
+            }).then(function (result) {
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            });
+        });
+    </script>
+{% else %}
+    <p>Sorry, we couldn't process your payment at this time. Please try again later.</p>
+{% endif %}
+{% endblock %}

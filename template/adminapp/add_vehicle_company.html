@@ -1,0 +1,119 @@
+{% extends 'adminapp/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<main id="main" class="main">
+<div class="container mt-5">
+
+
+<!-- Vehicle Companies -->
+ <h2>Vehicle Companies</h2>
+ <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#vehicleCompanyModal">
+    Add Vehicle Company
+  </button>
+ <table class="table table-bordered">
+     <thead>
+         <tr>
+             <th>ID</th>
+             <th>Category</th>
+             <th>Company Name</th>
+             <th>Actions</th>
+         </tr>
+     </thead>
+     <tbody>
+         {% for vehicle_company in vehicle_companies %}
+         <tr>
+             <td>{{ vehicle_company.sub_category_id }}</td>
+             <td>{{ vehicle_company.category.category_name }}</td>
+             <td>{{ vehicle_company.company_name }}</td>
+             <td>
+                 <button id="toggle-company-button-{{ vehicle_company.id }}" 
+                         onclick="toggleVehicleCompany({{ vehicle_company.id }})" 
+                         class="btn {% if vehicle_company.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                     {% if vehicle_company.is_active %}Deactivate{% else %}Activate{% endif %}
+                 </button>
+             </td>
+         </tr>
+         {% endfor %}
+     </tbody>
+ </table>
+
+ <!-- Vehicle Company Modal -->
+ <div class="modal fade" id="vehicleCompanyModal" tabindex="-1" aria-labelledby="vehicleCompanyModalLabel" aria-hidden="true">
+     <div class="modal-dialog">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="vehicleCompanyModalLabel">Add Vehicle Company</h5>
+                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+             </div>
+             <div class="modal-body">
+                 <form id="vehicleCompanyForm" method="post" action="{% url 'adminapp:add_vehicle_company' %}">
+                     {% csrf_token %}
+                     {{ vehicle_company_form.as_p }}
+                     <button type="submit" class="btn btn-primary">Submit</button>
+                 </form>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ <!-- AJAX for Vehicle Company Form -->
+ <script>
+    // $('#vehicleCompanyForm').on('submit', function(event) {
+    //     event.preventDefault();
+    //     $.ajax({
+    //         url: $(this).attr('action'),
+    //         type: 'POST',
+    //         data: $(this).serialize(),
+    //         success: function(response) {
+    //             if (response.success) {
+    //                 $('#vehicleCompanyModal').modal('hide');
+    //                 // Update this part
+    //                 var toggleUrl = "{% url 'adminapp:toggle_vehicle_company' 999999 %}".replace('999999', response.sub_category_id);
+    //                         $('#vehicle-types-table').append(
+    //                             '<tr>' +
+    //                                 '<td>' + response.sub_category_id + '</td>' +
+    //                                 '<td>' + response.category.category_name + '</td>' +
+    //                                 '<td>' +
+    //                                     '<form method="post" action="' + toggleUrl + '" style="display:inline;">' +
+    //                                         '{% csrf_token %}' +
+    //                                         '<button type="submit" class="btn btn-sm btn-success">Deactivate</button>' +
+    //                                     '</form>' +
+    //                                 '</td>' +
+    //                             '</tr>'
+    //                         );
+    //             } else {
+    //                 alert('Error: ' + JSON.stringify(response.errors));
+    //             }
+    //         }
+    //     });
+    // });
+
+    function toggleVehicleCompany(id) {
+        $.ajax({
+            url: `/adminapp/toggle-vehicle-company/${id}/`,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    const button = $(`#toggle-company-button-${id}`);
+                    if (response.is_active) {
+                        button.text('Deactivate').removeClass('btn-success').addClass('btn-danger');
+                    } else {
+                        button.text('Activate').removeClass('btn-danger').addClass('btn-success');
+                    }
+                } else {
+                    console.error('Error toggling vehicle company:', response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+ </script>
+ </main
+ {% endblock %}

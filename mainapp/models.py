@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from vendor.models import Vehicle
 from django.contrib.auth.models import AbstractUser
 import os
 
@@ -111,23 +112,23 @@ class UserProfile(models.Model):
 #     def __str__(self):
 #         return self.business_name
 
+from vendor.models import Vehicle  # Import Vehicle from vendor app
+
 class Booking(models.Model):
-    STATUS_CHOICES = [
+    booking_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    status = models.CharField(max_length=20, choices=[
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
-        ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
-    ]
-
-    booking_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookings')
-    vehicle = models.ForeignKey('vendor.Vehicle', on_delete=models.CASCADE, related_name='bookings')
-    start_date = models.DateTimeField(null=False)
-    end_date = models.DateTimeField(null=False)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+        ('completed', 'Completed'),
+    ], default='pending')
 
     def __str__(self):
-        return f"Booking {self.booking_id} - {self.user.username} - {self.vehicle}"
+        return f"Booking for {self.vehicle} by {self.user.username}"
 
     class Meta:
         db_table = 'bookings'

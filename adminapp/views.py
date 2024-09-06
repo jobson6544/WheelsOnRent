@@ -46,106 +46,87 @@ def vehicle_management(request):
     return render(request, 'adminapp/vehicle_management.html', context)
 
 def add_vehicle_type(request):
+    vehicle_types = VehicleType.objects.all()
+    context = {
+        'vehicle_type_form': VehicleTypeForm(),
+        'vehicle_types': vehicle_types,
+        }
     if request.method == 'POST':
         form = VehicleTypeForm(request.POST)
         if form.is_valid():
-            vehicle_type = form.save()
-            return JsonResponse({'success': True, 'category_id': vehicle_type.category_id, 'category_name': vehicle_type.category_name})
-        else:
-            return JsonResponse({'success': False, 'errors': form.errors})
-    return JsonResponse({'success': False, 'errors': 'Invalid request method'})
+            form.save()
+    return render(request, 'adminapp/add_vehicle_type.html', context)
+
 
 def add_vehicle_company(request):
+    vehicle_types = VehicleType.objects.all()
+    vehicle_companies = VehicleCompany.objects.all()
+    context = {
+        'vehicle_company_form': VehicleCompanyForm(),
+        'vehicle_companies': vehicle_companies,
+        }
     if request.method == 'POST':
         form = VehicleCompanyForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('adminapp:vehicle_management')
-    return vehicle_management(request)
+    return render(request, 'adminapp/add_vehicle_company.html', context)
 
 def add_model(request):
+    models = Model.objects.all()
+    context = {
+        'model_form': ModelForm(),
+        'models': models,
+    }
     if request.method == 'POST':
         form = ModelForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('adminapp:vehicle_management')
-    return vehicle_management(request)
+    return render(request, 'adminapp/add_model.html', context)
 
 def add_features(request):
+    features = Features.objects.all()
+    context = {
+        'features_form': FeaturesForm(),
+        'features': features,
+    }
     if request.method == 'POST':
         form = FeaturesForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('adminapp:vehicle_management')
-    return vehicle_management(request)
+    return render(request, 'adminapp/add_features.html', context)
 
 def toggle_vehicle_type(request, id):
     vehicle_type = get_object_or_404(VehicleType, category_id=id)
     if request.method == 'POST':
         vehicle_type.is_active = not vehicle_type.is_active
         vehicle_type.save()
-        return redirect('adminapp:vehicle_management')
-    return render(request, 'adminapp/vehicle_management.html')
+        return redirect('adminapp:toggle_vehicle_type')
+    return render(request, 'adminapp/add_vehicle_type.html')
 
 def toggle_vehicle_company(request, id):
     if request.method == 'POST':
-        try:
-            vehicle_company = VehicleCompany.objects.get(sub_category_id=id)
-            vehicle_company.is_active = not vehicle_company.is_active
-            vehicle_company.save()
-            return JsonResponse({
-                'success': True,
-                'is_active': vehicle_company.is_active
-            })
-        except VehicleCompany.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'error': 'Vehicle company not found'
-            })
-    return JsonResponse({
-        'success': False,
-        'error': 'Invalid request method'
-    })
+        vehicle_company = VehicleCompany.objects.get(sub_category_id=id)
+        vehicle_company.is_active = not vehicle_company.is_active
+        vehicle_company.save()
+        return redirect('adminapp:toggle_vehicle_company')
+    return render(request, 'adminapp/add_vehicle_company.html')
 
 def toggle_model(request, id):
     if request.method == 'POST':
-        try:
-            model = Model.objects.get(model_id=id)
-            model.is_active = not model.is_active
-            model.save()
-            return JsonResponse({
-                'success': True,
-                'is_active': model.is_active
-            })
-        except Model.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'error': 'Model not found'
-            })
-    return JsonResponse({
-        'success': False,
-        'error': 'Invalid request method'
-    })
+        model = Model.objects.get(model_id=id)
+        model.is_active = not model.is_active
+        model.save()
+        return redirect('adminapp:toggle_model')
+    return render(request, 'adminapp/add_model.html')
+            
 
 def toggle_features(request, id):
     if request.method == 'POST':
-        try:
-            feature = Features.objects.get(feature_id=id)
-            feature.is_active = not feature.is_active
-            feature.save()
-            return JsonResponse({
-                'success': True,
-                'is_active': feature.is_active
-            })
-        except Features.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'error': 'Feature not found'
-            })
-    return JsonResponse({
-        'success': False,
-        'error': 'Invalid request method'
-    })
+        feature = Features.objects.get(feature_id=id)
+        feature.is_active = not feature.is_active
+        feature.save()
+        return redirect('adminapp:toggle_features')
+    return render(request, 'adminapp/add_features.html')
 
 def vendor_success(request):
     return render(request, 'adminapp/success.html')

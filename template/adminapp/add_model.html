@@ -1,0 +1,121 @@
+{% extends 'adminapp/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<main id="main" class="main">
+<div class="container mt-5">
+<!-- Models -->
+<h2>Models</h2>
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modelModal">
+    Add Vehicle Model
+  </button>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Sub Category</th>
+            <th>Model Name</th>
+            <th>Model Year</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for model in models %}
+        <tr>
+            <td>{{ model.model_id }}</td>
+            <td>{{ model.sub_category.company_name }}</td>
+            <td>{{ model.model_name }}</td>
+            <td>{{ model.model_year }}</td>
+            <td>
+                <button id="toggle-model-button-{{ model.model_id }}" 
+                        onclick="toggleModel({{ model.model_id }})" 
+                        class="btn {% if model.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                    {% if model.is_active %}Deactivate{% else %}Activate{% endif %}
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Model Modal -->
+<div class="modal fade" id="modelModal" tabindex="-1" role="dialog" aria-labelledby="modelModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modelModalLabel">Add Model</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="modelForm" method="post" action="{% url 'adminapp:add_model' %}">
+                    {% csrf_token %}
+                    {{ model_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+<script>
+    $('#modelForm').on('submit', function(event) {
+            event.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        $('#modelModal').modal('hide');
+                        // Update this part
+                        var toggleUrl = "{% url 'adminapp:toggle_model' 999999 %}".replace('999999', response.model_id);
+                            $('#vehicle-types-table').append(
+                                '<tr>' +
+                                    '<td>' + response.model_id + '</td>' +
+                                    '<td>' + response.sub_category.company_name + '</td>' +
+                                    '<td>' + response.model_name + '</td>' +
+                                    '<td>' + response.model_year + '</td>' +
+                                    '<td>' +
+                                        '<form method="post" action="' + toggleUrl + '" style="display:inline;">' +
+                                            '{% csrf_token %}' +
+                                            '<button type="submit" class="btn btn-sm btn-success">Deactivate</button>' +
+                                        '</form>' +
+                                    '</td>' +
+                            '</tr>'
+                        );
+                    } else {
+                        alert('Error: ' + JSON.stringify(response.errors));
+                    }
+            }
+        });
+    });
+
+    function toggleModel(id) {
+        $.ajax({
+            url: `/adminapp/toggle-model/${id}/`,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    const button = $(`#toggle-model-button-${id}`);
+                    if (response.is_active) {
+                        button.text('Deactivate').removeClass('btn-success').addClass('btn-danger');
+                    } else {
+                        button.text('Activate').removeClass('btn-danger').addClass('btn-success');
+                    }
+                } else {
+                    console.error('Error toggling model:', response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+</script>
+{% endblock %}
