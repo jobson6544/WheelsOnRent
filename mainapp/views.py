@@ -15,13 +15,18 @@ from .payments import create_checkout_session
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 import stripe
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 def index(request):
     return render(request, 'index.html')
@@ -161,15 +166,20 @@ def book_vehicle(request, id):
         logger.info(f"Start date: {start_date_str}, End date: {end_date_str}")
         
         try:
-            start_date = datetime.strptime(start_date_str, '%Y-%m-%dT%H:%M').date()
-            end_date = datetime.strptime(end_date_str, '%Y-%m-%dT%H:%M').date()
+            start_date = timezone.make_aware(datetime.strptime(start_date_str, '%Y-%m-%dT%H:%M'))
+            end_date = timezone.make_aware(datetime.strptime(end_date_str, '%Y-%m-%dT%H:%M'))
+            
+            # Calculate the total amount
+            duration = (end_date - start_date).days + 1
+            total_amount = duration * vehicle.rental_rate
             
             booking = Booking.objects.create(
                 user=request.user,
                 vehicle=vehicle,
                 start_date=start_date,
                 end_date=end_date,
-                status='pending'
+                status='pending',
+                total_amount=total_amount
             )
             
             logger.info(f"Booking created successfully: {booking.booking_id}")
@@ -195,17 +205,86 @@ def cancel_booking(request, booking_id):
     
     if request.method == 'POST':
         if booking.status in ['pending', 'confirmed']:
-            # Check if the booking start date is more than 24 hours away
-            if booking.start_date > timezone.now() + timezone.timedelta(hours=24):
+            start_datetime = timezone.make_aware(
+                datetime.combine(booking.start_date.date(), booking.start_date.time())
+            ) if timezone.is_naive(booking.start_date) else booking.start_date
+            
+            if start_datetime > timezone.now() + timedelta(hours=24):
+                old_status = booking.status
                 booking.status = 'cancelled'
                 booking.save()
-                messages.success(request, 'Your booking has been successfully cancelled.')
+                
+                email_sent = send_cancellation_email(booking)
+                if not email_sent:
+                    messages.warning(request, 'Booking cancelled, but there was an issue sending the confirmation email.')
+                
+                if old_status == 'confirmed':
+                    handle_refund(request, booking)
+                else:
+                    messages.success(request, 'Your pending booking has been successfully cancelled.')
             else:
                 messages.error(request, 'Bookings can only be cancelled more than 24 hours before the start time.')
         else:
             messages.error(request, 'This booking cannot be cancelled.')
     
     return redirect('user_booking_history')
+
+def send_cancellation_email(booking):
+    subject = 'Booking Cancellation Confirmation'
+    html_message = render_to_string('emails/booking_cancellation.html', {
+        'booking': booking,
+        'user': booking.user,
+    })
+    plain_message = strip_tags(html_message)
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to_email = booking.user.email
+    logger.info(f"Sending cancellation email to {to_email}")
+
+    try:
+        send_mail(
+            subject,
+            plain_message,
+            from_email,
+            [to_email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send cancellation email for booking {booking.booking_id}: {str(e)}")
+        return False
+
+def handle_refund(request, booking):
+    if not booking.stripe_payment_intent_id:
+        messages.warning(request, 'No payment was processed for this booking. Cancellation completed without refund.')
+        booking.refund_status = 'not_applicable'
+        booking.save()
+        return
+
+    try:
+        payment_intent = stripe.PaymentIntent.retrieve(booking.stripe_payment_intent_id)
+        
+        if payment_intent.status == 'succeeded':
+            refund = stripe.Refund.create(
+                payment_intent=payment_intent.id,
+                amount=int(booking.total_amount * 100)  # Convert to cents
+            )
+            
+            if refund.status == 'succeeded':
+                booking.refund_status = 'refunded'
+                booking.save()
+                messages.success(request, 'Your booking has been cancelled and your payment has been refunded.')
+            else:
+                booking.refund_status = 'pending'
+                booking.save()
+                messages.warning(request, 'Your booking has been cancelled. Refund initiated but not yet confirmed. Please check your account in 5-10 business days.')
+        else:
+            messages.warning(request, 'Your booking has been cancelled. No refund was processed as the payment was not completed.')
+    
+    except stripe.error.StripeError as e:
+        messages.error(request, f'An error occurred while processing your refund: {str(e)}')
+        booking.refund_status = 'failed'
+        booking.save()
 
 @login_required
 def profile_view(request):
@@ -248,19 +327,31 @@ def payment_view(request):
         messages.error(request, "Invalid booking amount. Please contact support.")
         return redirect('payment_error')
     
-    session, error = create_checkout_session(request, amount, booking_id)
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price_data': {
+                'currency': 'usd',
+                'unit_amount': int(amount * 100),
+                'product_data': {
+                    'name': f'Booking {booking.booking_id}',
+                },
+            },
+            'quantity': 1,
+        }],
+        mode='payment',
+        success_url=request.build_absolute_uri(reverse('payment_success')) + f'?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking_id}',
+        cancel_url=request.build_absolute_uri(reverse('payment_cancelled')) + f'?booking_id={booking_id}',
+        client_reference_id=str(booking_id),
+    )
     
-    if error:
-        messages.error(request, f"An error occurred: {error}")
-        booking.status = 'failed'
-        booking.save()
-        return redirect('payment_error')
-    
+    booking.stripe_payment_intent_id = session.payment_intent
+    booking.save()
+
     return render(request, 'payment.html', {
         'session_id': session.id,
         'stripe_public_key': settings.STRIPE_PUBLIC_KEY,
         'booking': booking,
-        'amount': amount  # Pass the amount to the template
     })
 
 def calculate_booking_amount(booking):
@@ -293,13 +384,18 @@ def payment_success(request):
     booking = get_object_or_404(Booking, booking_id=booking_id)
     
     try:
-        # Verify the payment with Stripe
         session = stripe.checkout.Session.retrieve(session_id)
         if session.payment_status == "paid" and str(session.client_reference_id) == str(booking_id):
-            # Update booking status
             booking.status = 'confirmed'
+            booking.stripe_payment_intent_id = session.payment_intent
             booking.save()
-            messages.success(request, "Booking confirmed successfully!")
+            
+            # Send confirmation email
+            email_sent = send_booking_confirmation_email(booking)
+            if email_sent:
+                messages.success(request, "Booking confirmed successfully! A confirmation email has been sent.")
+            else:
+                messages.success(request, "Booking confirmed successfully! However, there was an issue sending the confirmation email.")
         else:
             messages.warning(request, "Payment was successful, but booking confirmation failed. Please contact support.")
     except stripe.error.StripeError as e:
@@ -308,6 +404,31 @@ def payment_success(request):
         booking.save()
     
     return render(request, 'payment_success.html', {'booking': booking})
+
+def send_booking_confirmation_email(booking):
+    subject = 'Booking Confirmation'
+    html_message = render_to_string('emails/booking_confirmation.html', {
+        'booking': booking,
+        'user': booking.user,
+    })
+    plain_message = strip_tags(html_message)
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to_email = booking.user.email
+
+    try:
+        send_mail(
+            subject,
+            plain_message,
+            from_email,
+            [to_email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+        logger.info(f"Confirmation email sent for booking {booking.booking_id}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send confirmation email for booking {booking.booking_id}: {str(e)}")
+        return False
 
 def payment_cancelled(request):
     booking_id = request.GET.get('booking_id')

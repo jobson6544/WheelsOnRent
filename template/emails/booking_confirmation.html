@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Confirmation</title>
+</head>
+<body>
+    <h1>Booking Confirmation</h1>
+    <p>Dear {{ user.get_full_name }},</p>
+    <p>Your booking (ID: {{ booking.booking_id }}) has been successfully confirmed.</p>
+    <h2>Booking Details:</h2>
+    <ul>
+        <li>Vehicle: {{ booking.vehicle }}</li>
+        <li>Start Date: {{ booking.start_date }}</li>
+        <li>End Date: {{ booking.end_date }}</li>
+        <li>Total Amount: ${{ booking.total_amount }}</li>
+    </ul>
+    <p>If you have any questions or need to make changes to your booking, please don't hesitate to contact us.</p>
+    <p>Thank you for choosing our service. We hope you enjoy your rental!</p>
+    <p>Best regards,<br>Your Car Rental Team</p>
+</body>
+</html>

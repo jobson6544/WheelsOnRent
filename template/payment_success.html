@@ -3,4 +3,11 @@
 {% block content %}
 <h2>Payment Successful</h2>
 <p>Thank you for your payment. Your transaction was successful.</p>
+<p>Booking ID: {{ booking.booking_id }}</p>
+<p>Vehicle: {{ booking.vehicle.vehicle_name }}</p>
+<p>Start Date: {{ booking.start_date }}</p>
+<p>End Date: {{ booking.end_date }}</p>
+<p>Total Amount: ${{ booking.total_amount }}</p>
+<button onclick="window.print()">Print Receipt</button>
+<button onclick="window.location.href='{% url 'home' %}'">Return to Home</button>
 {% endblock %}

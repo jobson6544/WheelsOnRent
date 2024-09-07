@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Cancellation Confirmation</title>
+</head>
+<body>
+    <h1>Booking Cancellation Confirmation</h1>
+    <p>Dear {{ user.get_full_name }},</p>
+    <p>Your booking (ID: {{ booking.booking_id }}) has been successfully cancelled.</p>
+    <h2>Booking Details:</h2>
+    <ul>
+        <li>Vehicle: {{ booking.vehicle }}</li>
+        <li>Start Date: {{ booking.start_date }}</li>
+        <li>End Date: {{ booking.end_date }}</li>
+    </ul>
+    <p>If your booking was confirmed and paid for, you will receive a refund within 5-10 business days.</p>
+    <p>If you have any questions, please don't hesitate to contact us.</p>
+    <p>Thank you for using our service.</p>
+    <p>Best regards,<br>Your Car Rental Team</p>
+</body>
+</html>

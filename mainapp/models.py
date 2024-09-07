@@ -118,14 +118,21 @@ class Booking(models.Model):
     booking_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     status = models.CharField(max_length=20, choices=[
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
         ('completed', 'Completed'),
     ], default='pending')
+    stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    refund_status = models.CharField(max_length=20, choices=[
+        ('not_refunded', 'Not Refunded'),
+        ('refunded', 'Refunded'),
+        ('failed', 'Refund Failed'),
+    ], default='not_refunded')
 
     def __str__(self):
         return f"Booking for {self.vehicle} by {self.user.username}"
