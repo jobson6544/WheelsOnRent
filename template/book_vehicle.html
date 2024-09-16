@@ -129,6 +129,11 @@ document.addEventListener('DOMContentLoaded', function() {
     startDateInput.addEventListener('change', function() {
         endDateInput.setAttribute('min', this.value);
     });
+
+    // Show booking conflict alert if the vehicle is already booked
+    {% if booking_conflict %}
+        alert("Vehicle is already booked for the selected dates. Please choose different dates.");
+    {% endif %}
 });
 </script>
 {% endblock %}

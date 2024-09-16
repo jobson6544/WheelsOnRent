@@ -159,6 +159,7 @@ def vendor_login(request):
 def book_vehicle(request, id):
     logger.info(f"Booking view called for vehicle id: {id}")
     vehicle = get_object_or_404(Vehicle, id=id)
+    
     if request.method == 'POST':
         logger.info("POST request received")
         start_date_str = request.POST.get('start_date')
@@ -166,32 +167,49 @@ def book_vehicle(request, id):
         logger.info(f"Start date: {start_date_str}, End date: {end_date_str}")
         
         try:
+            # Convert strings to datetime objects
             start_date = timezone.make_aware(datetime.strptime(start_date_str, '%Y-%m-%dT%H:%M'))
             end_date = timezone.make_aware(datetime.strptime(end_date_str, '%Y-%m-%dT%H:%M'))
+
+            # Check if the vehicle is already booked for overlapping dates
+            overlapping_bookings = Booking.objects.filter(
+                vehicle=vehicle,
+                status='confirmed',
+                start_date__lte=end_date,
+                end_date__gte=start_date
+            )
             
-            # Calculate the total amount
+            if overlapping_bookings.exists():
+                logger.info("Vehicle is already booked for the selected dates.")
+                return render(request, 'book_vehicle.html', {'vehicle': vehicle, 'booking_conflict': True})
+
+            # Calculate the total amount (assuming `vehicle.rental_rate` is a daily rate)
             duration = (end_date - start_date).days + 1
             total_amount = duration * vehicle.rental_rate
-            
+
+            # Create the booking
             booking = Booking.objects.create(
                 user=request.user,
                 vehicle=vehicle,
                 start_date=start_date,
                 end_date=end_date,
-                status='pending',
+                status='pending',  # You can change this based on your workflow
                 total_amount=total_amount
             )
             
             logger.info(f"Booking created successfully: {booking.booking_id}")
             messages.success(request, 'Booking created successfully!')
+
+            # Redirect to the payment page
             return redirect(reverse('payment') + f'?booking_id={booking.booking_id}')
+        
         except ValueError as e:
             logger.error(f"Invalid date format: {str(e)}")
             messages.error(request, f"Invalid date format: {str(e)}")
         except Exception as e:
             logger.error(f"An error occurred: {str(e)}")
             messages.error(request, f"An error occurred: {str(e)}")
-    
+
     return render(request, 'book_vehicle.html', {'vehicle': vehicle})
 
 @login_required
