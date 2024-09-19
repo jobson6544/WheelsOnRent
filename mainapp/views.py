@@ -1,30 +1,25 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import UserRegistrationForm, UserProfileForm, UserEditForm, UserProfileEditForm
-from .models import UserProfile, Booking  # Import UserProfile here
 from django.urls import reverse
-from django.contrib.auth import get_user_model
-from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth import logout  # Ensure this import is present
-from vendor.models import Vehicle
-from django.utils import timezone  # Add this import
+from django.utils import timezone
 from django.conf import settings
-from .payments import create_checkout_session
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.views.decorators.http import require_GET
-from datetime import datetime, timedelta
-import logging
-import stripe
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.contrib.sites.shortcuts import get_current_site
+from django.views.decorators.http import require_GET
+from django.http import JsonResponse
+from .forms import UserRegistrationForm, UserProfileForm, UserEditForm, UserProfileEditForm
+from .models import UserProfile, Booking, User  # Import User directly from your models
+from vendor.models import Vehicle
+from datetime import datetime, timedelta
+import logging
+import stripe
+from .utils import generate_verification_token
 
 logger = logging.getLogger(__name__)
-
-User = get_user_model()
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -36,13 +31,65 @@ def customer_register(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.role = 'user'  # Set the role for the user if needed
+            user.role = 'user'
+            user.is_active = False  # Deactivate account till it is verified
+            user.email_verification_token = generate_verification_token()
             user.save()
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')  # Specify the backend
-            return redirect('complete_profile')
+
+            # Send verification email
+            current_site = get_current_site(request)
+            mail_subject = 'Activate your account'
+            message = render_to_string('emails/email_verification.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'token': user.email_verification_token,
+            })
+            plain_message = strip_tags(message)
+            to_email = form.cleaned_data.get('email')
+            send_mail(mail_subject, plain_message, settings.DEFAULT_FROM_EMAIL, [to_email], html_message=message)
+
+            messages.success(request, 'Please check your email to verify your account.')
+            return redirect('login')  # Redirect to login page after registration
     else:
         form = UserRegistrationForm()
     return render(request, 'register.html', {'form': form})
+
+def verify_email(request, token):
+    try:
+        user = User.objects.get(email_verification_token=token)
+        if user.is_email_verified:
+            messages.info(request, 'Email already verified.')
+        else:
+            user.is_email_verified = True
+            user.is_active = True
+            user.email_verification_token = None
+            user.save()
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            messages.success(request, 'Your email has been verified. Your account is now active.')
+        return redirect('login')
+    except User.DoesNotExist:
+        messages.error(request, 'Invalid verification link')
+        return redirect('login')
+
+def login_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
+            if user.is_email_verified:
+                login(request, user)
+                messages.success(request, f"Welcome back, {user.username}!")
+                if hasattr(user, 'is_first_login') and user.is_first_login:
+                    user.is_first_login = False
+                    user.save()
+                    return redirect('complete_profile')
+                return redirect('home')
+            else:
+                messages.error(request, "Please verify your email before logging in.")
+        else:
+            messages.error(request, "Invalid email or password.")
+    return render(request, 'user_login.html')
 
 @login_required(login_url='login')
 def complete_profile(request):
@@ -61,32 +108,6 @@ def complete_profile(request):
         form = UserProfileForm(instance=profile)
 
     return render(request, 'complete_profile.html', {'form': form})
-
-def login_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        user = authenticate(request, username=email, password=password)
-        if user is not None:
-            login(request, user)
-            messages.success(request, f"Welcome back, {user.username}!")
-            if hasattr(user, 'is_first_login') and user.is_first_login:
-                user.is_first_login = False
-                user.save()
-                return redirect('complete_profile')
-            return redirect('home')
-        else:
-            messages.error(request, "Invalid email or password.")
-    return render(request, 'user_login.html')
-
-def redirect_after_login(user):
-    try:
-        profile = user.profile
-        if not profile.is_complete:
-            return redirect('complete_profile')
-    except UserProfile.DoesNotExist:
-        return redirect('complete_profile')
-    return redirect('home')
 
 def home(request):
     vehicles = Vehicle.objects.filter(status=1).select_related('vendor', 'model__sub_category__category').prefetch_related('features')
