@@ -22,7 +22,11 @@ class VendorUserForm(UserCreationForm):
 class VendorProfileForm(forms.ModelForm):
     class Meta:
         model = Vendor
-        fields = ['business_name', 'address', 'city', 'state', 'zip_code', 'contact_number']
+        fields = ['business_name', 'full_address', 'contact_number', 'profile_picture', 'latitude', 'longitude']
+        widgets = {
+            'latitude': forms.HiddenInput(),
+            'longitude': forms.HiddenInput(),
+        }
 
 class VendorLoginForm(forms.Form):
     email = forms.EmailField()

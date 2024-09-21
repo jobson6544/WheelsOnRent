@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import VehicleDashboardView  # Add this import
 
 app_name = 'vendor'
 
@@ -18,4 +19,7 @@ urlpatterns = [
     path('edit-vehicle/<int:vehicle_id>/', views.edit_vehicle, name='edit_vehicle'),
     path('update-vehicle/<int:vehicle_id>/', views.update_vehicle, name='update_vehicle'),
     path('vehicle/<int:vehicle_id>/', views.vehicle_detail, name='vehicle_detail'),
+    path('price-dashboard/', VehicleDashboardView.as_view(), name='price_dashboard'),
+    path('profile/', views.vendor_profile, name='vendor_profile'),
+    path('profile/update/', views.update_profile, name='update_profile'),
 ]

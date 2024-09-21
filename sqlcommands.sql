@@ -1,1 +1,1 @@
-DROP TABLE bookings;
+DROP TABLE RentalPriceHistory;

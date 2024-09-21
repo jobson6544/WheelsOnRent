@@ -1,0 +1,31 @@
+<h1>Vehicle Price Dashboard</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Model</th>
+            <th>Current Price</th>
+            <th>Suggested Price</th>
+            <th>Difference</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vehicle in vehicles %}
+        <tr>
+            <td>{{ vehicle.model }}</td>
+            <td>${{ vehicle.rental_rate|floatformat:2 }}</td>
+            <td>${{ vehicle.suggested_price|floatformat:2 }}</td>
+            <td>
+                {% with diff=vehicle.suggested_price|subtract:vehicle.rental_rate %}
+                    {% if diff > 0 %}
+                        <span class="price-increase">+${{ diff|floatformat:2 }}</span>
+                    {% elif diff < 0 %}
+                        <span class="price-decrease">-${{ diff|abs|floatformat:2 }}</span>
+                    {% else %}
+                        <span class="price-unchanged">$0.00</span>
+                    {% endif %}
+                {% endwith %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

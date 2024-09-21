@@ -280,3 +280,11 @@ EMAIL_HOST_PASSWORD = 'lzur nqtk elun snru'
 
 DEFAULT_FROM_EMAIL = 'sinju641@gmail.com'
 
+OPENWEATHERMAP_API_KEY = '7f6feecf624423ff2a27f2e3f9166af2'
+
+from django.conf import settings
+
+print(f"API Key: {settings.OPENWEATHERMAP_API_KEY}")
+
+GOOGLE_MAPS_API_KEY = 'AIzaSyAR5UzoEbsm9hdEdoEP_aHzpBxsVz-ROqI'
+

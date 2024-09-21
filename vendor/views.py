@@ -1,6 +1,6 @@
 import logging
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, transaction
@@ -13,6 +13,10 @@ from .forms import VehicleForm, VendorUserForm, VendorProfileForm, VehicleCompan
 from mainapp.models import Booking
 from django.views.decorators.cache import never_cache
 from .decorators import vendor_required, vendor_status_check
+from django.views.generic import ListView
+from decimal import Decimal
+from django.conf import settings  # Add this import
+from django.contrib.auth.forms import PasswordChangeForm
 
 logger = logging.getLogger(__name__)
 
@@ -66,13 +70,19 @@ def vendor_register_profile(request):
             vendor = vendor_form.save(commit=False)
             vendor.user = request.user
             vendor.status = 'pending'
+            vendor.latitude = request.POST.get('latitude')
+            vendor.longitude = request.POST.get('longitude')
             vendor.save()
             messages.success(request, 'Vendor registration completed successfully. Your application is under review.')
             return redirect('vendor:application_under_review')
-            
     else:
         vendor_form = VendorProfileForm()
-    return render(request, 'vendor/vendor_register_profile.html', {'vendor_form': vendor_form})
+    
+    context = {
+        'vendor_form': vendor_form,
+        'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
+    }
+    return render(request, 'vendor/vendor_register_profile.html', context)
 
 @never_cache
 @vendor_status_check
@@ -213,7 +223,7 @@ def vendor_vehicles(request):
 @never_cache
 @vendor_required
 def update_vehicle(request, vehicle_id):
-    vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user, status=1)
+    vehicle = get_object_or_404(Vehicle, id=vehicle_id)
     if request.method == 'POST':
         form = VehicleForm(request.POST, request.FILES, instance=vehicle)
         if form.is_valid():
@@ -256,7 +266,7 @@ def update_vehicle(request, vehicle_id):
 @never_cache
 @vendor_required
 def delete_vehicle(request, vehicle_id):
-    vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user)
+    vehicle = get_object_or_404(Vehicle, id=vehicle_id)
     vehicle.status = 0
     vehicle.save()
     messages.success(request, 'Vehicle has been successfully deleted.')
@@ -279,8 +289,20 @@ def edit_vehicle(request, vehicle_id):
 @never_cache
 @vendor_required
 def vehicle_detail(request, vehicle_id):
-    vehicle = get_object_or_404(Vehicle, vehicle_id=vehicle_id, vendor__user=request.user, status=1)
-    return render(request, 'vendor/vehicle_detail.html', {'vehicle': vehicle})
+    vehicle = get_object_or_404(Vehicle, pk=vehicle_id)
+    suggested_price = Decimal(str(vehicle.get_suggested_price()))  # Convert to Decimal
+
+    if request.method == 'POST' and 'update_price' in request.POST:
+        vehicle.rental_rate = suggested_price
+        vehicle.save()
+        messages.success(request, 'Price updated successfully!')
+        return redirect('vendor:vehicle_detail', vehicle_id=vehicle.id)
+
+    context = {
+        'vehicle': vehicle,
+        'suggested_price': suggested_price,
+    }
+    return render(request, 'vendor/vehicle_detail.html', context)
 
 @never_cache
 def application_under_review(request):
@@ -311,3 +333,46 @@ def add_vehicle_company(request):
     else:
         form = VehicleCompanyForm()
     return render(request, 'vendor/add_vehicle_company.html', {'form': form})
+
+class VehicleDashboardView(ListView):
+    model = Vehicle
+    template_name = 'vehicle_dashboard.html'
+    context_object_name = 'vehicles'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for vehicle in context['vehicles']:
+            vehicle.suggested_price = vehicle.get_suggested_price()
+        return context
+
+@login_required
+def vendor_profile(request):
+    vendor = request.user.vendor
+    context = {
+        'vendor': vendor,
+        'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
+    }
+    return render(request, 'vendor/vendor_profile.html', context)
+
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        form = VendorProfileForm(request.POST, request.FILES, instance=request.user.vendor)
+        if form.is_valid():
+            vendor = form.save(commit=False)
+            vendor.latitude = request.POST.get('latitude')
+            vendor.longitude = request.POST.get('longitude')
+            vendor.save()
+            messages.success(request, 'Your profile has been updated successfully.')
+            return redirect('vendor:vendor_profile')
+    else:
+        form = VendorProfileForm(instance=request.user.vendor)
+    
+    context = {
+        'form': form,
+        'vendor': request.user.vendor,
+        'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
+    }
+    return render(request, 'vendor/vendor_profile.html', context)
+
+
