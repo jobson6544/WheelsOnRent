@@ -379,14 +379,23 @@
                     </div>
                     <div class="col-md-3">
                         <div class="mb-3">
-                            {{ vehicle_form.registration_date.label_tag }} {{ vehicle_form.registration_date|add_class:"form-control" }}
+                            {{ vehicle_form.registration_date.label_tag }}
+                            <input type="date" name="{{ vehicle_form.registration_date.name }}" 
+                                   id="{{ vehicle_form.registration_date.id_for_label }}"
+                                   class="form-control"
+                                   max="{{ today_date|date:'Y-m-d' }}"
+                                   required>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="mb-3">
-                            {{ vehicle_form.registration_end_date.label_tag }} {{ vehicle_form.registration_end_date|add_class:"form-control" }}
-                        </div>
-                    </div>
+                      <div class="mb-3">
+                          {{ vehicle_form.registration_end_date.label_tag }}
+                          <input type="date" name="{{ vehicle_form.registration_end_date.name }}" 
+                                 id="{{ vehicle_form.registration_end_date.id_for_label }}"
+                                 class="form-control"
+                                 required>
+                      </div>
+                  </div>
                 </div>
             </div>
         </div>
@@ -409,12 +418,21 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            {{ vehicle_form.insurance_start_date.label_tag }} {{ vehicle_form.insurance_start_date|add_class:"form-control" }}
-                        </div>
-                        <div class="mb-3">
-                            {{ vehicle_form.insurance_end_date.label_tag }} {{ vehicle_form.insurance_end_date|add_class:"form-control" }}
-                        </div>
+                      <div class="mb-3">
+                        {{ vehicle_form.insurance_start_date.label_tag }}
+                        <input type="date" name="{{ vehicle_form.insurance_start_date.name }}" 
+                               id="{{ vehicle_form.insurance_start_date.id_for_label }}"
+                               class="form-control"
+                               max="{{ today_date|date:'Y-m-d' }}"
+                               required>
+                    </div>
+                    <div class="mb-3">
+                      {{ vehicle_form.insurance_end_date.label_tag }}
+                      <input type="date" name="{{ vehicle_form.insurance_end_date.name }}" 
+                             id="{{ vehicle_form.insurance_end_date.id_for_label }}"
+                             class="form-control"
+                             required>
+                  </div>
                         <div class="mb-3">
                             {{ vehicle_form.road_tax_details.label_tag }} {{ vehicle_form.road_tax_details|add_class:"form-control" }}
                         </div>
@@ -542,6 +560,90 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set max date for registration date
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+
+    today = yyyy + '-' + mm + '-' + dd;
+    document.getElementById('{{ vehicle_form.registration_date.id_for_label }}').setAttribute('max', today);
+});
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const registrationDateInput = document.getElementById('{{ vehicle_form.registration_date.id_for_label }}');
+      const registrationEndDateInput = document.getElementById('{{ vehicle_form.registration_end_date.id_for_label }}');
+  
+      function updateRegistrationEndDate() {
+          const registrationDate = new Date(registrationDateInput.value);
+          if (registrationDate) {
+              // Set min date to the day after registration date
+              const minDate = new Date(registrationDate);
+              minDate.setDate(minDate.getDate() + 1);
+              
+              // Set max date to 5 years after registration date
+              const maxDate = new Date(registrationDate);
+              maxDate.setFullYear(maxDate.getFullYear() + 5);
+  
+              registrationEndDateInput.min = minDate.toISOString().split('T')[0];
+              registrationEndDateInput.max = maxDate.toISOString().split('T')[0];
+  
+              // If the current end date is outside the new range, reset it
+              const currentEndDate = new Date(registrationEndDateInput.value);
+              if (currentEndDate < minDate || currentEndDate > maxDate) {
+                  registrationEndDateInput.value = '';
+              }
+          }
+      }
+  
+      registrationDateInput.addEventListener('change', updateRegistrationEndDate);
+  
+      // Initial call to set the correct state
+      updateRegistrationEndDate();
+  });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Existing code for registration dates...
+    
+        const insuranceStartDateInput = document.getElementById('{{ vehicle_form.insurance_start_date.id_for_label }}');
+        const insuranceEndDateInput = document.getElementById('{{ vehicle_form.insurance_end_date.id_for_label }}');
+    
+        function updateInsuranceEndDate() {
+            const insuranceStartDate = new Date(insuranceStartDateInput.value);
+            if (insuranceStartDate) {
+                // Set min date to the day after insurance start date
+                const minDate = new Date(insuranceStartDate);
+                minDate.setDate(minDate.getDate() + 1);
+                
+                // Set max date to 1 year after insurance start date
+                const maxDate = new Date(insuranceStartDate);
+                maxDate.setFullYear(maxDate.getFullYear() + 1);
+    
+                insuranceEndDateInput.min = minDate.toISOString().split('T')[0];
+                insuranceEndDateInput.max = maxDate.toISOString().split('T')[0];
+    
+                // If the current end date is outside the new range, reset it
+                const currentEndDate = new Date(insuranceEndDateInput.value);
+                if (currentEndDate < minDate || currentEndDate > maxDate) {
+                    insuranceEndDateInput.value = '';
+                }
+            }
+        }
+    
+        insuranceStartDateInput.addEventListener('change', updateInsuranceEndDate);
+    
+        // Set max date for insurance start date to today
+        var today = new Date().toISOString().split('T')[0];
+        insuranceStartDateInput.setAttribute('max', today);
+    
+        // Initial call to set the correct state
+        updateInsuranceEndDate();
+    });
+    </script>l
 {% endblock %}
 
 {% block extra_js %}

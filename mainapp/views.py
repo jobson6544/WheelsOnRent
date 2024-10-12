@@ -419,7 +419,6 @@ def payment_success(request):
     if not session_id or not booking_id:
         messages.error(request, "Invalid payment confirmation.")
         return redirect('home')
-    
     booking = get_object_or_404(Booking, booking_id=booking_id)
     
     try:
@@ -481,4 +480,33 @@ def payment_cancelled(request):
 def payment_error(request):
     return render(request, 'payment_error.html')
 
-
+def vendor_benefits(request):
+    benefits = [
+        "Increased revenue through our wide customer base",
+        "Flexible rental options to suit your needs",
+        "Secure and insured transactions",
+        "Easy-to-use platform for managing your listings",
+        "24/7 customer support"
+    ]
+    
+    context = {
+        'benefits': benefits,
+        'max_days': 30,  # Maximum number of days for the scrollbar
+    }
+    
+    if request.method == 'POST':
+        rental_days = int(request.POST.get('rental_days', 0))
+        rental_price = float(request.POST.get('rental_price', 0))
+        
+        # Calculate profits for all days up to rental_days
+        total_prices = [day * rental_price for day in range(1, rental_days + 1)]
+        wheels_on_rent_fees = [price * 0.04 for price in total_prices]
+        vendor_profits = [price - fee for price, fee in zip(total_prices, wheels_on_rent_fees)]
+        
+        return JsonResponse({
+            'total_prices': total_prices,
+            'wheels_on_rent_fees': wheels_on_rent_fees,
+            'vendor_profits': vendor_profits
+        })
+    
+    return render(request, 'vendor_benefits.html', context)

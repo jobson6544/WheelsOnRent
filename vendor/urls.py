@@ -22,4 +22,5 @@ urlpatterns = [
     path('price-dashboard/', VehicleDashboardView.as_view(), name='price_dashboard'),
     path('profile/', views.vendor_profile, name='vendor_profile'),
     path('profile/update/', views.update_profile, name='update_profile'),
+    path('benefits/', views.vendor_benefits, name='vendor_benefits'),
 ]

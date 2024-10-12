@@ -20,4 +20,5 @@ urlpatterns = [
     path('payment-cancelled/', views.payment_cancelled, name='payment_cancelled'),
     path('payment-error/', views.payment_error, name='payment_error'),
     path('verify-email/<str:token>/', views.verify_email, name='verify_email'),
+    path('benefits/', views.vendor_benefits, name='vendor_benefits'),
 ]

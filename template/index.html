@@ -25,7 +25,8 @@
               <ul class="site-menu main-menu js-clone-nav ml-auto ">
                 <li class="active"><a href="{% url 'index' %}" class="nav-link font-weight-bold">Home</a></li>
                 <li><a href="{% url 'user_login' %}" class="nav-link font-weight-bold">login</a></li>
-                <li><a href="{% url 'vendor:vendor_login' %}" class="nav-link font-weight-bold">Join With Us</a></li>
+                <li><a href="{% url 'vendor_benefits' %}" class="nav-link font-weight-bold">Vendor Benefits</a></li>
+                <li><a href="{% url 'vendor:vendor_login' %}" class="nav-link font-weight-bold">Vendor Login</a></li>
                 <li><a href="#" class="nav-link font-weight-bold">Contact</a></li>
                 {% if user.is_authenticated %}
                   <li class="nav-item">

@@ -205,7 +205,8 @@ def add_vehicle(request):
     
     context = {
         'vehicle_form': vehicle_form,
-        'document_form': document_form
+        'document_form': document_form,
+        'today_date': timezone.now().date(),
     }
     logger.debug("Rendering add_vehicle template")
     return render(request, 'vendor/add_vehicle.html', context)
@@ -375,4 +376,29 @@ def update_profile(request):
     }
     return render(request, 'vendor/vendor_profile.html', context)
 
-
+@never_cache
+@never_cache
+def vendor_benefits(request):
+    benefits = [
+        "Increased revenue through our wide customer base",
+        "Flexible rental options to suit your needs",
+        "Secure and insured transactions",
+        "Easy-to-use platform for managing your listings",
+        "24/7 customer support"
+    ]
+    
+    context = {
+        'benefits': benefits,
+        'max_days': 30,  # Maximum number of days for the scrollbar
+    }
+    
+    if request.method == 'POST':
+        rental_days = int(request.POST.get('rental_days', 0))
+        vehicle_value = int(request.POST.get('vehicle_value', 0))
+        
+        # Calculate profits for all days up to rental_days
+        profits = [round((day * vehicle_value) / 1000) for day in range(1, rental_days + 1)]
+        
+        return JsonResponse({'profits': profits})
+    
+    return render(request, 'vendor/vendor_benefits.html', context)

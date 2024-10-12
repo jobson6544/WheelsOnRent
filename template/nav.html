@@ -22,6 +22,7 @@
                 <li>{{user.first_name}} {{user.last_name}}</li>
               {% else %}
               <li><a href="{% url 'user_login' %}" class="nav-link font-weight-bold">login</a></li>
+
               <li><a href="{% url 'vendor:vendor_login' %}" class="nav-link font-weight-bold">Join With Us</a></li>
               {% endif %}
               <li><a href="#" class="nav-link font-weight-bold">Contact</a></li>
