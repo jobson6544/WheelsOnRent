@@ -181,6 +181,7 @@ def vendor_login(request):
 @login_required
 @login_required
 @login_required
+@login_required
 def book_vehicle(request, id):
     logger.info(f"Booking view called for vehicle id: {id}")
     vehicle = get_object_or_404(Vehicle, id=id)
@@ -192,51 +193,59 @@ def book_vehicle(request, id):
         logger.info(f"Start date: {start_date_str}, End date: {end_date_str}")
         
         try:
-            # Convert strings to datetime objects
-            start_date = timezone.make_aware(datetime.strptime(start_date_str, '%Y-%m-%dT%H:%M'))
-            end_date = timezone.make_aware(datetime.strptime(end_date_str, '%Y-%m-%dT%H:%M'))
+            # Convert strings to date objects
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
 
             # Check if the vehicle is already booked for overlapping dates
             overlapping_bookings = Booking.objects.filter(
                 vehicle=vehicle,
-                status='confirmed',
-                start_date__lte=end_date,
-                end_date__gte=start_date
+                status__in=['confirmed', 'pending'],
+                start_date__date__lt=end_date,
+                end_date__date__gt=start_date
             )
             
             if overlapping_bookings.exists():
                 logger.info("Vehicle is already booked for the selected dates.")
-                return render(request, 'book_vehicle.html', {'vehicle': vehicle, 'booking_conflict': True})
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Vehicle is not available for the selected dates. Please choose different dates.'
+                })
 
-            # Calculate the total amount (assuming `vehicle.rental_rate` is a daily rate)
-            duration = (end_date - start_date).days + 1
+            # Calculate the total amount
+            duration = (end_date - start_date).days + 1  # Duration in days
             total_amount = duration * vehicle.rental_rate
 
             # Create the booking
             booking = Booking.objects.create(
                 user=request.user,
                 vehicle=vehicle,
-                start_date=start_date,
-                end_date=end_date,
-                status='pending',  # You can change this based on your workflow
+                start_date=timezone.make_aware(datetime.combine(start_date, datetime.min.time())),
+                end_date=timezone.make_aware(datetime.combine(end_date, datetime.max.time())),
+                status='pending',
                 total_amount=total_amount
             )
             
             logger.info(f"Booking created successfully: {booking.booking_id}")
 
             # Generate and send QR code
-            current_site = get_current_site(request)
             booking.generate_and_send_qr(request)
 
             messages.success(request, 'Booking created successfully! Check your email for the pickup QR code.')
 
-            # Redirect to the payment page
-            return redirect(reverse('payment') + f'?booking_id={booking.booking_id}')
+            # Return JSON response for successful booking
+            return JsonResponse({
+                'success': True,
+                'redirect_url': reverse('payment') + f'?booking_id={booking.booking_id}'
+            })
         
         except Exception as e:
             logger.error(f"An error occurred: {str(e)}")
-            logger.error(traceback.format_exc())  # This will log the full traceback
-            messages.error(request, f"An error occurred while processing your booking. Please try again later.")
+            logger.error(traceback.format_exc())
+            return JsonResponse({
+                'success': False,
+                'message': 'An error occurred while processing your booking. Please try again later.'
+            })
 
     return render(request, 'book_vehicle.html', {'vehicle': vehicle})
 

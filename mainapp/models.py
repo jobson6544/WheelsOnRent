@@ -152,6 +152,16 @@ class Booking(models.Model):
     class Meta:
         db_table = 'bookings'
 
+    @classmethod
+    def check_availability(cls, vehicle, start_date, end_date):
+        overlapping_bookings = cls.objects.filter(
+            vehicle=vehicle,
+            status__in=['confirmed', 'pending'],
+            start_date__lt=end_date,
+            end_date__gt=start_date
+        )
+        return not overlapping_bookings.exists()
+
     def generate_qr_code(self, qr_type):
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
         
