@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vehicle Pickup Confirmation</title>
+</head>
+<body>
+    <h1>Vehicle Pickup Confirmation</h1>
+    <p>Dear {{ customer_name }},</p>
+    <p>This email confirms that you have successfully picked up your rental vehicle.</p>
+    <h2>Booking Details:</h2>
+    <ul>
+        <li>Booking ID: {{ booking.booking_id }}</li>
+        <li>Vehicle: {{ booking.vehicle }}</li>
+        <li>Pickup Time: {{ booking.pickup.pickup_time }}</li>
+        <li>Expected Return Date: {{ booking.end_date }}</li>
+    </ul>
+    <p>If you have any questions or need assistance during your rental period, please don't hesitate to contact us.</p>
+    <p>Thank you for choosing our service. Enjoy your ride!</p>
+    <p>Best regards,<br>Your Car Rental Team</p>
+</body>
+</html>
+

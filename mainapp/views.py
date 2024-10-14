@@ -18,6 +18,8 @@ from datetime import datetime, timedelta
 import logging
 import stripe
 from .utils import generate_verification_token
+from django.contrib.sites.shortcuts import get_current_site
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -177,6 +179,8 @@ def vendor_login(request):
     return render(request, 'vendor_login.html', {'form': form})
 
 @login_required
+@login_required
+@login_required
 def book_vehicle(request, id):
     logger.info(f"Booking view called for vehicle id: {id}")
     vehicle = get_object_or_404(Vehicle, id=id)
@@ -219,17 +223,20 @@ def book_vehicle(request, id):
             )
             
             logger.info(f"Booking created successfully: {booking.booking_id}")
-            messages.success(request, 'Booking created successfully!')
+
+            # Generate and send QR code
+            current_site = get_current_site(request)
+            booking.generate_and_send_qr(request)
+
+            messages.success(request, 'Booking created successfully! Check your email for the pickup QR code.')
 
             # Redirect to the payment page
             return redirect(reverse('payment') + f'?booking_id={booking.booking_id}')
         
-        except ValueError as e:
-            logger.error(f"Invalid date format: {str(e)}")
-            messages.error(request, f"Invalid date format: {str(e)}")
         except Exception as e:
             logger.error(f"An error occurred: {str(e)}")
-            messages.error(request, f"An error occurred: {str(e)}")
+            logger.error(traceback.format_exc())  # This will log the full traceback
+            messages.error(request, f"An error occurred while processing your booking. Please try again later.")
 
     return render(request, 'book_vehicle.html', {'vehicle': vehicle})
 

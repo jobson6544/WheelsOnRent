@@ -8,15 +8,29 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.db.models import Sum, Count
 from django.utils import timezone
-from .models import Vehicle, VehicleCompany, Model, Registration, Image, Features, VehicleDocument, Vendor, Insurance
+from .models import Vehicle, VehicleCompany, Model, Registration, Image, Features, VehicleDocument, Vendor, Insurance, Pickup, Return
 from .forms import VehicleForm, VendorUserForm, VendorProfileForm, VehicleCompanyForm, VehicleDocumentForm
-from mainapp.models import Booking
+from django.apps import apps
 from django.views.decorators.cache import never_cache
 from .decorators import vendor_required, vendor_status_check
 from django.views.generic import ListView
 from decimal import Decimal
 from django.conf import settings  # Add this import
 from django.contrib.auth.forms import PasswordChangeForm
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from mainapp.models import Booking, User  # Adjust this import based on your project structure
+import qrcode
+from io import BytesIO
+from django.core.files.base import ContentFile
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.urls import reverse
+import random
+from django.core.mail import send_mail
+import json
+
+Booking = apps.get_model('mainapp', 'Booking')
 
 logger = logging.getLogger(__name__)
 
@@ -402,3 +416,271 @@ def vendor_benefits(request):
         return JsonResponse({'profits': profits})
     
     return render(request, 'vendor/vendor_benefits.html', context)
+
+@login_required
+@vendor_required
+def vendor_bookings(request):
+    vendor = request.user.vendor
+    bookings = Booking.objects.filter(vehicle__vendor=vendor).order_by('-start_date')
+
+    # Pagination
+    page = request.GET.get('page', 1)
+    paginator = Paginator(bookings, 10)  # Show 10 bookings per page
+
+    try:
+        bookings = paginator.page(page)
+    except PageNotAnInteger:
+        bookings = paginator.page(1)
+    except EmptyPage:
+        bookings = paginator.page(paginator.num_pages)
+
+    context = {
+        'bookings': bookings,
+    }
+    return render(request, 'vendor/vendor_bookings.html', context)
+
+
+@login_required
+@vendor_required
+def booking_detail(request, booking_id):
+    booking = get_object_or_404(Booking, booking_id=booking_id, vehicle__vendor=request.user.vendor)
+    context = {
+        'booking': booking,
+    }
+    return render(request, 'vendor/booking_details.html', context)
+
+@login_required
+@vendor_required
+def generate_pickup_qr(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, vehicle__vendor=request.user.vendor)
+    pickup, created = Pickup.objects.get_or_create(booking=booking)
+    
+    # Generate QR code
+    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    qr.add_data(f"{request.build_absolute_uri('/')[:-1]}{reverse('vendor:verify_pickup', args=[booking_id])}")
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # Save QR code image
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    pickup.qr_code.save(f"pickup_qr_{booking_id}.png", ContentFile(buffer.getvalue()))
+    
+    # Send email with QR code
+    subject = 'Vehicle Pickup QR Code'
+    html_content = render_to_string('emails/pickup_qr.html', {'booking': booking})
+    text_content = strip_tags(html_content)
+    email = EmailMultiAlternatives(subject, text_content, 'from@example.com', [booking.user.email])
+    email.attach_alternative(html_content, "text/html")
+    email.attach(f'pickup_qr_{booking_id}.png', buffer.getvalue(), 'image/png')
+    email.send()
+
+    return JsonResponse({'success': True, 'message': 'QR code sent to customer email'})
+
+@login_required
+@vendor_required
+def generate_return_qr(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, vehicle__vendor=request.user.vendor)
+    return_obj, created = Return.objects.get_or_create(booking=booking)
+    
+    # Generate QR code
+    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    qr.add_data(f"{request.build_absolute_uri('/')[:-1]}{reverse('vendor:verify_return', args=[booking_id])}")
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # Save QR code image
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    return_obj.qr_code.save(f"return_qr_{booking_id}.png", ContentFile(buffer.getvalue()))
+    
+    # Send email with QR code
+    subject = 'Vehicle Return QR Code'
+    html_content = render_to_string('emails/return_qr.html', {'booking': booking})
+    text_content = strip_tags(html_content)
+    email = EmailMultiAlternatives(subject, text_content, 'from@example.com', [booking.user.email])
+    email.attach_alternative(html_content, "text/html")
+    email.attach(f'return_qr_{booking_id}.png', buffer.getvalue(), 'image/png')
+    email.send()
+
+    return JsonResponse({'success': True, 'message': 'QR code sent to customer email'})
+
+
+
+@login_required
+@vendor_required
+def send_otp(request, booking_id):
+    if request.method == 'POST':
+        try:
+            booking = get_object_or_404(Booking, booking_id=booking_id)
+            pickup, created = Pickup.objects.get_or_create(booking=booking)
+            
+            # Generate new OTP
+            new_otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+            pickup.otp = new_otp
+            pickup.save()
+            
+            # Send OTP to customer's email
+            subject = 'Your OTP for Vehicle Pickup'
+            message = f'Your OTP for vehicle pickup is: {new_otp}'
+            from_email = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [booking.user.email]
+            
+            logger.info(f"Attempting to send OTP email to {recipient_list}")
+            
+            try:
+                send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+                logger.info(f"OTP email sent successfully to {recipient_list}")
+                return JsonResponse({'success': True, 'message': 'OTP sent successfully'})
+            except Exception as e:
+                logger.error(f"Failed to send OTP email: {str(e)}")
+                return JsonResponse({'success': False, 'message': f'Failed to send OTP email: {str(e)}'}, status=500)
+        
+        except Exception as e:
+            logger.error(f"Error in send_otp view: {str(e)}")
+            return JsonResponse({'success': False, 'message': f'An error occurred: {str(e)}'}, status=500)
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=400)
+
+@login_required
+@vendor_required
+def verify_pickup(request, booking_id):
+    if request.method == 'POST':
+        booking = get_object_or_404(Booking, id=booking_id, vehicle__vendor=request.user.vendor)
+        pickup = get_object_or_404(Pickup, booking=booking)
+        otp = request.POST.get('otp')
+        
+        if otp == pickup.otp:
+            pickup.is_verified = True
+            pickup.pickup_time = timezone.now()
+            pickup.save()
+            booking.vehicle.mark_as_delivered()
+            booking.send_pickup_email()
+            return JsonResponse({'success': True, 'message': 'Vehicle delivered successfully'})
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid OTP'})
+
+@login_required
+@vendor_required
+def verify_return(request, booking_id):
+    if request.method == 'POST':
+        booking = get_object_or_404(Booking, id=booking_id, vehicle__vendor=request.user.vendor)
+        return_obj = get_object_or_404(Return, booking=booking)
+        otp = request.POST.get('otp')
+        
+        if otp == return_obj.otp:
+            return_obj.is_verified = True
+            return_obj.return_time = timezone.now()
+            return_obj.save()
+            booking.vehicle.mark_as_returned()
+            booking.send_return_email()
+            booking.send_feedback_email()
+            return JsonResponse({'success': True, 'message': 'Vehicle returned successfully'})
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid OTP'})
+
+@login_required
+@vendor_required
+def scan_qr(request):
+    return render(request, 'vendor/scan_qr.html')
+
+@login_required
+@vendor_required
+def booking_details(request, booking_data):
+    try:
+        data = json.loads(booking_data)
+        booking = get_object_or_404(Booking, booking_id=data['booking_id'])
+        customer = get_object_or_404(User, id=data['customer_id'])
+        
+        context = {
+            'booking': booking,
+            'customer': customer,
+            'qr_type': data['type'],
+        }
+        
+        return render(request, 'vendor/booking_details.html', context)
+    except json.JSONDecodeError:
+        messages.error(request, "Invalid QR code data")
+        return redirect('vendor:scan_qr')
+
+@login_required
+@vendor_required
+def send_otp(request, booking_id):
+    if request.method == 'POST':
+        booking = get_object_or_404(Booking, booking_id=booking_id)
+        qr_type = request.POST.get('qr_type')
+        
+        if qr_type == 'pickup':
+            pickup, created = Pickup.objects.get_or_create(booking=booking)
+            otp_object = pickup
+        elif qr_type == 'return':
+            return_obj, created = Return.objects.get_or_create(booking=booking)
+            otp_object = return_obj
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid QR type'})
+        
+        # Generate new OTP
+        new_otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+        otp_object.otp = new_otp
+        otp_object.otp_created_at = timezone.now()
+        otp_object.save()
+        
+        # Send OTP to customer's email
+        subject = f'Your OTP for Vehicle {qr_type.capitalize()}'
+        message = f'Your OTP for vehicle {qr_type} is: {new_otp}. This OTP will expire in 5 minutes.'
+        booking.user.email_user(subject, message)
+        
+        # Store OTP in session
+        request.session[f'{qr_type}_otp'] = new_otp
+        request.session[f'{qr_type}_otp_expires'] = (timezone.now() + timezone.timedelta(minutes=5)).isoformat()
+        
+        return JsonResponse({'success': True, 'message': 'OTP sent successfully'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+@login_required
+@vendor_required
+def verify_otp(request, booking_id):
+    if request.method == 'POST':
+        booking = get_object_or_404(Booking, booking_id=booking_id)
+        qr_type = request.POST.get('qr_type')
+        otp = request.POST.get('otp')
+        
+        stored_otp = request.session.get(f'{qr_type}_otp')
+        otp_expires = request.session.get(f'{qr_type}_otp_expires')
+        
+        if not stored_otp or not otp_expires:
+            return JsonResponse({'success': False, 'message': 'OTP has not been sent'})
+        
+        if timezone.now() > timezone.datetime.fromisoformat(otp_expires):
+            return JsonResponse({'success': False, 'message': 'OTP has expired'})
+        
+        if otp == stored_otp:
+            if qr_type == 'pickup':
+                pickup, created = Pickup.objects.get_or_create(booking=booking)
+                pickup.is_verified = True
+                pickup.pickup_time = timezone.now()
+                pickup.save()
+                booking.status = 'picked_up'
+                booking.vehicle.mark_as_rented()
+                booking.send_pickup_email()
+            elif qr_type == 'return':
+                return_obj, created = Return.objects.get_or_create(booking=booking)
+                return_obj.is_verified = True
+                return_obj.return_time = timezone.now()
+                return_obj.save()
+                booking.status = 'returned'
+                booking.vehicle.mark_as_returned()
+                booking.send_return_email()
+            
+            booking.save()
+            
+            # Clear OTP from session
+            del request.session[f'{qr_type}_otp']
+            del request.session[f'{qr_type}_otp_expires']
+            
+            return JsonResponse({'success': True, 'message': f'Vehicle {qr_type} verified successfully'})
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid OTP'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})

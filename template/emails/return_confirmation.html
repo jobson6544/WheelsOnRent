@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vehicle Return Confirmation</title>
+</head>
+<body>
+    <h1>Vehicle Return Confirmation</h1>
+    <p>Dear {{ booking.user.get_full_name }},</p>
+    <p>This email confirms that you have successfully returned your rental vehicle.</p>
+    <p>Booking Details:</p>
+    <ul>
+        <li>Booking ID: {{ booking.booking_id }}</li>
+        <li>Vehicle: {{ booking.vehicle }}</li>
+        <li>Pickup Time: {{ booking.pickup.pickup_time }}</li>
+        <li>Return Time: {{ booking.return.return_time }}</li>
+    </ul>
+    <p>Thank you for choosing our service!</p>
+</body>
+</html>
+

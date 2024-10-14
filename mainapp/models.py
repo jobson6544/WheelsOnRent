@@ -3,6 +3,16 @@ from django.db import models
 from vendor.models import Vehicle
 from django.contrib.auth.models import AbstractUser
 import os
+from django.core.mail import EmailMultiAlternatives, send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.urls import reverse
+import qrcode
+from io import BytesIO
+from django.core.files.base import ContentFile
+from django.template import loader
+from django.template.exceptions import TemplateDoesNotExist
+import json  # Add this import at the top of the file
 
 def profile_photo_path(instance, filename):
     # File will be uploaded to MEDIA_ROOT/profile_photos/user_<id>/<filename>
@@ -117,9 +127,9 @@ class UserProfile(models.Model):
 from vendor.models import Vehicle  # Import Vehicle from vendor app
 
 class Booking(models.Model):
-    booking_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    booking_id = models.AutoField(primary_key=True)  # This replaces the default 'id' field
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    vehicle = models.ForeignKey('vendor.Vehicle', on_delete=models.CASCADE, related_name='bookings')
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     status = models.CharField(max_length=20, choices=[
@@ -141,3 +151,84 @@ class Booking(models.Model):
 
     class Meta:
         db_table = 'bookings'
+
+    def generate_qr_code(self, qr_type):
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        
+        booking_data = {
+            'booking_id': self.booking_id,
+            'customer_id': self.user.id,
+            'vehicle_id': self.vehicle.id,
+            'type': qr_type,
+        }
+        if qr_type == 'return':
+            booking_data['return_date'] = self.end_date.isoformat()
+        
+        qr.add_data(json.dumps(booking_data))
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        buffer = BytesIO()
+        img.save(buffer, format="PNG")
+        qr_file = ContentFile(buffer.getvalue())
+        
+        return qr_file
+
+    def generate_and_send_qr(self, request):
+        pickup_qr = self.generate_qr_code('pickup')
+        return_qr = self.generate_qr_code('return')
+        
+        subject = 'Vehicle Pickup and Return QR Codes'
+        html_content = render_to_string('emails/pickup_return_qr.html', {'booking': self})
+        text_content = strip_tags(html_content)
+        
+        email = EmailMultiAlternatives(
+            subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.user.email]
+        )
+        email.attach_alternative(html_content, "text/html")
+        email.attach(f'pickup_qr_{self.booking_id}.png', pickup_qr.read(), 'image/png')
+        email.attach(f'return_qr_{self.booking_id}.png', return_qr.read(), 'image/png')
+        email.send()
+
+    def send_pickup_email(self):
+        subject = 'Vehicle Pickup Confirmation'
+        context = {
+            'booking': self,
+            'customer_name': self.user.get_full_name() or self.user.username,
+        }
+        html_message = render_to_string('emails/pickup_confirmation.html', context)
+        plain_message = strip_tags(html_message)
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to_email = self.user.email
+
+        send_mail(
+            subject,
+            plain_message,
+            from_email,
+            [to_email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+
+    def send_return_email(self):
+        subject = 'Vehicle Return Confirmation'
+        context = {
+            'booking': self,
+            'customer_name': self.user.get_full_name() or self.user.username,
+        }
+        html_message = render_to_string('emails/return_confirmation.html', context)
+        plain_message = strip_tags(html_message)
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to_email = self.user.email
+
+        send_mail(
+            subject,
+            plain_message,
+            from_email,
+            [to_email],
+            html_message=html_message,
+            fail_silently=False,
+        )

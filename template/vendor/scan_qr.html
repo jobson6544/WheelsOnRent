@@ -1,0 +1,27 @@
+{% extends 'vendor/base.html' %}
+{% block content %}
+<main id="main" class="main">
+<div class="container">
+    <h2>Scan QR Code</h2>
+    <div id="reader" style="width: 500px;"></div>
+    <div id="result" class="mt-3"></div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+    function onScanSuccess(decodedText, decodedResult) {
+        console.log(`Code scanned = ${decodedText}`, decodedResult);
+        html5QrcodeScanner.clear();
+        window.location.href = `/vendor/booking-details/${encodeURIComponent(decodedText)}/`;
+    }
+
+    function onScanError(errorMessage) {
+        console.error(errorMessage);
+    }
+
+    let html5QrcodeScanner = new Html5QrcodeScanner(
+    "reader", { fps: 10, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess, onScanError);
+</script>
+</main>
+{% endblock %}

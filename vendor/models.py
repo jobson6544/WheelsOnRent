@@ -8,6 +8,11 @@ import holidays
 import requests
 from datetime import datetime
 import googlemaps
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+import random
+import string
 
 class Vendor(models.Model):
     STATUS_CHOICES = [
@@ -96,6 +101,13 @@ class Features(models.Model):
         return self.feature_name
 
 class Vehicle(models.Model):
+    STATUS_CHOICES = [
+        (1, 'Available'),
+        (2, 'Rented'),
+        (3, 'Maintenance'),
+        (4, 'Delivered'),
+    ]
+
     FUEL_CHOICES = [
         ('petrol', 'Petrol'),
         ('diesel', 'Diesel'),
@@ -112,7 +124,7 @@ class Vehicle(models.Model):
     features = models.ManyToManyField('Features')
     availability = models.BooleanField(default=True)
     rental_rate = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.IntegerField(default=1)  # 1 for active, 0 for deleted
+    status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     fuel_type = models.CharField(max_length=20, choices=FUEL_CHOICES)
     engine_number = models.CharField(max_length=50)
     chassis_number = models.CharField(max_length=50)
@@ -229,6 +241,24 @@ class Vehicle(models.Model):
             print(f"Exception in get_weather_condition: {e}")
             return 0  # Default to Sunny/Clear if any exception occurs
 
+    def get_bookings(self):
+        return self.bookings.all()  # Assuming you've set up a related_name in the Booking model
+
+    def mark_as_rented(self):
+        self.status = 2  # Use the integer value for 'Rented'
+        self.save()
+
+    def mark_as_returned(self):
+        self.status = 1  # Use the integer value for 'Available'
+        self.save()
+
+    def mark_as_delivered(self):
+        self.status = 4  # Use the integer value for 'Delivered'
+        self.save()
+
+    def get_status_display(self):
+        return dict(self.STATUS_CHOICES).get(self.status, 'Unknown')
+
 class Image(models.Model):
     image_id = models.AutoField(primary_key=True)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='additional_images')
@@ -290,3 +320,67 @@ class RentalPriceHistory(models.Model):
 
     def __str__(self):
         return f"{self.vehicle} - {self.date} - ${self.price}"
+
+class Pickup(models.Model):
+    booking = models.OneToOneField('mainapp.Booking', on_delete=models.CASCADE, related_name='pickup')
+    qr_code = models.CharField(max_length=50, unique=True)
+    otp = models.CharField(max_length=6)
+    is_verified = models.BooleanField(default=False)
+    pickup_time = models.DateTimeField(null=True, blank=True)
+
+    def generate_qr_code(self):
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=50))
+
+    def generate_otp(self):
+        return ''.join(random.choices(string.digits, k=6))
+
+    def save(self, *args, **kwargs):
+        if not self.qr_code:
+            self.qr_code = self.generate_qr_code()
+        if not self.otp:
+            self.otp = self.generate_otp()
+        super().save(*args, **kwargs)
+
+class Return(models.Model):
+    booking = models.OneToOneField('mainapp.Booking', on_delete=models.CASCADE, related_name='vehicle_return')
+    qr_code = models.CharField(max_length=50, unique=True)
+    otp = models.CharField(max_length=6)
+    is_verified = models.BooleanField(default=False)
+    return_time = models.DateTimeField(null=True, blank=True)
+
+    def generate_qr_code(self):
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=50))
+
+    def generate_otp(self):
+        return ''.join(random.choices(string.digits, k=6))
+
+    def save(self, *args, **kwargs):
+        if not self.qr_code:
+            self.qr_code = self.generate_qr_code()
+        if not self.otp:
+            self.otp = self.generate_otp()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Return for Booking {self.booking.booking_id}"
+
+class Booking(models.Model):
+    # ... existing fields ...
+
+    def send_pickup_email(self):
+        subject = 'Vehicle Pickup Information'
+        html_message = render_to_string('emails/pickup_info.html', {'booking': self})
+        plain_message = strip_tags(html_message)
+        send_mail(subject, plain_message, 'from@example.com', [self.user.email], html_message=html_message)
+
+    def send_return_email(self):
+        subject = 'Vehicle Return Information'
+        html_message = render_to_string('emails/return_info.html', {'booking': self})
+        plain_message = strip_tags(html_message)
+        send_mail(subject, plain_message, 'from@example.com', [self.user.email], html_message=html_message)
+
+    def send_feedback_email(self):
+        subject = 'Feedback Request'
+        html_message = render_to_string('emails/feedback_request.html', {'booking': self})
+        plain_message = strip_tags(html_message)
+        send_mail(subject, plain_message, 'from@example.com', [self.user.email], html_message=html_message)

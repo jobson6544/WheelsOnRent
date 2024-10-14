@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vehicle Pickup and Return QR Codes</title>
+</head>
+<body>
+    <h1>Vehicle Pickup and Return QR Codes</h1>
+    <p>Dear {{ booking.user.get_full_name }},</p>
+    <p>Thank you for your booking. Please find attached the QR codes for your vehicle pickup and return.</p>
+    <p>Booking Details:</p>
+    <ul>
+        <li>Booking ID: {{ booking.booking_id }}</li>
+        <li>Vehicle: {{ booking.vehicle }}</li>
+        <li>Start Date: {{ booking.start_date }}</li>
+        <li>End Date: {{ booking.end_date }}</li>
+    </ul>
+    <p>Instructions:</p>
+    <ol>
+        <li>Use the Pickup QR code when you arrive to pick up your vehicle.</li>
+        <li>Use the Return QR code when you're returning the vehicle.</li>
+        <li>Present these QR codes to our staff for scanning.</li>
+    </ol>
+    <p>Note: The QR codes are attached to this email.</p>
+    <p>If you have any questions, please don't hesitate to contact us.</p>
+    <p>Thank you for choosing our service!</p>
+    <p>Best regards,<br>Your Car Rental Team</p>
+</body>
+</html>
+

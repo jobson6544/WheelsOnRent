@@ -1,0 +1,114 @@
+{% extends 'vendor/base.html' %}
+
+{% block title %}Booking Detail - {{ booking.booking_id }}{% endblock %}
+
+{% block content %}
+<main id="main" class="main">
+<div class="container mt-4">
+    <h2>Booking Detail</h2>
+    <div class="card">
+        <div class="card-header">
+            Booking ID: {{ booking.booking_id }}
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{ booking.vehicle.make }} {{ booking.vehicle.model }}</h5>
+            <p class="card-text"><strong>Customer:</strong> {{ booking.user.get_full_name }}</p>
+            <p class="card-text"><strong>Email:</strong> {{ booking.user.email }}</p>
+            <p class="card-text"><strong>Start Date:</strong> {{ booking.start_date }}</p>
+            <p class="card-text"><strong>End Date:</strong> {{ booking.end_date }}</p>
+            <p class="card-text"><strong>Status:</strong> {{ booking.get_status_display }}</p>
+            <p class="card-text"><strong>Total Price:</strong> ${{ booking.total_amount|floatformat:2 }}</p>
+            {% if booking.status == 'confirmed' %}
+                <button id="sendPickupOTP" class="btn btn-primary" data-booking-id="{{ booking.booking_id }}">Send Pickup OTP</button>
+                <div id="pickupOTPForm" style="display: none;">
+                    <input type="text" id="pickupOTP" class="form-control mt-2" placeholder="Enter Pickup OTP">
+                    <button id="verifyPickupOTP" class="btn btn-success mt-2">Verify Pickup OTP</button>
+                </div>
+            {% elif booking.status == 'picked_up' %}
+                <button id="sendReturnOTP" class="btn btn-primary" data-booking-id="{{ booking.booking_id }}">Send Return OTP</button>
+                <div id="returnOTPForm" style="display: none;">
+                    <input type="text" id="returnOTP" class="form-control mt-2" placeholder="Enter Return OTP">
+                    <button id="verifyReturnOTP" class="btn btn-success mt-2">Verify Return OTP</button>
+                </div>
+            {% endif %}
+            
+            <div id="otpResult" class="mt-3"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sendPickupOTP = document.getElementById('sendPickupOTP');
+        const sendReturnOTP = document.getElementById('sendReturnOTP');
+        const verifyPickupOTP = document.getElementById('verifyPickupOTP');
+        const verifyReturnOTP = document.getElementById('verifyReturnOTP');
+        
+        if (sendPickupOTP) {
+            sendPickupOTP.addEventListener('click', () => sendOTP('pickup'));
+        }
+        if (sendReturnOTP) {
+            sendReturnOTP.addEventListener('click', () => sendOTP('return'));
+        }
+        if (verifyPickupOTP) {
+            verifyPickupOTP.addEventListener('click', () => verifyOTP('pickup'));
+        }
+        if (verifyReturnOTP) {
+            verifyReturnOTP.addEventListener('click', () => verifyOTP('return'));
+        }
+        
+        function sendOTP(type) {
+            const bookingId = '{{ booking.booking_id }}';
+            fetch(`/vendor/send-otp/${bookingId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `qr_type=${type}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('otpResult').innerText = 'OTP sent successfully';
+                    document.getElementById(`${type}OTPForm`).style.display = 'block';
+                } else {
+                    document.getElementById('otpResult').innerText = `Failed to send OTP: ${data.message}`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('otpResult').innerText = `An error occurred: ${error.message}`;
+            });
+        }
+        
+        function verifyOTP(type) {
+            const bookingId = '{{ booking.booking_id }}';
+            const otp = document.getElementById(`${type}OTP`).value;
+            fetch(`/vendor/verify-otp/${bookingId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `otp=${otp}&qr_type=${type}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('otpResult').innerText = data.message;
+                    document.getElementById(`${type}OTPForm`).style.display = 'none';
+                    location.reload(); // Reload the page to reflect the new status
+                } else {
+                    document.getElementById('otpResult').innerText = `Failed to verify OTP: ${data.message}`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('otpResult').innerText = `An error occurred: ${error.message}`;
+            });
+        }
+    });
+</script>
+</main>
+{% endblock %}
