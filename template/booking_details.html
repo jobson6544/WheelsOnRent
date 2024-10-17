@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container text-center">
+    <h2 class="mb-4 animate__animated animate__fadeIn">Booking Details</h2>
+    <div class="card p-4 mb-4 animate__animated animate__fadeInUp">
+        <p><strong>Booking #{{ booking.booking_id }}</strong></p>
+        <p>Vehicle: {{ booking.vehicle.name }}</p>
+        <p>Start Date: {{ booking.start_date|date:"M d, Y" }}</p>
+        <p>End Date: {{ booking.end_date|date:"M d, Y" }}</p>
+        <p>Total Amount: ${{ booking.total_amount }}</p>
+    </div>
+
+    <h3 class="mb-3 animate__animated animate__fadeIn">QR Codes</h3>
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-3">
+            <h4>Pickup QR Code</h4>
+            <button class="btn btn-primary mb-2" onclick="showQRModal('pickup-qr', 'Pickup QR Code')">Show QR Code</button>
+        </div>
+        <div class="col-md-6 mb-3">
+            <h4>Return QR Code</h4>
+            <button class="btn btn-primary mb-2" onclick="showQRModal('return-qr', 'Return QR Code')">Show QR Code</button>
+        </div>
+    </div>
+
+    <a href="{% url 'user_bookings' %}" class="btn btn-secondary mt-3">Back to Bookings</a>
+</div>
+
+<!-- QR Code Modal -->
+<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qrModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalQRImage" src="" alt="QR Code" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showQRModal(qrId, title) {
+    var modal = new bootstrap.Modal(document.getElementById('qrModal'));
+    var modalTitle = document.getElementById('qrModalLabel');
+    var modalImage = document.getElementById('modalQRImage');
+    
+    modalTitle.textContent = title;
+    modalImage.src = qrId === 'pickup-qr' ? "{{ pickup_qr_url }}" : "{{ return_qr_url }}";
+    
+    modal.show();
+}
+</script>
+
+{% endblock %}

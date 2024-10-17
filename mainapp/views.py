@@ -193,35 +193,40 @@ def book_vehicle(request, id):
         logger.info(f"Start date: {start_date_str}, End date: {end_date_str}")
         
         try:
-            # Convert strings to date objects
-            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+            # Convert strings to datetime objects
+            start_date = timezone.make_aware(datetime.strptime(start_date_str, '%Y-%m-%d'))
+            end_date = timezone.make_aware(datetime.strptime(end_date_str, '%Y-%m-%d'))
 
-            # Check if the vehicle is already booked for overlapping dates
-            overlapping_bookings = Booking.objects.filter(
-                vehicle=vehicle,
-                status__in=['confirmed', 'pending'],
-                start_date__date__lt=end_date,
-                end_date__date__gt=start_date
-            )
-            
-            if overlapping_bookings.exists():
-                logger.info("Vehicle is already booked for the selected dates.")
+            # Ensure end_date is at least one day after start_date
+            if end_date <= start_date:
+                end_date = start_date + timedelta(days=1)
+
+            # Set the time to the start and end of the day
+            start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+            logger.info(f"Adjusted dates - Start: {start_date}, End: {end_date}")
+
+            # Check if the vehicle is available for the selected dates
+            if not Booking.check_availability(vehicle, start_date, end_date):
+                logger.warning("Vehicle is not available for the selected dates.")
                 return JsonResponse({
                     'success': False,
                     'message': 'Vehicle is not available for the selected dates. Please choose different dates.'
                 })
 
+            logger.info("Vehicle is available for the selected dates.")
+
             # Calculate the total amount
-            duration = (end_date - start_date).days + 1  # Duration in days
+            duration = (end_date.date() - start_date.date()).days  # Duration in days
             total_amount = duration * vehicle.rental_rate
 
             # Create the booking
             booking = Booking.objects.create(
                 user=request.user,
                 vehicle=vehicle,
-                start_date=timezone.make_aware(datetime.combine(start_date, datetime.min.time())),
-                end_date=timezone.make_aware(datetime.combine(end_date, datetime.max.time())),
+                start_date=start_date,
+                end_date=end_date,
                 status='pending',
                 total_amount=total_amount
             )
@@ -241,7 +246,6 @@ def book_vehicle(request, id):
         
         except Exception as e:
             logger.error(f"An error occurred: {str(e)}")
-            logger.error(traceback.format_exc())
             return JsonResponse({
                 'success': False,
                 'message': 'An error occurred while processing your booking. Please try again later.'

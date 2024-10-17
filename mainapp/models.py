@@ -13,6 +13,9 @@ from django.core.files.base import ContentFile
 from django.template import loader
 from django.template.exceptions import TemplateDoesNotExist
 import json  # Add this import at the top of the file
+import logging
+
+logger = logging.getLogger(__name__)
 
 def profile_photo_path(instance, filename):
     # File will be uploaded to MEDIA_ROOT/profile_photos/user_<id>/<filename>
@@ -154,13 +157,17 @@ class Booking(models.Model):
 
     @classmethod
     def check_availability(cls, vehicle, start_date, end_date):
+        logger.info(f"Checking availability for vehicle {vehicle.id} from {start_date} to {end_date}")
         overlapping_bookings = cls.objects.filter(
             vehicle=vehicle,
             status__in=['confirmed', 'pending'],
             start_date__lt=end_date,
             end_date__gt=start_date
         )
-        return not overlapping_bookings.exists()
+        is_available = not overlapping_bookings.exists()
+        logger.info(f"Overlapping bookings found: {overlapping_bookings.count()}")
+        logger.info(f"Is vehicle available: {is_available}")
+        return is_available
 
     def generate_qr_code(self, qr_type):
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
