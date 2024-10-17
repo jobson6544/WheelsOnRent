@@ -317,14 +317,18 @@ def vehicle_detail(request, vehicle_id):
     suggested_price = Decimal(str(vehicle.get_suggested_price()))  # Convert to Decimal
 
     if request.method == 'POST' and 'update_price' in request.POST:
-        vehicle.rental_rate = suggested_price
-        vehicle.save()
-        messages.success(request, 'Price updated successfully!')
-        return redirect('vendor:vehicle_detail', vehicle_id=vehicle.id)
+        if vehicle.predicted_price:
+            vehicle.rental_rate = vehicle.predicted_price
+            vehicle.predicted_price = None  # Clear the temporary predicted price
+            vehicle.save()
+            messages.success(request, f'Rental rate updated to ${vehicle.rental_rate:.2f} per day.')
+        else:
+            messages.error(request, 'No predicted price available.')
 
     context = {
         'vehicle': vehicle,
         'suggested_price': suggested_price,
+        'predicted_price': vehicle.predicted_price,
     }
     return render(request, 'vendor/vehicle_detail.html', context)
 
@@ -699,5 +703,7 @@ def verify_otp(request, booking_id):
 def predict_price(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, id=vehicle_id, vendor__user=request.user)
     predicted_price = vehicle.predict_price()
+    vehicle.predicted_price = predicted_price  # Store the predicted price temporarily
+    vehicle.save(update_fields=['predicted_price'])
     messages.success(request, f'Predicted rental rate for {vehicle.model}: ${predicted_price:.2f} per day.')
-    return redirect('vendor:vendor_vehicles')
+    return redirect('vendor:vehicle_detail', vehicle_id=vehicle.id)

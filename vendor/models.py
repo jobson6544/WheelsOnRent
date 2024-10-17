@@ -141,6 +141,9 @@ class Vehicle(models.Model):
     air_conditioning = models.BooleanField(default=True)
     fuel_efficiency = models.FloatField(default=0.0)  # km per liter
 
+    # Temporary field for predicted price
+    predicted_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
     def __str__(self):
         return f"{self.model} - {self.registration.registration_number}"
 
