@@ -73,10 +73,23 @@ class VehicleForm(forms.ModelForm):
         required=False
     )
 
+    year = forms.IntegerField()
+    mileage = forms.IntegerField()
+    seating_capacity = forms.IntegerField()
+    transmission = forms.CharField(max_length=20)
+    air_conditioning = forms.BooleanField()
+    fuel_efficiency = forms.FloatField()
+
     class Meta:
         model = Vehicle
-        fields = ['vehicle_type', 'vehicle_company', 'model', 'fuel_type', 'engine_number', 'chassis_number', 
-                  'rental_rate', 'availability', 'image', 'features']
+        fields = [
+            'vehicle_type', 'vehicle_company', 'model', 'fuel_type', 'engine_number', 
+            'chassis_number', 'rental_rate', 'availability', 'image', 'registration_number', 
+            'registration_date', 'registration_end_date', 'policy_number', 'policy_provider', 
+            'coverage_type', 'insurance_start_date', 'insurance_end_date', 'road_tax_details', 
+            'fitness_expiry_date', 'puc_expiry_date', 'features', 'year', 'mileage', 
+            'seating_capacity', 'transmission', 'air_conditioning', 'fuel_efficiency'
+        ]
 
     def __init__(self, *args, **kwargs):
         self.vendor = kwargs.pop('vendor', None)

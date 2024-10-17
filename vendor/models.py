@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import random
 import string
+import joblib
 
 class Vendor(models.Model):
     STATUS_CHOICES = [
@@ -132,6 +133,13 @@ class Vehicle(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     mileage = models.IntegerField(default=0, help_text="Current mileage of the vehicle")
+
+    # New fields for price prediction
+    year = models.IntegerField(default=datetime.now().year)
+    seating_capacity = models.IntegerField(default=5)
+    transmission = models.CharField(max_length=20, choices=[('manual', 'Manual'), ('automatic', 'Automatic')], default='manual')
+    air_conditioning = models.BooleanField(default=True)
+    fuel_efficiency = models.FloatField(default=0.0)  # km per liter
 
     def __str__(self):
         return f"{self.model} - {self.registration.registration_number}"
@@ -258,6 +266,40 @@ class Vehicle(models.Model):
 
     def get_status_display(self):
         return dict(self.STATUS_CHOICES).get(self.status, 'Unknown')
+
+    def predict_price(self):
+        # Load the trained model
+        model = joblib.load('trained_rental_price_model.joblib')
+        
+        # Prepare the input features
+        features = np.array([[
+            self.year,
+            self.mileage,
+            self.seating_capacity,
+            1 if self.transmission == 'automatic' else 0,
+            1 if self.air_conditioning else 0,
+            self.fuel_efficiency,
+            self.model.model_year,
+            len(self.features.all()),
+            {'petrol': 0, 'diesel': 1, 'electric': 2, 'hybrid': 3, 'cng': 4, 'lpg': 5}.get(self.fuel_type, 0),
+            # Add additional features to match the 20 expected by the model
+            self.rental_rate,  # Current rental rate
+            self.status,
+            self.created_at.year,
+            self.created_at.month,
+            self.created_at.day,
+            self.updated_at.year,
+            self.updated_at.month,
+            self.updated_at.day,
+            self.vendor.vendor_id,
+            self.model.model_id,
+            self.registration.registration_id
+        ]])
+        
+        # Make prediction
+        predicted_price = model.predict(features)[0]
+        
+        return round(predicted_price, 2)
 
 class Image(models.Model):
     image_id = models.AutoField(primary_key=True)

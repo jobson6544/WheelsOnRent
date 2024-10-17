@@ -29,6 +29,8 @@ from django.urls import reverse
 import random
 from django.core.mail import send_mail
 import json
+import joblib
+import numpy as np
 
 Booking = apps.get_model('mainapp', 'Booking')
 
@@ -200,7 +202,14 @@ def add_vehicle(request):
                     document.save()
                     logger.info(f"Document saved: {document.id}")
                     
-                    messages.success(request, 'Vehicle added successfully!')
+                    # Predict price
+                    predicted_price = vehicle.predict_price()
+                    
+                    # You can choose to set this as the initial rental rate or just display it
+                    vehicle.rental_rate = predicted_price
+                    vehicle.save()
+
+                    messages.success(request, f'Vehicle added successfully! Suggested rental rate: ${predicted_price:.2f} per day.')
                     logger.info("Vehicle addition process completed successfully")
                     return redirect('vendor:vendor_vehicles')
             except Exception as e:
@@ -684,3 +693,11 @@ def verify_otp(request, booking_id):
             return JsonResponse({'success': False, 'message': 'Invalid OTP'})
     
     return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+@never_cache
+@vendor_required
+def predict_price(request, vehicle_id):
+    vehicle = get_object_or_404(Vehicle, id=vehicle_id, vendor__user=request.user)
+    predicted_price = vehicle.predict_price()
+    messages.success(request, f'Predicted rental rate for {vehicle.model}: ${predicted_price:.2f} per day.')
+    return redirect('vendor:vendor_vehicles')

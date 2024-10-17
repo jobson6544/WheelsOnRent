@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import VehicleDashboardView  # Add this import
+from .views import VehicleDashboardView
 
 app_name = 'vendor'
 
@@ -33,4 +33,5 @@ urlpatterns = [
     path('scan-qr/', views.scan_qr, name='scan_qr'),
     path('booking-details/<str:booking_data>/', views.booking_details, name='booking_details'),
     path('verify-otp/<int:booking_id>/', views.verify_otp, name='verify_otp'),
+    path('predict-price/<int:vehicle_id>/', views.predict_price, name='predict_price'),
 ]

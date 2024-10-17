@@ -170,6 +170,38 @@
             </div>
         </div>
 
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Additional Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ vehicle_form.year.label_tag }} {{ vehicle_form.year|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.mileage.label_tag }} {{ vehicle_form.mileage|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.seating_capacity.label_tag }} {{ vehicle_form.seating_capacity|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ vehicle_form.transmission.label_tag }} {{ vehicle_form.transmission|add_class:"form-control" }}
+                        </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.air_conditioning.label_tag }} {{ vehicle_form.air_conditioning|add_class:"form-check-input" }}
+                        </div>
+                        <div class="mb-3">
+                            {{ vehicle_form.fuel_efficiency.label_tag }} {{ vehicle_form.fuel_efficiency|add_class:"form-control" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary">Add Vehicle</button>
     </form>
 </div>
