@@ -21,4 +21,6 @@ urlpatterns = [
     path('payment-error/', views.payment_error, name='payment_error'),
     path('verify-email/<str:token>/', views.verify_email, name='verify_email'),
     path('benefits/', views.vendor_benefits, name='vendor_benefits'),
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('password-reset-verify/', views.password_reset_verify, name='password_reset_verify'),
 ]

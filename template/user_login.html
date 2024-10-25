@@ -34,6 +34,15 @@
                 background: rgba(255, 255, 255, .7); /* White background with 80% opacity */
                 /* Or use a hex value with alpha: background: #FFFFFFCC; */
 }
+
+            .forgot-pass {
+                color: #4070f4;
+                text-decoration: none;
+            }
+
+            .forgot-pass:hover {
+                text-decoration: underline;
+            }
         </style>
                         
     </head>
@@ -49,6 +58,9 @@
                         </div>
                         <div class="field input-field">
                             <input type="password" name="password" class="input" placeholder="Password" id="password" required>
+                        </div>
+                        <div class="form-link">
+                            <a href="{% url 'forgot_password' %}" class="forgot-pass">Forgot password?</a>
                         </div>
                         <div class="field button-field">
                             <button type="submit">Login</button>

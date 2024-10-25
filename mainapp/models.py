@@ -14,6 +14,9 @@ from django.template import loader
 from django.template.exceptions import TemplateDoesNotExist
 import json  # Add this import at the top of the file
 import logging
+import random
+from django.utils import timezone
+import string
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +49,8 @@ class User(AbstractUser):
     is_first_login = models.BooleanField(default=True)
     is_email_verified = models.BooleanField(default=False)
     email_verification_token = models.CharField(max_length=100, blank=True, null=True)
+    password_reset_token = models.CharField(max_length=100, blank=True, null=True)
+    password_reset_token_created_at = models.DateTimeField(null=True, blank=True)
 
     # If you want to use email for login instead of username
     USERNAME_FIELD = 'email'
@@ -59,6 +64,18 @@ class User(AbstractUser):
             self.full_name = f"{self.first_name} {self.last_name}".strip()
         super().save(*args, **kwargs)
         
+    def generate_password_reset_token(self):
+        token = ''.join(random.choices(string.digits, k=6))
+        self.password_reset_token = token
+        self.password_reset_token_created_at = timezone.now()
+        self.save()
+        return token
+
+    def is_password_reset_token_valid(self):
+        if not self.password_reset_token or not self.password_reset_token_created_at:
+            return False
+        return timezone.now() - self.password_reset_token_created_at < timezone.timedelta(minutes=15)
+
 # Model for storing additional user details
 # class Customer(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE)

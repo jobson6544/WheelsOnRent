@@ -20,6 +20,13 @@ import stripe
 from .utils import generate_verification_token
 from django.contrib.sites.shortcuts import get_current_site
 import traceback
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.utils import timezone
+from django.views.decorators.http import require_http_methods
+
+User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
@@ -530,3 +537,47 @@ def vendor_benefits(request):
         })
     
     return render(request, 'vendor_benefits.html', context)
+
+@require_http_methods(["GET", "POST"])
+def forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email, is_active=True, role='user')
+            if user.is_email_verified:
+                token = user.generate_password_reset_token()
+                reset_url = request.build_absolute_uri(reverse('password_reset_verify'))
+                send_mail(
+                    'Password Reset OTP',
+                    f'Your OTP for password reset is: {token}\nUse this OTP at {reset_url}',
+                    'from@example.com',
+                    [user.email],
+                    fail_silently=False,
+                )
+                return JsonResponse({'status': 'success', 'message': 'A password reset OTP has been sent to your email.'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Your email is not verified. Please verify your email first.'})
+        except User.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'No active customer account found with this email address.'})
+    return render(request, 'forgot_password.html')
+
+@require_http_methods(["GET", "POST"])
+def password_reset_verify(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        token = request.POST.get('token')
+        new_password = request.POST.get('new_password')
+        try:
+            user = User.objects.get(email=email, is_active=True, role='user')
+            if user.is_email_verified and user.password_reset_token == token and user.is_password_reset_token_valid():
+                user.set_password(new_password)
+                user.password_reset_token = None
+                user.password_reset_token_created_at = None
+                user.save()
+                return JsonResponse({'status': 'success', 'message': 'Your password has been reset successfully. You can now login with your new password.'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Invalid or expired OTP. Please try again.'})
+        except User.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'No active customer account found with this email address.'})
+    return render(request, 'password_reset_verify.html')
+
