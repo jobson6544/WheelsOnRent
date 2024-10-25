@@ -31,8 +31,11 @@ from django.core.mail import send_mail
 import json
 import joblib
 import numpy as np
+from django.contrib.auth import get_user_model
+from django.views.decorators.http import require_http_methods
 
 Booking = apps.get_model('mainapp', 'Booking')
+User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
@@ -374,10 +377,12 @@ class VehicleDashboardView(ListView):
         return context
 
 @login_required
+@login_required
 def vendor_profile(request):
     vendor = request.user.vendor
     context = {
         'vendor': vendor,
+        'profile_picture_url': vendor.get_profile_picture_url(),
         'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
     }
     return render(request, 'vendor/vendor_profile.html', context)
@@ -390,15 +395,18 @@ def update_profile(request):
             vendor = form.save(commit=False)
             vendor.latitude = request.POST.get('latitude')
             vendor.longitude = request.POST.get('longitude')
+            if 'profile_picture' in request.FILES:
+                vendor.profile_picture = request.FILES['profile_picture']
             vendor.save()
             messages.success(request, 'Your profile has been updated successfully.')
-            return redirect('vendor:vendor_profile')
+            return redirect('vendor:profile')  # Changed this line
     else:
         form = VendorProfileForm(instance=request.user.vendor)
     
     context = {
         'form': form,
         'vendor': request.user.vendor,
+        'profile_picture_url': request.user.vendor.get_profile_picture_url(),
         'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
     }
     return render(request, 'vendor/vendor_profile.html', context)
@@ -707,3 +715,49 @@ def predict_price(request, vehicle_id):
     vehicle.save(update_fields=['predicted_price'])
     messages.success(request, f'Predicted rental rate for {vehicle.model}: ${predicted_price:.2f} per day.')
     return redirect('vendor:vehicle_detail', vehicle_id=vehicle.id)
+
+@require_http_methods(["GET", "POST"])
+def vendor_forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email, is_active=True, role='vendor')
+            vendor = Vendor.objects.get(user=user, status='approved')
+            token = vendor.generate_password_reset_token()
+            reset_url = request.build_absolute_uri(reverse('vendor:vendor_password_reset_verify'))
+            send_mail(
+                'Password Reset OTP',
+                f'Your OTP for password reset is: {token}\nUse this OTP at {reset_url}',
+                'from@example.com',
+                [user.email],
+                fail_silently=False,
+            )
+            return JsonResponse({'status': 'success', 'message': 'A password reset OTP has been sent to your email.'})
+        except (User.DoesNotExist, Vendor.DoesNotExist):
+            return JsonResponse({'status': 'error', 'message': 'No active vendor account found with this email address.'})
+    return render(request, 'vendor/vendor_forgot_password.html')
+
+@require_http_methods(["GET", "POST"])
+def vendor_password_reset_verify(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        token = request.POST.get('token')
+        new_password = request.POST.get('new_password')
+        try:
+            user = User.objects.get(email=email, is_active=True, role='vendor')
+            vendor = Vendor.objects.get(user=user, status='approved')
+            if vendor.password_reset_token == token and vendor.is_password_reset_token_valid():
+                user.set_password(new_password)
+                user.save()
+                vendor.password_reset_token = None
+                vendor.password_reset_token_created_at = None
+                vendor.save()
+                return JsonResponse({'status': 'success', 'message': 'Your password has been reset successfully. You can now login with your new password.'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Invalid or expired OTP. Please try again.'})
+        except (User.DoesNotExist, Vendor.DoesNotExist):
+            return JsonResponse({'status': 'error', 'message': 'No active vendor account found with this email address.'})
+    return render(request, 'vendor/vendor_password_reset_verify.html')
+
+
+

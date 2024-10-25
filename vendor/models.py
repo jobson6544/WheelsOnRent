@@ -31,6 +31,8 @@ class Vendor(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     profile_picture = models.ImageField(upload_to='vendor_profiles/', null=True, blank=True)
+    password_reset_token = models.CharField(max_length=100, blank=True, null=True)
+    password_reset_token_created_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.business_name
@@ -53,6 +55,23 @@ class Vendor(models.Model):
 
     def get_full_address(self):
         return f"{self.address}, {self.city}, {self.state}, {self.zip_code}"
+
+    def generate_password_reset_token(self):
+        token = ''.join(random.choices(string.digits, k=6))
+        self.password_reset_token = token
+        self.password_reset_token_created_at = timezone.now()
+        self.save()
+        return token
+
+    def is_password_reset_token_valid(self):
+        if not self.password_reset_token or not self.password_reset_token_created_at:
+            return False
+        return timezone.now() - self.password_reset_token_created_at < timezone.timedelta(minutes=15)
+
+    def get_profile_picture_url(self):
+        if self.profile_picture:
+            return self.profile_picture.url
+        return None  # or return a URL to a default image
 
 class VehicleType(models.Model):
     category_id = models.AutoField(primary_key=True)
@@ -429,3 +448,4 @@ class Booking(models.Model):
         html_message = render_to_string('emails/feedback_request.html', {'booking': self})
         plain_message = strip_tags(html_message)
         send_mail(subject, plain_message, 'from@example.com', [self.user.email], html_message=html_message)
+

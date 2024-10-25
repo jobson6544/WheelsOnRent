@@ -42,13 +42,16 @@
             <div class="form login">
                 <div class="form-content">
                     <header>Vendor Login</header>
-                    <form method="POST">
+                    <form method="POST" action="{% url 'vendor:vendor_login' %}">
                         {% csrf_token %}
                         <div class="field input-field">
-                            <input type="text" name="email" class="input" placeholder="Email" id="email">
+                            <input type="email" name="email" class="input" placeholder="Email" id="email" required>
                         </div>
                         <div class="field input-field">
-                            <input type="password" name="password" class="input" placeholder="password" id="password">
+                            <input type="password" name="password" class="input" placeholder="Password" id="password" required>
+                        </div>
+                        <div class="form-link">
+                            <a href="{% url 'vendor:vendor_forgot_password' %}" class="forgot-pass">Forgot password?</a>
                         </div>
                         <div class="field button-field">
                             <button type="submit">Login</button>

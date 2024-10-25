@@ -24,9 +24,20 @@ class VendorProfileForm(forms.ModelForm):
         model = Vendor
         fields = ['business_name', 'full_address', 'contact_number', 'profile_picture', 'latitude', 'longitude']
         widgets = {
+            'profile_picture': forms.FileInput(),
             'latitude': forms.HiddenInput(),
             'longitude': forms.HiddenInput(),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        latitude = cleaned_data.get('latitude')
+        longitude = cleaned_data.get('longitude')
+
+        if latitude is None or longitude is None:
+            raise forms.ValidationError("Latitude and longitude are required. Please ensure your address is valid.")
+
+        return cleaned_data
 
 class VendorLoginForm(forms.Form):
     email = forms.EmailField()

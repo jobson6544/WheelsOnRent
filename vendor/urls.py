@@ -34,4 +34,6 @@ urlpatterns = [
     path('booking-details/<str:booking_data>/', views.booking_details, name='booking_details'),
     path('verify-otp/<int:booking_id>/', views.verify_otp, name='verify_otp'),
     path('predict-price/<int:vehicle_id>/', views.predict_price, name='predict_price'),
+    path('forgot-password/', views.vendor_forgot_password, name='vendor_forgot_password'),
+    path('password-reset-verify/', views.vendor_password_reset_verify, name='vendor_password_reset_verify'),
 ]
