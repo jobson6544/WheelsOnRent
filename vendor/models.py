@@ -14,6 +14,7 @@ from django.utils.html import strip_tags
 import random
 import string
 import joblib
+from django.db.models import Avg
 
 class Vendor(models.Model):
     STATUS_CHOICES = [
@@ -72,6 +73,17 @@ class Vendor(models.Model):
         if self.profile_picture:
             return self.profile_picture.url
         return None  # or return a URL to a default image
+
+    def get_all_feedback(self):
+        """Get all feedback for this vendor's vehicles"""
+        return Feedback.objects.filter(booking__vehicle__vendor=self)
+
+    def get_average_rating(self):
+        """Get the average rating for this vendor"""
+        feedbacks = self.get_all_feedback()
+        if feedbacks.exists():
+            return feedbacks.aggregate(Avg('rating'))['rating__avg']
+        return 0
 
 class VehicleType(models.Model):
     category_id = models.AutoField(primary_key=True)

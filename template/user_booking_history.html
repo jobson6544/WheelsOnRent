@@ -36,12 +36,16 @@
                         <td>{{ booking.vehicle.rental_rate }}</td>
                         <td>{{ booking.get_status_display }}</td>
                         <td>
-                            {% if booking.status == 'pending' or booking.status == 'confirmed' %}
-                                <form method="post" action="{% url 'cancel_booking' booking.booking_id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this booking?')">Cancel</button>
-                                </form>
-                            {% endif %}
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'booking_detail' booking.booking_id %}" class="btn btn-info btn-sm">View Details</a>
+                                {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+                                    <a href="{% url 'booking_detail' booking.booking_id %}" class="btn btn-info btn-sm">View Details</a>
+                                    <form method="post" action="{% url 'cancel_booking' booking.booking_id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this booking?')">Cancel</button>
+                                    </form>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}

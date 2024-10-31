@@ -2,7 +2,7 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
-from .models import User, UserProfile
+from .models import User, UserProfile, Feedback
 
 class UserRegistrationForm(forms.ModelForm):
     username = forms.CharField(
@@ -162,3 +162,16 @@ class UserProfileEditForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['phone_number', 'license_number', 'address', 'city', 'pin_code', 'profile_photo', 'license_front', 'license_back']
+
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        model = Feedback
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.RadioSelect(attrs={'class': 'star-rating'}),
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Share your experience with this vehicle rental...'
+            })
+        }

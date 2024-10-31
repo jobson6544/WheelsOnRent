@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Avg, Max
 from django.utils import timezone
 from .models import Vehicle, VehicleCompany, Model, Registration, Image, Features, VehicleDocument, Vendor, Insurance, Pickup, Return
 from .forms import VehicleForm, VendorUserForm, VendorProfileForm, VehicleCompanyForm, VehicleDocumentForm
@@ -33,6 +33,7 @@ import joblib
 import numpy as np
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_http_methods
+from django.db.models import Q
 
 Booking = apps.get_model('mainapp', 'Booking')
 User = get_user_model()
@@ -758,6 +759,136 @@ def vendor_password_reset_verify(request):
         except (User.DoesNotExist, Vendor.DoesNotExist):
             return JsonResponse({'status': 'error', 'message': 'No active vendor account found with this email address.'})
     return render(request, 'vendor/vendor_password_reset_verify.html')
+
+@login_required
+@vendor_required
+@login_required
+@vendor_required
+def view_feedback(request):
+    vendor = get_object_or_404(Vendor, user=request.user)
+    
+    # Get filter parameters from request
+    rating_filter = request.GET.get('rating')
+    date_filter = request.GET.get('date')
+    sort_by = request.GET.get('sort')
+    
+    # Start with all feedback for this vendor's vehicles
+    feedbacks = Booking.objects.filter(
+        vehicle__vendor=vendor,
+        feedback__isnull=False
+    ).select_related(
+        'user',
+        'vehicle',
+        'feedback'
+    )
+    
+    # Apply filters
+    if rating_filter:
+        feedbacks = feedbacks.filter(feedback__rating=rating_filter)
+    
+    if date_filter:
+        if date_filter == 'last_week':
+            feedbacks = feedbacks.filter(feedback__created_at__gte=timezone.now() - timezone.timedelta(days=7))
+        elif date_filter == 'last_month':
+            feedbacks = feedbacks.filter(feedback__created_at__gte=timezone.now() - timezone.timedelta(days=30))
+        elif date_filter == 'last_year':
+            feedbacks = feedbacks.filter(feedback__created_at__gte=timezone.now() - timezone.timedelta(days=365))
+    
+    # Apply sorting
+    if sort_by == 'rating_high':
+        feedbacks = feedbacks.order_by('-feedback__rating')
+    elif sort_by == 'rating_low':
+        feedbacks = feedbacks.order_by('feedback__rating')
+    elif sort_by == 'date_new':
+        feedbacks = feedbacks.order_by('-feedback__created_at')
+    elif sort_by == 'date_old':
+        feedbacks = feedbacks.order_by('feedback__created_at')
+    else:
+        feedbacks = feedbacks.order_by('-feedback__created_at')  # Default sort by newest
+    
+    # Calculate statistics
+    total_feedback = feedbacks.count()
+    avg_rating = feedbacks.aggregate(Avg('feedback__rating'))['feedback__rating__avg'] or 0
+    rating_distribution = feedbacks.values('feedback__rating').annotate(
+        count=Count('feedback__rating')
+    ).order_by('feedback__rating')
+    
+    # Pagination
+    paginator = Paginator(feedbacks, 10)  # Show 10 feedbacks per page
+    page = request.GET.get('page')
+    try:
+        feedbacks_page = paginator.page(page)
+    except PageNotAnInteger:
+        feedbacks_page = paginator.page(1)
+    except EmptyPage:
+        feedbacks_page = paginator.page(paginator.num_pages)
+    
+    context = {
+        'feedbacks': feedbacks_page,
+        'total_feedback': total_feedback,
+        'avg_rating': round(avg_rating, 1),
+        'rating_distribution': rating_distribution,
+        'current_rating_filter': rating_filter,
+        'current_date_filter': date_filter,
+        'current_sort': sort_by,
+    }
+    
+    return render(request, 'vendor/feedback_list.html', context)
+
+
+@login_required
+@vendor_required
+def customer_list(request):
+    vendor = get_object_or_404(Vendor, user=request.user)
+    
+    # Get all unique customers who have booked this vendor's vehicles
+    customers = User.objects.filter(
+        booking__vehicle__vendor=vendor
+    ).distinct().annotate(
+        total_bookings=Count('booking'),
+        total_spent=Sum('booking__total_amount'),
+        last_booking=Max('booking__start_date'),  # Changed from created_at to start_date
+        avg_rating=Avg('booking__feedback__rating')
+    )
+    
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        customers = customers.filter(
+            Q(full_name__icontains=search_query) |
+            Q(email__icontains=search_query)
+        )
+    
+    # Sorting
+    sort_by = request.GET.get('sort', 'last_booking')
+    if sort_by == 'name':
+        customers = customers.order_by('full_name')
+    elif sort_by == 'bookings':
+        customers = customers.order_by('-total_bookings')
+    elif sort_by == 'spent':
+        customers = customers.order_by('-total_spent')
+    elif sort_by == 'rating':
+        customers = customers.order_by('-avg_rating')
+    else:  # default sort by last booking
+        customers = customers.order_by('-last_booking')
+    
+    # Pagination
+    paginator = Paginator(customers, 10)  # Show 10 customers per page
+    page = request.GET.get('page')
+    try:
+        customers_page = paginator.page(page)
+    except PageNotAnInteger:
+        customers_page = paginator.page(1)
+    except EmptyPage:
+        customers_page = paginator.page(paginator.num_pages)
+    
+    context = {
+        'customers': customers_page,
+        'search_query': search_query,
+        'current_sort': sort_by,
+    }
+    
+    return render(request, 'vendor/customer_list.html', context)
 
 
 

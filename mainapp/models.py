@@ -266,3 +266,46 @@ class Booking(models.Model):
             html_message=html_message,
             fail_silently=False,
         )
+
+    def get_vehicle_details(self):
+        return {
+            'model': self.vehicle.model.model_name,
+            'year': self.vehicle.model.model_year,
+            'company': self.vehicle.model.sub_category.company_name,
+            'type': self.vehicle.model.sub_category.category.category_name,
+            'fuel_type': self.vehicle.get_fuel_type_display(),
+            'registration_number': self.vehicle.registration.registration_number,
+            'image': self.vehicle.image.url if self.vehicle.image else None,
+            'image_url': self.vehicle.image_url if hasattr(self.vehicle, 'image_url') else None,
+        }
+
+    def get_vendor_details(self):
+        return {
+            'business_name': self.vehicle.vendor.business_name,
+            'contact_number': self.vehicle.vendor.contact_number,
+            'full_address': self.vehicle.vendor.full_address,
+        }
+
+    def can_submit_feedback(self):
+        """Check if feedback can be submitted for this booking"""
+        return (
+            self.status == 'returned' and 
+            not hasattr(self, 'feedback')
+        )
+
+class Feedback(models.Model):
+    RATING_CHOICES = (
+        (1, '1 Star'),
+        (2, '2 Stars'),
+        (3, '3 Stars'),
+        (4, '4 Stars'),
+        (5, '5 Stars'),
+    )
+    
+    booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='feedback')
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Feedback for Booking {self.booking.booking_id}"

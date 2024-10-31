@@ -1,255 +1,37 @@
 {% extends 'base.html' %}
-{% include 'nav.html' %}
-{% block extra_head %}
-
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-    body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f0f4f8;
-    }
-    .booking-card {
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
-        margin-bottom: 40px;
-        background-color: #ffffff;
-        overflow: hidden;
-    }
-    .booking-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 20px 45px rgba(50, 50, 93, 0.15), 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-    .booking-header {
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-        color: white;
-        padding: 25px;
-        border-top-left-radius: 20px;
-        border-top-right-radius: 20px;
-    }
-    .booking-header h3 {
-        margin: 0;
-        font-weight: 600;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        font-size: 1.5rem;
-    }
-    .booking-body {
-        padding: 30px;
-    }
-    .btn-group {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 25px;
-    }
-    .btn-custom {
-        flex: 1;
-        margin: 0 8px;
-        border-radius: 30px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        transition: all 0.3s ease;
-        padding: 12px 20px;
-        font-size: 0.9rem;
-    }
-    .btn-custom:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 7px 20px rgba(0,0,0,0.2);
-    }
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translate3d(0, 40px, 0); }
-        to { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    .fade-in-up {
-        animation: fadeInUp 0.8s ease-out;
-    }
-    h2.page-title {
-        font-weight: 700;
-        color: #333;
-        margin-bottom: 40px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        font-size: 2.5rem;
-        text-align: center;
-    }
-    .booking-info p, .vendor-details p {
-        margin-bottom: 12px;
-        color: #555;
-        font-size: 1rem;
-        line-height: 1.6;
-    }
-    .booking-info strong, .vendor-details strong {
-        color: #333;
-        font-weight: 600;
-    }
-    .section-title {
-        color: #2575fc;
-        font-weight: 600;
-        margin-top: 25px;
-        margin-bottom: 20px;
-        font-size: 1.3rem;
-        border-bottom: 2px solid #2575fc;
-        padding-bottom: 10px;
-    }
-    .info-row {
-        display: flex;
-        flex-wrap: wrap;
-        margin-bottom: 15px;
-    }
-    .info-col {
-        flex: 1;
-        min-width: 200px;
-        padding-right: 15px;
-    }
-    .icon-text {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    .icon-text i {
-        margin-right: 10px;
-        color: #2575fc;
-        font-size: 1.2rem;
-    }
-    .status-badge {
-        display: inline-block;
-        padding: 5px 10px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-    .status-confirmed {
-        background-color: #28a745;
-        color: white;
-    }
-    .vehicle-image {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-</style>
-{% endblock %}
 
 {% block content %}
+<h1>My Bookings</h1>
 
-<header class="site-navbar site-navbar-target" role="banner">
-
-    <div class="container">
-      <div class="row align-items-center position-relative">
-
-        <div class="col-3">
-          <div class="site-logo">
-            <a href="{% url 'home' %}" class="font-weight-bold"><strong>WheelsOnRent</strong></a>
-          </div>
-        </div>
-
-        <div class="col-9  text-right">
-          
-          <span class="d-inline-block d-lg-none"><a href="#" class=" site-menu-toggle js-menu-toggle py-5 "><span class="icon-menu h3 text-black"></span></a></span>
-
-          <nav class="site-navigation text-right ml-auto d-none d-lg-block" role="navigation">
-            <ul class="site-menu main-menu js-clone-nav ml-auto ">
-              <li class="active"><a href="{% url 'home' %}" class="nav-link font-weight-bold">Home</a></li>
-              {% if user.is_authenticated %}
-                <li><a href="{% url 'logout' %}" class="nav-link font-weight-bold">Logout</a></li>
-                <li>{{user.first_name}} {{user.last_name}}</li>
-              {% else %}
-              <li><a href="{% url 'user_login' %}" class="nav-link font-weight-bold">login</a></li>
-
-              <li><a href="{% url 'vendor:vendor_login' %}" class="nav-link font-weight-bold">Join With Us</a></li>
-              {% endif %}
-              <li><a href="#" class="nav-link font-weight-bold">Contact</a></li>
-              {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link font-weight-bold" href="{% url 'user_booking_history' %}">Bookings History</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link font-weight-bold" href="{% url 'user_bookings' %}">My Bookings</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link font-weight-bold" href="{% url 'profile_view' %}">My Profile</a>
-              </li>
-              {% endif %}
-            </ul>
-          </nav>
-        </div>
-
-        
-      </div>
-    </div>
-
-  </header>
-
-<div class="container mt-5 fade-in-up"><br>
-    <h2 class="page-title"><i class="fas fa-calendar-check"></i><strong>Your Confirmed Bookings</strong></h2>
-    {% if bookings %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Booking ID</th>
+            <th>Vehicle</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for booking in bookings %}
-            <div class="booking-card mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
-                <div class="booking-header">
-                    <h3><i class="fas fa-car"></i> Booking Id: {{ booking.booking_id }} - {{ booking.vehicle.model }}</h3>
-                </div>
-                <div class="booking-body">
-                    <img src="{{ booking.vehicle.image.url }}" alt="{{ booking.vehicle.name }}" class="vehicle-image" style="width: 550px; height: 250px; object-fit: cover;">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="booking-info">
-                                <h4 class="section-title"><i class="fas fa-info-circle"></i> Vehicle Details</h4>
-                                <p class="icon-text"><i class="fas fa-cogs"></i> <strong>Model:</strong> {{ booking.vehicle.model }}</p>
-
-                                <h4 class="section-title"><i class="fas fa-clipboard-list"></i> Booking Details</h4>
-                                <p class="icon-text"><i class="fas fa-calendar"></i> <strong>Start Date:</strong> {{ booking.start_date|date:"M d, Y" }}</p>
-                                <p class="icon-text"><i class="fas fa-calendar-check"></i> <strong>End Date:</strong> {{ booking.end_date|date:"M d, Y" }}</p>
-                                <p class="icon-text"><i class="fas fa-dollar-sign"></i> <strong>Total Price:</strong> ${{ booking.total_amount }}</p>
-                                <p class="icon-text"><i class="fas fa-info-circle"></i> <strong>Status:</strong> <span class="status-badge status-confirmed">{{ booking.status }}</span></p>
-                                {% if booking.pickup_time %}
-                                    <p class="icon-text"><i class="fas fa-clock"></i> <strong>Pickup Time:</strong> {{ booking.pickup_time|date:"H:i" }}</p>
-                                {% endif %}
-                                {% if booking.return_time %}
-                                    <p class="icon-text"><i class="fas fa-clock"></i> <strong>Return Time:</strong> {{ booking.return_time|date:"H:i" }}</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="vendor-details">
-                                <h4 class="section-title"><i class="fas fa-store"></i> Vendor Details</h4>
-                                <p class="icon-text"><i class="fas fa-user"></i> <strong>Name:</strong> {{ booking.vehicle.vendor.business_name }}</p>
-                                <p class="icon-text"><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> {{ booking.vehicle.vendor.full_address }}</p>
-                                <p class="icon-text"><i class="fas fa-phone"></i> <strong>Phone:</strong> {{ booking.vehicle.vendor.contact_number }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="booking-footer mt-3 p-3">
-                    <div class="btn-group">
-                        <a href="tel:+91{{ booking.vehicle.vendor.contact_number }}" class="btn btn-info btn-custom"><i class="fas fa-phone"></i> Call Vendor</a>
-                        {% if booking.vehicle.vendor.latitude and booking.vehicle.vendor.longitude %}
-                            <a href="https://www.google.com/maps/dir/?api=1&destination={{ booking.vehicle.vendor.latitude }},{{ booking.vehicle.vendor.longitude }}" 
-                               class="btn btn-secondary btn-custom" target="_blank">
-                                <i class="fas fa-map-marker-alt"></i> Get Directions
-                            </a>
-                        {% endif %}
-                        <a href="{% url 'booking_detail' booking.booking_id %}" class="btn btn-primary btn-custom"><i class="fas fa-eye"></i> View Details</a>
-                    </div>
-                </div>
-            </div>
+        <tr>
+            <td>{{ booking.booking_id }}</td>
+            <td>{{ booking.vehicle.model.model_name }} ({{ booking.vehicle.model.model_year }})</td>
+            <td>{{ booking.start_date }}</td>
+            <td>{{ booking.end_date }}</td>
+            <td>{{ booking.get_status_display }}</td>
+            <td><a href="{% url 'booking_detail' booking_id=booking.booking_id %}" class="btn btn-primary btn-sm">View Details</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No bookings found.</td>
+        </tr>
         {% endfor %}
-    {% else %}
-        <p class="text-center">You have no confirmed bookings.</p>
-    {% endif %}
-</div>
-{% endblock %}
+    </tbody>
+</table>
 
-{% block extra_js %}
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-    AOS.init({
-        duration: 1000,
-        once: true,
-        offset: 100,
-    });
-</script>
+<!-- ... pagination code ... -->
+
 {% endblock %}

@@ -31,4 +31,5 @@ urlpatterns = [
     path('deactivate-customer/<int:user_id>/', views.deactivate_customer, name='deactivate_customer'),
     path('deactivated-customers/', views.deactivated_customers, name='deactivated_customers'),
     path('reactivate-customer/<int:user_id>/', views.reactivate_customer, name='reactivate_customer'),
+    path('feedback/', views.view_all_feedback, name='view_all_feedback'),
 ]

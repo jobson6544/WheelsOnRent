@@ -18,6 +18,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.urls import reverse
 from django.http import HttpResponse
+from mainapp.models import Feedback
 
 logger = logging.getLogger(__name__)
 
@@ -458,4 +459,31 @@ def toggle_customer_status(request, user_id):
         
         return redirect('adminapp:all_customers')
     return redirect('adminapp:all_customers')
+
+@login_required
+@user_passes_test(is_admin)
+def view_all_feedback(request):
+    feedbacks = Feedback.objects.all().order_by('-created_at')
+    
+    # Filter by vendor if specified
+    vendor_id = request.GET.get('vendor')
+    if vendor_id:
+        feedbacks = feedbacks.filter(booking__vehicle__vendor_id=vendor_id)
+    
+    # Filter by rating if specified
+    rating = request.GET.get('rating')
+    if rating:
+        feedbacks = feedbacks.filter(rating=rating)
+    
+    paginator = Paginator(feedbacks, 20)
+    page = request.GET.get('page')
+    feedbacks_page = paginator.get_page(page)
+    
+    context = {
+        'feedbacks': feedbacks_page,
+        'vendors': Vendor.objects.all(),
+        'selected_vendor': vendor_id,
+        'selected_rating': rating
+    }
+    return render(request, 'adminapp/feedback_list.html', context)
 

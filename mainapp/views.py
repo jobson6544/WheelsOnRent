@@ -11,8 +11,8 @@ from django.utils.html import strip_tags
 from django.contrib.sites.shortcuts import get_current_site
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
-from .forms import UserRegistrationForm, UserProfileForm, UserEditForm, UserProfileEditForm
-from .models import UserProfile, Booking, User  # Import User directly from your models
+from .forms import UserRegistrationForm, UserProfileForm, UserEditForm, UserProfileEditForm, FeedbackForm
+from .models import UserProfile, Booking, User, Feedback  # Import User directly from your models
 from vendor.models import Vehicle
 from datetime import datetime, timedelta
 import logging
@@ -25,6 +25,7 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 User = get_user_model()
 
@@ -580,4 +581,105 @@ def password_reset_verify(request):
         except User.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'No active customer account found with this email address.'})
     return render(request, 'password_reset_verify.html')
+
+@login_required
+def user_bookings(request):
+    bookings_list = Booking.objects.filter(user=request.user).order_by('-start_date')
+    
+    # Pagination
+    page = request.GET.get('page', 1)
+    paginator = Paginator(bookings_list, 10)  # Show 10 bookings per page
+    
+    try:
+        bookings = paginator.page(page)
+    except PageNotAnInteger:
+        bookings = paginator.page(1)
+    except EmptyPage:
+        bookings = paginator.page(paginator.num_pages)
+    
+    context = {
+        'bookings': bookings,
+    }
+    return render(request, 'user_bookings.html', context)
+
+@login_required
+def booking_detail(request, booking_id):
+    booking = get_object_or_404(Booking, booking_id=booking_id, user=request.user)
+    vehicle_details = booking.get_vehicle_details()
+    vendor_details = booking.get_vendor_details()
+    
+    context = {
+        'booking': booking,
+        'vehicle_details': vehicle_details,
+        'vendor_details': vendor_details,
+        'can_submit_feedback': booking.can_submit_feedback(),
+    }
+    return render(request, 'booking_detail.html', context)
+
+@login_required
+@require_http_methods(["POST"])
+def submit_feedback(request, booking_id):
+    try:
+        booking = get_object_or_404(Booking, booking_id=booking_id, user=request.user)
+        
+        # Debug logging
+        logger.info(f"Attempting to submit feedback for booking {booking_id}")
+        logger.info(f"Booking status: {booking.status}")
+        logger.info(f"Can submit feedback: {booking.can_submit_feedback()}")
+        
+        if not booking.can_submit_feedback():
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Cannot submit feedback for this booking'
+            })
+        
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        
+        # Debug logging
+        logger.info(f"Received rating: {rating}")
+        logger.info(f"Received comment: {comment}")
+        
+        if not rating or not comment:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Both rating and comment are required'
+            })
+        
+        try:
+            rating = int(rating)
+            if rating < 1 or rating > 5:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Rating must be between 1 and 5'
+                })
+            
+            feedback = Feedback.objects.create(
+                booking=booking,
+                rating=rating,
+                comment=comment
+            )
+            
+            # Debug logging
+            logger.info(f"Feedback created successfully: {feedback.id}")
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Thank you for your feedback!'
+            })
+            
+        except ValueError as ve:
+            logger.error(f"ValueError in submit_feedback: {str(ve)}")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid rating value'
+            })
+            
+    except Exception as e:
+        logger.error(f"Error submitting feedback: {str(e)}")
+        logger.error(traceback.format_exc())  # Add full traceback
+        return JsonResponse({
+            'status': 'error',
+            'message': f'An error occurred: {str(e)}'
+        })
 

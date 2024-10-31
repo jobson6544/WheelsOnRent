@@ -149,10 +149,10 @@
       </li><!-- End Components Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link collapsed" data-bs-target="#rentals-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-journal-text"></i><span>Rentals</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="rentals-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'vendor:scan_qr' %}">
                   <i class="bi bi-circle"></i><span>Scan QR</span>
@@ -161,6 +161,24 @@
             <li>
               <a href="{% url 'vendor:vendor_bookings' %}">
               <i class="bi bi-circle"></i><span>Bookings</span>   
+              </a>
+            </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item"></li>
+        <a class="nav-link collapsed" data-bs-target="#customers-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Customers</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="customers-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'vendor:customer_list' %}">
+                  <i class="bi bi-circle"></i><span>Customer List</span>
+                </a>
+            </li>
+            <li>
+              <a href="{% url 'vendor:view_feedback' %}">
+              <i class="bi bi-circle"></i><span>Feedback List</span>   
               </a>
             </li>
         </ul>

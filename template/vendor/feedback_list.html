@@ -1,0 +1,141 @@
+{% extends 'vendor/base.html' %}
+{% load static %}
+
+{% block content %}
+<main id="main" class="main">
+<div class="container mt-4">
+    <!-- Statistics Section -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Overall Rating</h5>
+                    <div class="display-4">{{ avg_rating }}/5</div>
+                    <p class="text-muted">From {{ total_feedback }} reviews</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Rating Distribution</h5>
+                    {% for item in rating_distribution %}
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="mr-2">{{ item.feedback__rating }} ★</div>
+                        <div class="progress flex-grow-1">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {% widthratio item.count total_feedback 100 %}%">
+                            </div>
+                        </div>
+                        <div class="ml-2">{{ item.count }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row">
+                <div class="col-md-3">
+                    <label>Rating</label>
+                    <select name="rating" class="form-control" onchange="this.form.submit()">
+                        <option value="">All Ratings</option>
+                        {% for i in '12345'|make_list %}
+                        <option value="{{ i }}" {% if current_rating_filter == i %}selected{% endif %}>
+                            {{ i }} Stars
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Time Period</label>
+                    <select name="date" class="form-control" onchange="this.form.submit()">
+                        <option value="">All Time</option>
+                        <option value="last_week" {% if current_date_filter == 'last_week' %}selected{% endif %}>Last Week</option>
+                        <option value="last_month" {% if current_date_filter == 'last_month' %}selected{% endif %}>Last Month</option>
+                        <option value="last_year" {% if current_date_filter == 'last_year' %}selected{% endif %}>Last Year</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Sort By</label>
+                    <select name="sort" class="form-control" onchange="this.form.submit()">
+                        <option value="date_new" {% if current_sort == 'date_new' %}selected{% endif %}>Newest First</option>
+                        <option value="date_old" {% if current_sort == 'date_old' %}selected{% endif %}>Oldest First</option>
+                        <option value="rating_high" {% if current_sort == 'rating_high' %}selected{% endif %}>Highest Rating</option>
+                        <option value="rating_low" {% if current_sort == 'rating_low' %}selected{% endif %}>Lowest Rating</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-secondary">Reset Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Feedback List -->
+    {% if feedbacks %}
+        {% for booking in feedbacks %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h5 class="card-title mb-0">
+                            Vehicle: {{ booking.vehicle.model.brand.brand_name }} {{ booking.vehicle.model.model_name }}
+                        </h5>
+                        <p class="text-muted mb-0">
+                            Registration: {{ booking.vehicle.registration.registration_number }}
+                        </p>
+                    </div>
+                    <div class="text-warning">
+                        {% for i in ''|ljust:booking.feedback.rating %}★{% endfor %}
+                        {% for i in ''|ljust:5|slice:booking.feedback.rating %}☆{% endfor %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <strong>Customer Details:</strong>
+                    <p class="mb-0">Name: {{ booking.user.get_full_name }}</p>
+                    <p class="mb-0">Email: {{ booking.user.email }}</p>
+                    <p class="mb-0">Phone: {{ booking.user.profile.phone_number }}</p>
+                </div>
+                <p class="card-text"><strong>Feedback:</strong> {{ booking.feedback.comment }}</p>
+                <div class="d-flex justify-content-between text-muted">
+                    <small>Submitted on {{ booking.feedback.created_at|date:"F d, Y" }}</small>
+                    <small>Booking ID: {{ booking.booking_id }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Pagination -->
+        {% if feedbacks.has_other_pages %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if feedbacks.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ feedbacks.previous_page_number }}&rating={{ current_rating_filter }}&date={{ current_date_filter }}&sort={{ current_sort }}">Previous</a>
+                </li>
+                {% endif %}
+
+                {% for num in feedbacks.paginator.page_range %}
+                <li class="page-item {% if feedbacks.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}&rating={{ current_rating_filter }}&date={{ current_date_filter }}&sort={{ current_sort }}">{{ num }}</a>
+                </li>
+                {% endfor %}
+
+                {% if feedbacks.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ feedbacks.next_page_number }}&rating={{ current_rating_filter }}&date={{ current_date_filter }}&sort={{ current_sort }}">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">No feedback found.</div>
+    {% endif %}
+</div>
+</main>
+{% endblock %}

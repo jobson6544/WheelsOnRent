@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f0f2f5;
+    }
+    .booking-details {
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    .booking-details:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+    .card-title {
+        color: #3498db;
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+    .section-title {
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+        font-weight: bold;
+    }
+    .btn-back {
+        transition: all 0.3s ease;
+        background-color: #3498db;
+        border: none;
+    }
+    .btn-back:hover {
+        transform: translateX(-5px);
+        background-color: #2980b9;
+    }
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.5em 1em;
+    }
+    .card-text strong {
+        color: #34495e;
+    }
+    .vehicle-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .rating-stars {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+
+    .rating-stars input {
+        display: none;
+    }
+
+    .rating-stars label {
+        cursor: pointer;
+        font-size: 2.5rem;
+        color: #e4e5e9;
+        transition: all 0.3s ease;
+    }
+
+    .rating-stars label:hover,
+    .rating-stars label:hover ~ label,
+    .rating-stars input:checked ~ label {
+        color: #ffc107;
+        transform: scale(1.2);
+    }
+
+    .stars-display {
+        font-size: 2rem;
+        margin: 1rem 0;
+    }
+
+    .stars-display i {
+        margin: 0 0.2rem;
+    }
+
+    .feedback-form {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .feedback-form textarea {
+        border: 2px solid #e4e5e9;
+        transition: all 0.3s ease;
+        padding: 1rem;
+    }
+
+    .feedback-form textarea:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 15px rgba(52, 152, 219, 0.1);
+    }
+
+    .feedback-comment {
+        background: linear-gradient(145deg, #f8f9fa, #ffffff);
+        border-left: 5px solid #3498db;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .feedback-display {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-5 animate__animated animate__fadeInDown">Booking Details</h1>
+
+    <!-- Booking Details Card -->
+    <div class="row booking-details p-4 mb-5 animate__animated animate__zoomIn">
+        <div class="col-md-12">
+            <div class="card animate__animated animate__fadeInLeft">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Booking ID: {{ booking.booking_id }}</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Status:</strong> {{ booking.get_status_display }}</p>
+                            <p><strong>Start Date:</strong> {{ booking.start_date|date:"F d, Y" }}</p>
+                            <p><strong>End Date:</strong> {{ booking.end_date|date:"F d, Y" }}</p>
+                            <p><strong>Total Amount:</strong> ${{ booking.total_amount|floatformat:2 }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if vehicle_details.image %}
+                                <img src="{{ vehicle_details.image }}" alt="{{ vehicle_details.model }}" class="vehicle-image">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Section -->
+    {% if booking.status == 'returned' and not booking.feedback %}
+        <div class="text-center mb-4">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                Submit Feedback
+            </button>
+        </div>
+
+        <!-- Feedback Modal -->
+        <div class="modal fade" id="feedbackModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Submit Feedback</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="feedbackForm" method="post" action="{% url 'submit_feedback' booking.booking_id %}">
+                            {% csrf_token %}
+                            <div class="text-center mb-4">
+                                <div class="rating-stars">
+                                    {% for i in "54321"|make_list %}
+                                        <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}" required>
+                                        <label for="star{{ i }}" class="star-label">
+                                            <i class="fas fa-star"></i>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Your Comment</label>
+                                <textarea name="comment" id="comment" class="form-control" rows="4" required></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="feedbackForm">Submit Feedback</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <h2 class="section-title animate__animated animate__fadeInLeft">Vehicle Details</h2>
+    <div class="row mb-5 animate__animated animate__fadeInUp">
+        <div class="col-md-12">
+            <div class="card animate__animated animate__flipInX">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 animate__animated animate__fadeInLeft">
+                            <p class="card-text mb-3"><strong>Model:</strong> {{ vehicle_details.model }} ({{ vehicle_details.year }})</p>
+                            <p class="card-text mb-3"><strong>Company:</strong> {{ vehicle_details.company }}</p>
+                            <p class="card-text mb-3"><strong>Type:</strong> {{ vehicle_details.type }}</p>
+                        </div>
+                        <div class="col-md-6 animate__animated animate__fadeInRight">
+                            <p class="card-text mb-3"><strong>Fuel Type:</strong> {{ vehicle_details.fuel_type }}</p>
+                            <p class="card-text mb-3"><strong>Registration Number:</strong> {{ vehicle_details.registration_number }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title animate__animated animate__fadeInRight">Vendor Details</h2>
+    <div class="row mb-5 animate__animated animate__fadeInUp">
+        <div class="col-md-12">
+            <div class="card animate__animated animate__flipInY">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 animate__animated animate__fadeInLeft">
+                            <p class="card-text mb-3"><strong>Business Name:</strong> {{ vendor_details.business_name }}</p>
+                            <p class="card-text mb-3"><strong>Contact Number:</strong> {{ vendor_details.contact_number }}</p>
+                        </div>
+                        <div class="col-md-6 animate__animated animate__fadeInRight">
+                            <p class="card-text mb-3"><strong>Address:</strong> {{ vendor_details.full_address }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4 mb-5 animate__animated animate__fadeInUp">
+        <div class="col-md-4 text-center">
+            <a href="{% url 'user_bookings' %}" class="btn btn-primary btn-lg btn-back animate__animated animate__pulse">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Bookings
+            </a>
+        </div>
+        <div class="col-md-4 text-center">
+            <a href="tel:+91{{ vendor_details.contact_number }}" class="btn btn-success btn-lg animate__animated animate__pulse">
+                <i class="fas fa-phone-alt mr-2"></i> Call Vendor
+            </a>
+        </div>
+        <div class="col-md-4 text-center">
+            <a href="https://www.google.com/maps/dir/?api=1&destination={{ vendor_details.full_address|urlencode }}" target="_blank" class="btn btn-info btn-lg animate__animated animate__pulse">
+                <i class="fas fa-directions mr-2"></i> Get Directions
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('feedbackForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thank You!',
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Something went wrong!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || 'Something went wrong! Please try again.'
+                });
+            });
+        });
+    }
+});
+</script>
+{% endblock %}
+

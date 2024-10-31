@@ -23,4 +23,7 @@ urlpatterns = [
     path('benefits/', views.vendor_benefits, name='vendor_benefits'),
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('password-reset-verify/', views.password_reset_verify, name='password_reset_verify'),
+    path('bookings/', views.user_bookings, name='user_bookings'),
+    path('booking/<int:booking_id>/', views.booking_detail, name='booking_detail'),
+    path('submit-feedback/<int:booking_id>/', views.submit_feedback, name='submit_feedback'),
 ]

@@ -36,4 +36,6 @@ urlpatterns = [
     path('predict-price/<int:vehicle_id>/', views.predict_price, name='predict_price'),
     path('forgot-password/', views.vendor_forgot_password, name='vendor_forgot_password'),
     path('password-reset-verify/', views.vendor_password_reset_verify, name='vendor_password_reset_verify'),
+    path('feedback/', views.view_feedback, name='view_feedback'),
+    path('customers/', views.customer_list, name='customer_list'),
 ]
