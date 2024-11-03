@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'vendor',
     'mainapp',
     'adminapp',
+    'django.contrib.humanize',
     'crispy_forms',
     'crispy_bootstrap4',
     'formtools',

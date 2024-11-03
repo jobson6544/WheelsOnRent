@@ -34,6 +34,17 @@ import numpy as np
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_http_methods
 from django.db.models import Q
+from django.http import HttpResponse
+import csv
+import xlsxwriter
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from datetime import datetime
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import Spacer, Paragraph
 
 Booking = apps.get_model('mainapp', 'Booking')
 User = get_user_model()
@@ -889,6 +900,341 @@ def customer_list(request):
     }
     
     return render(request, 'vendor/customer_list.html', context)
+
+@login_required
+@vendor_required
+def reports_dashboard(request):
+    vendor = request.user.vendor
+    end_date = timezone.now()
+    start_date = end_date - timezone.timedelta(days=30)  # Last 30 days
+
+    # Get bookings data
+    bookings = Booking.objects.filter(
+        vehicle__vendor=vendor,
+        start_date__range=[start_date, end_date]
+    ).order_by('start_date')
+
+    # Calculate total revenue from completed bookings
+    total_revenue = Booking.objects.filter(
+        vehicle__vendor=vendor,
+        status='returned'
+    ).aggregate(
+        total=Sum('total_amount')
+    )['total'] or 0
+
+    # Calculate average feedback rating
+    avg_rating = Booking.objects.filter(
+        vehicle__vendor=vendor,
+        status='returned',
+        feedback__isnull=False
+    ).aggregate(
+        avg_rating=Avg('feedback__rating')
+    )['avg_rating'] or 0
+
+    # Prepare data for charts
+    booking_dates = []
+    booking_counts = []
+    revenue_amounts = []
+
+    current_date = start_date
+    while current_date <= end_date:
+        date_str = current_date.strftime('%Y-%m-%d')
+        daily_bookings = bookings.filter(start_date__date=current_date.date()).count()
+        daily_revenue = bookings.filter(
+            start_date__date=current_date.date(),
+            status='returned'
+        ).aggregate(total=Sum('total_amount'))['total'] or 0
+
+        booking_dates.append(date_str)
+        booking_counts.append(daily_bookings)
+        revenue_amounts.append(float(daily_revenue))
+
+        current_date += timezone.timedelta(days=1)
+
+    context = {
+        'total_bookings': bookings.count(),
+        'total_vehicles': Vehicle.objects.filter(vendor=vendor).count(),
+        'total_revenue': total_revenue,
+        'avg_rating': round(avg_rating, 1),  # Round to 1 decimal place
+        'booking_dates': json.dumps(booking_dates),
+        'booking_counts': json.dumps(booking_counts),
+        'revenue_dates': json.dumps(booking_dates),
+        'revenue_amounts': json.dumps(revenue_amounts),
+    }
+
+    return render(request, 'vendor/report_dashboard.html', context)
+
+@login_required
+@vendor_required
+def generate_report(request):
+    vendor = request.user.vendor
+    report_type = request.GET.get('type')
+    file_format = request.GET.get('format')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Convert string dates to datetime objects
+    if start_date and end_date:
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        # Set time to start and end of day
+        start_date = start_date.replace(hour=0, minute=0, second=0)
+        end_date = end_date.replace(hour=23, minute=59, second=59)
+
+    # Get headers and data based on report type
+    if report_type == 'booking':
+        headers = ['Booking ID', 'Customer', 'Vehicle', 'Start Date', 'End Date', 'Status', 'Amount']
+        data = get_booking_report_data(vendor, start_date, end_date)
+    elif report_type == 'revenue':
+        headers = ['Date', 'Total Bookings', 'Revenue', 'Platform Fees', 'Net Amount']
+        data = get_revenue_report_data(vendor, start_date, end_date)
+    elif report_type == 'vehicle':
+        headers = ['Vehicle ID', 'Model', 'Registration', 'Status', 'Total Bookings', 'Total Revenue']
+        data = get_vehicle_report_data(vendor)
+
+    # If no data found
+    if not data:
+        data = [['No data available for the selected period'] * len(headers)]
+
+    # Generate report in requested format
+    if file_format == 'pdf':
+        return generate_pdf_report(data, headers, report_type)
+    elif file_format == 'excel':
+        return generate_excel_report(data, headers, report_type)
+
+def get_booking_report_data(vendor, start_date, end_date):
+    bookings = Booking.objects.filter(
+        vehicle__vendor=vendor,
+        start_date__range=[start_date, end_date]
+    ).select_related('user', 'vehicle')
+    
+    return [
+        [
+            booking.booking_id,
+            booking.user.get_full_name(),
+            str(booking.vehicle),
+            booking.start_date.strftime('%Y-%m-%d'),
+            booking.end_date.strftime('%Y-%m-%d'),
+            booking.status,
+            float(booking.total_amount)  # Convert to float
+        ] for booking in bookings
+    ]
+
+def get_revenue_report_data(vendor, start_date, end_date):
+    bookings = Booking.objects.filter(
+        vehicle__vendor=vendor,
+        start_date__range=[start_date, end_date],
+        status='returned'
+    ).values('start_date__date').annotate(
+        daily_bookings=Count('booking_id'),
+        daily_revenue=Sum('total_amount')
+    ).order_by('start_date__date')
+
+    report_data = []
+    for booking in bookings:
+        try:
+            date = booking['start_date__date']
+            daily_bookings = booking['daily_bookings']
+            daily_revenue = float(booking['daily_revenue'] or 0)
+            platform_fees = round(daily_revenue * 0.10, 2)
+            net_amount = round(daily_revenue - platform_fees, 2)
+
+            report_data.append([
+                date.strftime('%Y-%m-%d'),
+                daily_bookings,
+                daily_revenue,
+                platform_fees,
+                net_amount
+            ])
+        except Exception as e:
+            logger.error(f"Error processing booking data: {e}")
+            continue
+
+    return report_data
+
+def get_vehicle_report_data(vendor):
+    vehicles = Vehicle.objects.filter(vendor=vendor).annotate(
+        total_bookings=Count('bookings', filter=Q(bookings__status='returned')),
+        total_revenue=Sum('bookings__total_amount', filter=Q(bookings__status='returned'))
+    )
+    
+    return [
+        [
+            vehicle.id,
+            str(vehicle.model),
+            vehicle.registration.registration_number,
+            vehicle.get_status_display(),
+            vehicle.total_bookings or 0,
+            float(vehicle.total_revenue or 0)  # Raw number for Excel
+        ] for vehicle in vehicles
+    ]
+
+# Add these functions after the existing imports
+def generate_pdf_report(data, headers, report_type):
+    # Create the HttpResponse object with PDF headers
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{report_type}_report.pdf"'
+
+    # Create the PDF object using ReportLab
+    buffer = BytesIO()
+    
+    # Set up the document with proper page size and margins
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=30,
+        leftMargin=30,
+        topMargin=30,
+        bottomMargin=30,
+        encoding='utf-8'  # Add encoding for ₹ symbol
+    )
+
+    # Create the list to hold the 'Flowables' (elements)
+    elements = []
+
+    # Add title
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=16,
+        spaceAfter=30,
+        alignment=1  # Center alignment
+    )
+    elements.append(Paragraph(f"{report_type.title()} Report", title_style))
+
+    # Format the data for the table
+    formatted_data = []
+    for row in data:
+        formatted_row = []
+        for col, value in enumerate(row):
+            if isinstance(value, (int, float)) and any(word in headers[col].lower() for word in ['amount', 'revenue', 'fees']):
+                formatted_row.append(f"₹{value:,.2f}")
+            elif isinstance(value, str) and value.count('-') == 2:  # Date
+                try:
+                    date_obj = datetime.strptime(value, '%Y-%m-%d')
+                    formatted_row.append(date_obj.strftime('%d-%m-%Y'))
+                except ValueError:
+                    formatted_row.append(value)
+            else:
+                formatted_row.append(str(value))
+        formatted_data.append(formatted_row)
+
+    # Create the table
+    table_data = [headers] + formatted_data
+    
+    # Calculate column widths
+    col_widths = [max(len(str(row[i])) * 7 for row in table_data) for i in range(len(headers))]
+    col_widths = [min(width, 120) for width in col_widths]  # Cap maximum width
+
+    table = Table(table_data, colWidths=col_widths, repeatRows=1)
+
+    # Style the table
+    style = TableStyle([
+        # Header style
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4B5563')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        
+        # Data style
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        
+        # Alternate row colors
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8f9fa')]),
+        
+        # Cell padding
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+    ])
+
+    table.setStyle(style)
+    elements.append(table)
+
+    # Add timestamp
+    timestamp_style = ParagraphStyle(
+        'Timestamp',
+        parent=styles['Normal'],
+        fontSize=8,
+        textColor=colors.gray,
+        alignment=0,  # Left alignment
+        spaceBefore=20,
+    )
+    timestamp = f"Generated on: {datetime.now().strftime('%d-%m-%Y %H:%M:%S')}"
+    elements.append(Paragraph(timestamp, timestamp_style))
+
+    try:
+        # Build the PDF
+        doc.build(elements)
+        pdf = buffer.getvalue()
+        buffer.close()
+        response.write(pdf)
+        return response
+    except Exception as e:
+        logger.error(f"PDF generation error: {str(e)}")
+        return HttpResponse("Error generating PDF", status=500)
+
+def generate_excel_report(data, headers, report_type):
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="{report_type}_report.xlsx"'
+    
+    wb = xlsxwriter.Workbook(response, {'constant_memory': True})
+    ws = wb.add_worksheet()
+    
+    # Add formats
+    header_format = wb.add_format({
+        'bold': True,
+        'bg_color': '#4B5563',
+        'font_color': 'white',
+        'align': 'center',
+        'valign': 'vcenter',
+        'border': 1,
+        'text_wrap': True
+    })
+    
+    date_format = wb.add_format({
+        'num_format': 'yyyy-mm-dd',
+        'align': 'center',
+        'border': 1
+    })
+    
+    currency_format = wb.add_format({
+        'num_format': '[₹]#,##0.00',
+        'align': 'center',
+        'border': 1
+    })
+    
+    number_format = wb.add_format({
+        'align': 'center',
+        'border': 1
+    })
+    
+    # Set column widths
+    for col, header in enumerate(headers):
+        width = max(len(header) + 2, 15)
+        ws.set_column(col, col, width)
+    
+    # Write headers
+    for col, header in enumerate(headers):
+        ws.write(0, col, header, header_format)
+    
+    # Write data
+    for row, row_data in enumerate(data, start=1):
+        for col, value in enumerate(row_data):
+            if isinstance(value, str) and value.count('-') == 2:  # Date
+                ws.write_datetime(row, col, datetime.strptime(value, '%Y-%m-%d'), date_format)
+            elif isinstance(value, (int, float)) and any(word in headers[col].lower() for word in ['amount', 'revenue', 'fees']):
+                ws.write_number(row, col, value, currency_format)
+            else:
+                ws.write(row, col, value, number_format)
+    
+    wb.close()
+    return response
 
 
 

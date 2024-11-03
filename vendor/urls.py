@@ -38,4 +38,6 @@ urlpatterns = [
     path('password-reset-verify/', views.vendor_password_reset_verify, name='vendor_password_reset_verify'),
     path('feedback/', views.view_feedback, name='view_feedback'),
     path('customers/', views.customer_list, name='customer_list'),
+    path('reports/dashboard/', views.reports_dashboard, name='reports_dashboard'),
+    path('reports/generate/', views.generate_report, name='generate_report'),
 ]

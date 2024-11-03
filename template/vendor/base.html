@@ -37,6 +37,11 @@
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
+
+  <!-- Add Chart.js in the head section -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  {% block extra_head %}{% endblock %}
 </head>
 
 <body>
@@ -222,6 +227,9 @@
   <!-- Template Main JS File -->
   <script src="{% static 'vendor/assets/js/main.js' %}"></script>
   
+
+  <!-- Add this before closing body tag -->
+  {% block extra_scripts %}{% endblock %}
 
 </body>
 

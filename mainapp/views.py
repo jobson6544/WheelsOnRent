@@ -528,7 +528,7 @@ def vendor_benefits(request):
         
         # Calculate profits for all days up to rental_days
         total_prices = [day * rental_price for day in range(1, rental_days + 1)]
-        wheels_on_rent_fees = [price * 0.04 for price in total_prices]
+        wheels_on_rent_fees = [price * 0.1 for price in total_prices]
         vendor_profits = [price - fee for price, fee in zip(total_prices, wheels_on_rent_fees)]
         
         return JsonResponse({

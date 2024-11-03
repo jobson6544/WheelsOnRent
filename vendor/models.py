@@ -228,13 +228,19 @@ class Vehicle(models.Model):
             self.mileage,
         ]])
 
-        # Adjust price based on weather
+        base_price = prediction[0]
+        
+        # Add platform fee to suggested price
+        platform_fee_multiplier = 1 + (Booking.PLATFORM_FEE_PERCENTAGE / 100)
+        adjusted_price = base_price * platform_fee_multiplier
+        
+        # Weather adjustments
         if weather_condition == 1:  # Rainy
-            base_price *= 1.1  # Increase price by 10% when it's raining
+            adjusted_price *= 1.1
         elif weather_condition == 3:  # Snowy
-            base_price *= 1.2  # Increase price by 20% when it's snowing
-
-        return Decimal(str(round(float(prediction[0]), 2)))
+            adjusted_price *= 1.2
+        
+        return Decimal(str(round(float(adjusted_price), 2)))
 
     def get_season(self, date):
         month = date.month
@@ -333,7 +339,11 @@ class Vehicle(models.Model):
         # Make prediction
         predicted_price = model.predict(features)[0]
         
-        return round(predicted_price, 2)
+        # Add platform fee to predicted price
+        platform_fee_multiplier = 1 + (Booking.PLATFORM_FEE_PERCENTAGE / 100)
+        adjusted_price = predicted_price * platform_fee_multiplier
+        
+        return round(adjusted_price, 2)
 
 class Image(models.Model):
     image_id = models.AutoField(primary_key=True)
@@ -460,4 +470,29 @@ class Booking(models.Model):
         html_message = render_to_string('emails/feedback_request.html', {'booking': self})
         plain_message = strip_tags(html_message)
         send_mail(subject, plain_message, 'from@example.com', [self.user.email], html_message=html_message)
+
+class Report(models.Model):
+    REPORT_TYPES = [
+        ('booking', 'Booking Report'),
+        ('revenue', 'Revenue Report'),
+        ('vehicle', 'Vehicle Report'),
+        ('feedback', 'Feedback Report'),
+    ]
+    
+    FILE_FORMATS = [
+        ('pdf', 'PDF'),
+        ('excel', 'Excel'),
+        ('csv', 'CSV'),
+    ]
+    
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    report_type = models.CharField(max_length=20, choices=REPORT_TYPES)
+    file_format = models.CharField(max_length=10, choices=FILE_FORMATS)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    generated_file = models.FileField(upload_to='reports/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.get_report_type_display()} - {self.created_at.date()}"
 

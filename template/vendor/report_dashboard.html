@@ -1,0 +1,397 @@
+{% extends 'vendor/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+<style>
+    .card {
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        border: none;
+        margin-bottom: 20px;
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .card-body {
+        padding: 20px;
+    }
+    .card-title {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 15px;
+        font-size: 1rem;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .btn-primary {
+        padding: 10px 20px;
+    }
+    canvas {
+        min-height: 300px;
+    }
+    .chart-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        padding: 10px;
+    }
+    canvas {
+        background-color: white;
+    }
+    .stars {
+        color: #ffc107;
+        font-size: 1.2rem;
+        margin-top: 5px;
+    }
+    .text-warning {
+        color: #ffc107 !important;
+    }
+    .h3 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    .text-muted {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main id="main" class="main">
+    <div class="container mt-4">
+        <h2 class="mb-4">Reports Dashboard</h2>
+        
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Total Bookings</h5>
+                        <p class="card-text h3">{{ total_bookings|default:"0" }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Total Vehicles</h5>
+                        <p class="card-text h3">{{ total_vehicles|default:"0" }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Total Revenue</h5>
+                        <p class="card-text h3">₹{{ total_revenue|floatformat:2 }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Average Rating</h5>
+                        <p class="card-text">
+                            <span class="h3">{{ avg_rating|floatformat:1 }}</span>
+                            <small class="text-muted">/5</small>
+                        </p>
+                        <div class="stars">
+                            {% with ''|center:5 as range %}
+                            {% for _ in range %}
+                                {% if forloop.counter <= avg_rating %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                {% elif forloop.counter <= avg_rating|add:"0.5" %}
+                                    <i class="bi bi-star-half text-warning"></i>
+                                {% else %}
+                                    <i class="bi bi-star text-warning"></i>
+                                {% endif %}
+                            {% endfor %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Booking Trends</h5>
+                        <div class="chart-container">
+                            <canvas id="bookingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Revenue Analysis</h5>
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Generation Form -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Generate Report</h5>
+                <form action="{% url 'vendor:generate_report' %}" method="get" id="reportForm">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="type">Report Type</label>
+                                <select name="type" id="type" class="form-control" required>
+                                    <option value="booking">Booking Report</option>
+                                    <option value="revenue">Revenue Report</option>
+                                    <option value="vehicle">Vehicle Report</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="format">File Format</label>
+                                <select name="format" id="format" class="form-control" required>
+                                    <option value="pdf">PDF</option>
+                                    <option value="excel">Excel</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 date-fields" style="display: none;">
+                            <div class="form-group">
+                                <label for="start_date">Start Date</label>
+                                <input type="date" name="start_date" id="start_date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-3 date-fields" style="display: none;">
+                            <div class="form-group">
+                                <label for="end_date">End Date</label>
+                                <input type="date" name="end_date" id="end_date" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Generate Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Function to toggle date fields visibility
+function toggleDateFields() {
+    const reportType = document.getElementById('type').value;
+    const dateFields = document.querySelectorAll('.date-fields');
+    
+    if (reportType === 'vehicle') {
+        dateFields.forEach(field => {
+            field.style.display = 'none';
+        });
+    } else {
+        dateFields.forEach(field => {
+            field.style.display = 'block';
+        });
+    }
+}
+
+// Initialize and add event listener
+document.addEventListener('DOMContentLoaded', function() {
+    const reportTypeSelect = document.getElementById('type');
+    reportTypeSelect.addEventListener('change', toggleDateFields);
+    // Run once on page load
+    toggleDateFields();
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing charts...');
+    
+    // Get the data from the server
+    const bookingDates = {{ booking_dates|safe }};
+    const bookingCounts = {{ booking_counts|safe }};
+    const revenueDates = {{ revenue_dates|safe }};
+    const revenueAmounts = {{ revenue_amounts|safe }};
+    
+    console.log('Data loaded:', {
+        bookingDates,
+        bookingCounts,
+        revenueDates,
+        revenueAmounts
+    });
+
+    // Format dates for display
+    const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric',
+            month: 'short', 
+            day: 'numeric' 
+        });
+    };
+
+    // Initialize Booking Chart
+    const bookingCtx = document.getElementById('bookingChart');
+    if (bookingCtx) {
+        console.log('Creating booking chart...');
+        new Chart(bookingCtx, {
+            type: 'line',
+            data: {
+                labels: bookingDates.map(formatDate),
+                datasets: [{
+                    label: 'Number of Bookings',
+                    data: bookingCounts,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1,
+                    fill: true,
+                    pointRadius: 3,
+                    pointHoverRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                return formatDate(tooltipItems[0].label);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart');
+    if (revenueCtx) {
+        console.log('Creating revenue chart...');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: revenueDates.map(formatDate),
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: revenueAmounts,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.1,
+                    fill: true,
+                    pointRadius: 3,
+                    pointHoverRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                return formatDate(tooltipItems[0].label);
+                            },
+                            label: function(context) {
+                                return '₹' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+<script>
+document.getElementById('type').addEventListener('change', function() {
+    const dateFields = document.querySelector('.date-fields');
+    if (this.value === 'vehicle') {
+        dateFields.style.display = 'none';
+    } else {
+        dateFields.style.display = 'block';
+    }
+});
+
+document.getElementById('reportForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    // Add loading indicator
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Generating...';
+    
+    // Submit form
+    fetch(this.action + '?' + new URLSearchParams(formData))
+        .then(response => response.blob())
+        .then(blob => {
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `report.${formData.get('format')}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Generate Report';
+        });
+});
+</script>
+{% endblock %}
