@@ -20,26 +20,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 print(f"Current working directory: {os.getcwd()}")
 print(f"BASE_DIR: {BASE_DIR}")
 
-# Load environment variables from .env file
-env_file = os.path.join(BASE_DIR, '.env')
-print(f"Looking for .env file at: {env_file}")
-if os.path.exists(env_file):
-    print(".env file found")
-    load_dotenv(env_file)
-else:
-    print(".env file not found")
+load_dotenv(override=True)
 
-# Print the environment variables
-print(f"STRIPE_SECRET_KEY: {os.getenv('STRIPE_SECRET_KEY')}")
-print(f"STRIPE_PUBLIC_KEY: {os.getenv('STRIPE_PUBLIC_KEY')}")
 
 # Stripe settings
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
 
-# Add this line to raise an error if the keys are not set
-if not STRIPE_SECRET_KEY or not STRIPE_PUBLIC_KEY:
-    raise ValueError("Stripe API keys are not set in the environment")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -80,6 +67,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -158,8 +146,7 @@ STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
 
 
 # Add this line to raise an error if the keys are not set
-if not STRIPE_SECRET_KEY or not STRIPE_PUBLIC_KEY:
-    raise ValueError("Stripe API keys are not set in the environment")
+
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY='711904224209-t8ef1ribc5dn4ftspr4aai14gobhujl7.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET='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'
@@ -194,9 +181,15 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR,'assets')
+STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Add these Whitenoise settings
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_MANIFEST_STRICT = False
+WHITENOISE_ALLOW_ALL_ORIGINS = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
