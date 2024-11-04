@@ -1,0 +1,6 @@
+INFO 2024-11-04 13:55:20,977 pipeline Starting create_user pipeline with details: {'username': 'sinju641', 'email': 'sinju641@gmail.com', 'fullname': 'Sinju', 'first_name': 'Sinju', 'last_name': ''}
+INFO 2024-11-04 13:55:20,978 pipeline Found existing user by email: sinju641@gmail.com
+INFO 2024-11-04 13:55:46,345 pipeline Starting create_user pipeline with details: {'username': 'jobsonkmathew', 'email': 'jobsonkmathew@gmail.com', 'fullname': 'Jobson K Mathew', 'first_name': 'Jobson', 'last_name': 'K Mathew'}
+INFO 2024-11-04 13:55:46,347 pipeline Found existing user by email: jobsonkmathew@gmail.com
+INFO 2024-11-04 13:57:05,013 pipeline Starting create_user pipeline with details: {'username': 'jobsonkmathew', 'email': 'jobsonkmathew@gmail.com', 'fullname': 'Jobson K Mathew', 'first_name': 'Jobson', 'last_name': 'K Mathew'}
+INFO 2024-11-04 13:57:05,015 pipeline User already exists in pipeline: jobsonkmathew@gmail.com

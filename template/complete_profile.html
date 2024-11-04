@@ -119,6 +119,17 @@ h2 {
                         {% endfor %}
                     </div>
                 {% endif %}
+                {% if is_google_user %}
+                    {% if is_first_login %}
+                        <div class="alert alert-info">
+                            Welcome! Since you've signed up with Google, please complete your profile information below.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            Please complete your profile information to continue.
+                        </div>
+                    {% endif %}
+                {% endif %}
                 <form action="{% url 'complete_profile' %}" method="post" id="profileForm" enctype="multipart/form-data">
                     {% csrf_token %}
                     {% for field in form %}

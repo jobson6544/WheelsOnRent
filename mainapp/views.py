@@ -103,21 +103,38 @@ def login_view(request):
 
 @login_required(login_url='login')
 def complete_profile(request):
-    # Try to get the existing profile, or create a new one if it doesn't exist
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    try:
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        # Check if profile is already complete
+        if profile.is_complete and not request.user.is_first_login:
+            messages.info(request, "Your profile is already complete.")
+            return redirect('home')
 
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            profile = form.save(commit=False)
-            profile.is_complete = True  # Mark the profile as complete
-            profile.save()
-            messages.success(request, 'Profile updated successfully!')
-            return redirect('home')  # or wherever you want to redirect after successful submission
-    else:
-        form = UserProfileForm(instance=profile)
+        if request.method == 'POST':
+            form = UserProfileForm(request.POST, request.FILES, instance=profile)
+            if form.is_valid():
+                profile = form.save(commit=False)
+                profile.is_complete = True
+                profile.save()
 
-    return render(request, 'complete_profile.html', {'form': form})
+                # Update user's first login status
+                request.user.is_first_login = False
+                request.user.save()
+
+                messages.success(request, 'Profile completed successfully!')
+                return redirect('home')
+        else:
+            form = UserProfileForm(instance=profile)
+
+        return render(request, 'complete_profile.html', {
+            'form': form,
+            'is_google_user': request.user.auth_method == 'google'
+        })
+    except Exception as e:
+        logger.error(f"Error in complete_profile view: {str(e)}")
+        messages.error(request, "An error occurred while loading your profile.")
+        return redirect('home')
 
 def home(request):
     vehicles = Vehicle.objects.filter(status=1).select_related('vendor', 'model__sub_category__category').prefetch_related('features')

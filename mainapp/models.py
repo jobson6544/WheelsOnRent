@@ -56,10 +56,20 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'full_name']
 
+    # Add a new field to track authentication method
+    AUTH_CHOICES = (
+        ('email', 'Email'),
+        ('google', 'Google'),
+    )
+    auth_method = models.CharField(max_length=10, choices=AUTH_CHOICES, default='email')
+
     def _str_(self):
         return self.email
         
     def save(self, *args, **kwargs):
+        if self.auth_method == 'google':
+            self.is_email_verified = True
+            self.is_active = True
         if not self.full_name:
             self.full_name = f"{self.first_name} {self.last_name}".strip()
         super().save(*args, **kwargs)
@@ -75,6 +85,13 @@ class User(AbstractUser):
         if not self.password_reset_token or not self.password_reset_token_created_at:
             return False
         return timezone.now() - self.password_reset_token_created_at < timezone.timedelta(minutes=15)
+
+    def has_complete_profile(self):
+        """Check if user has completed their profile"""
+        try:
+            return self.profile.is_complete
+        except UserProfile.DoesNotExist:
+            return False
 
 # Model for storing additional user details
 # class Customer(models.Model):

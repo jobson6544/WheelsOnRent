@@ -125,10 +125,10 @@ DATABASES = {
 
 AUTH_USER_MODEL = 'mainapp.User'
 
-AUTHENTICATION_BACKENDS = [
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
-    'social_core.backends.google.GoogleOAuth2',  # Add this for Google
-]
+)
 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -220,22 +220,21 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.auth_allowed',
     'social_core.pipeline.social_auth.social_user',
     'social_core.pipeline.user.get_username',
-    'social_core.pipeline.user.create_user',
+    'mainapp.pipeline.create_user',
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
-    'mainapp.pipeline.check_first_login',  # Add this line
 )
 
 # Update these settings
-LOGIN_REDIRECT_URL = 'home'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'complete_profile'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'complete_profile'
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'complete_profile'
 
 # Redirect to login page if not logged in
-LOGIN_URL = 'user_login'
+LOGIN_URL = 'login'
 
 # URL to redirect after logout
 LOGOUT_REDIRECT_URL = 'index'
@@ -252,20 +251,31 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_USE_UNIQUE_USER_ID = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+            'formatter': 'verbose',
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
     'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
+        'mainapp': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+        },
+        'social_core': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
         },
     },
 }
