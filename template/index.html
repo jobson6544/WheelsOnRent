@@ -24,7 +24,7 @@
             <nav class="site-navigation text-right ml-auto d-none d-lg-block" role="navigation">
               <ul class="site-menu main-menu js-clone-nav ml-auto ">
                 <li class="active"><a href="{% url 'index' %}" class="nav-link font-weight-bold">Home</a></li>
-                <li><a href="{% url 'user_login' %}" class="nav-link font-weight-bold">login</a></li>
+                <li><a href="{% url 'user_login' %}" class="nav-link font-weight-bold">Login</a></li>
                 <li><a href="{% url 'vendor_benefits' %}" class="nav-link font-weight-bold">Vendor Benefits</a></li>
                 <li><a href="{% url 'vendor:vendor_login' %}" class="nav-link font-weight-bold">Vendor Login</a></li>
                 <li><a href="#" class="nav-link font-weight-bold">Contact</a></li>
@@ -52,43 +52,13 @@
 
             <div class="row mb-5">
               <div class="col-lg-7 intro">
-                <h1><strong>Rent a car</strong> is within your finger tips.</h1>
+                <h1><strong>Rent a car</strong> is within your fingertips.</h1>
               </div>
             </div>
             
-            <form class="trip-form">
+           
               
-              <div class="row align-items-center">
-                
-                <div class="mb-3 mb-md-0 col-md-3">
-                  <select name="" id="" class="custom-select form-control">
-                    <option value="">Select Type</option>
-                    <option value="">Ferrari</option>
-                    <option value="">Toyota</option>
-                    <option value="">Ford</option>
-                    <option value="">Lamborghini</option>
-                  </select>
-                </div>
-                <div class="mb-3 mb-md-0 col-md-3">
-                  <div class="form-control-wrap">
-                    <input type="text" id="cf-3" placeholder="Pick up" class="form-control datepicker px-3">
-                    <span class="icon icon-date_range"></span>
-
-                  </div>
-                </div>
-                <div class="mb-3 mb-md-0 col-md-3">
-                  <div class="form-control-wrap">
-                    <input type="text" id="cf-4" placeholder="Drop off" class="form-control datepicker px-3">
-                    <span class="icon icon-date_range"></span>
-                  </div>
-                </div>
-                <div class="mb-3 mb-md-0 col-md-3">
-                  <input type="submit" value="Search Now" class="btn btn-primary btn-block py-3">
-                </div>
-              </div>
               
-            </form>
-
           </div>
         </div>
       </div>
@@ -108,7 +78,7 @@
               <div class="step-inner">
                 <span class="number text-primary">01.</span>
                 <h3>Select a car</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, laboriosam!</p>
+                <p>Choose from our wide selection of quality vehicles to find your perfect ride!</p>
               </div>
             </div>
           </div>
@@ -118,7 +88,7 @@
               <div class="step-inner">
                 <span class="number text-primary">02.</span>
                 <h3>Fill up form</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, laboriosam!</p>
+                <p>Complete your booking details with our simple reservation process.</p>
               </div>
             </div>
           </div>
@@ -128,7 +98,7 @@
               <div class="step-inner">
                 <span class="number text-primary">03.</span>
                 <h3>Payment</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, laboriosam!</p>
+                <p>Secure your booking with our safe and convenient payment options.</p>
               </div>
             </div>
           </div>
@@ -139,7 +109,7 @@
               <span class="icon">
                 <span class="icon-play"></span>
               </span>
-              <span class="caption">Video how it works</span>
+              <span class="caption">Watch how it works</span>
             </a>
           </div>
         </div>
@@ -155,10 +125,10 @@
             </div>
           </div>
           <div class="col-lg-4 ml-auto order-lg-1">
-            <h3 class="mb-4 section-heading"><strong>You can easily avail our promo for renting a car.</strong></h3>
-            <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae, explicabo iste a labore id est quas, doloremque veritatis! Provident odit pariatur dolorem quisquam, voluptatibus voluptates optio accusamus, vel quasi quidem!</p>
+            <h3 class="mb-4 section-heading"><strong>Take advantage of our special car rental promotions.</strong></h3>
+            <p class="mb-5">Get the best deals and discounts on your car rentals. We offer competitive rates and special promotions to make your journey more affordable!</p>
             
-            <p><a href="#" class="btn btn-primary">Meet them now</a></p>
+            <p><a href="#" class="btn btn-primary">View Offers</a></p>
           </div>
         </div>
       </div>
@@ -171,7 +141,7 @@
       <div class="row">
         <div class="col-lg-7">
           <h2 class="section-heading"><strong>Car Listings</strong></h2>
-          <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>    
+          <p class="mb-5">Browse our selection of quality vehicles available for rent</p>    
         </div>
       </div>
       
@@ -186,7 +156,7 @@
             <div class="listing-contents h-100">
               <h3>Mitsubishi Pajero</h3>
               <div class="rent-price">
-                <strong>$389.00</strong><span class="mx-1">/</span>day
+                <strong>₹389.00</strong><span class="mx-1">/</span>day
               </div>
               <div class="d-block d-md-flex mb-3 border-bottom pb-3">
                 <div class="listing-feature pr-4">
@@ -203,7 +173,7 @@
                 </div>
               </div>
               <div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos eos at eum, voluptatem quibusdam.</p>
+                <p>Spacious SUV perfect for family trips and outdoor adventures.</p>
                 <p><a href="{% url 'user_login' %}" class="btn btn-primary btn-sm">Rent Now</a></p>
               </div>
             </div>
@@ -220,7 +190,7 @@
             <div class="listing-contents h-100">
               <h3>Nissan Moco</h3>
               <div class="rent-price">
-                <strong>$389.00</strong><span class="mx-1">/</span>day
+                <strong>₹389.00</strong><span class="mx-1">/</span>day
               </div>
               <div class="d-block d-md-flex mb-3 border-bottom pb-3">
                 <div class="listing-feature pr-4">
@@ -237,7 +207,7 @@
                 </div>
               </div>
               <div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos eos at eum, voluptatem quibusdam.</p>
+                <p>Compact and fuel-efficient car ideal for city driving.</p>
                 <p><a href="{% url 'user_login' %}" class="btn btn-primary btn-sm">Rent Now</a></p>
               </div>
             </div>
@@ -253,9 +223,9 @@
               <img src="{%static 'indexall/images/car_4.jpg'%}" alt="Image" class="img-fluid">
             </div>
             <div class="listing-contents h-100">
-              <h3>Honda Fitta</h3>
+              <h3>Honda Fit</h3>
               <div class="rent-price">
-                <strong>$389.00</strong><span class="mx-1">/</span>day
+                <strong>₹389.00</strong><span class="mx-1">/</span>day
               </div>
               <div class="d-block d-md-flex mb-3 border-bottom pb-3">
                 <div class="listing-feature pr-4">
@@ -272,7 +242,7 @@
                 </div>
               </div>
               <div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos eos at eum, voluptatem quibusdam.</p>
+                <p>Versatile hatchback with excellent fuel economy and storage space.</p>
                 <p><a href="{% url 'user_login' %}" class="btn btn-primary btn-sm">Rent Now</a></p>
               </div>
             </div>
@@ -289,7 +259,7 @@
             <div class="listing-contents h-100">
               <h3>Skoda Laura</h3>
               <div class="rent-price">
-                <strong>$389.00</strong><span class="mx-1">/</span>day
+                <strong>₹389.00</strong><span class="mx-1">/</span>day
               </div>
               <div class="d-block d-md-flex mb-3 border-bottom pb-3">
                 <div class="listing-feature pr-4">
@@ -306,7 +276,7 @@
                 </div>
               </div>
               <div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos eos at eum, voluptatem quibusdam.</p>
+                <p>Elegant sedan offering comfort and style for business or leisure.</p>
                 <p><a href="{% url 'user_login' %}" class="btn btn-primary btn-sm">Rent Now</a></p>
               </div>
             </div>
@@ -321,9 +291,9 @@
               <img src="{%static 'indexall/images/car_2.jpg'%}" alt="Image" class="img-fluid">
             </div>
             <div class="listing-contents h-100">
-              <h3>Mazda LaPuta</h3>
+              <h3>Mazda Compact</h3>
               <div class="rent-price">
-                <strong>$389.00</strong><span class="mx-1">/</span>day
+                <strong>₹389.00</strong><span class="mx-1">/</span>day
               </div>
               <div class="d-block d-md-flex mb-3 border-bottom pb-3">
                 <div class="listing-feature pr-4">
@@ -340,7 +310,7 @@
                 </div>
               </div>
               <div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos eos at eum, voluptatem quibusdam.</p>
+                <p>Sporty and efficient compact car perfect for urban driving.</p>
                 <p><a href="{% url 'user_login' %}" class="btn btn-primary btn-sm">Rent Now</a></p>
               </div>
             </div>
@@ -358,7 +328,7 @@
             <div class="listing-contents h-100">
               <h3>Buick LaCrosse</h3>
               <div class="rent-price">
-                <strong>$389.00</strong><span class="mx-1">/</span>day
+                <strong>₹389.00</strong><span class="mx-1">/</span>day
               </div>
               <div class="d-block d-md-flex mb-3 border-bottom pb-3">
                 <div class="listing-feature pr-4">
@@ -375,7 +345,7 @@
                 </div>
               </div>
               <div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos eos at eum, voluptatem quibusdam.</p>
+                <p>Luxury sedan with premium features and smooth performance.</p>
                 <p><a href="{% url 'user_login' %}" class="btn btn-primary btn-sm">Rent Now</a></p>
               </div>
             </div>
@@ -392,7 +362,7 @@
       <div class="row">
         <div class="col-lg-7">
           <h2 class="section-heading"><strong>Features</strong></h2>
-          <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>    
+          <p class="mb-5">Discover what makes our service special</p>    
         </div>
       </div>
 
@@ -403,8 +373,8 @@
               <span class="icon-home"></span>
             </span>
             <div class="service-1-contents">
-              <h3>Lorem ipsum dolor</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+              <h3>Convenient Pickup</h3>
+              <p>Easy pickup locations and flexible timing to suit your schedule.</p>
               <p class="mb-0"><a href="#">Learn more</a></p>
             </div>
           </div>
@@ -415,8 +385,8 @@
               <span class="icon-gear"></span>
             </span>
             <div class="service-1-contents">
-              <h3>Lorem ipsum dolor</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+              <h3>Well-Maintained Fleet</h3>
+              <p>Regular maintenance and inspection of all vehicles for your safety.</p>
               <p class="mb-0"><a href="#">Learn more</a></p>
             </div>
           </div>
@@ -427,8 +397,8 @@
               <span class="icon-watch_later"></span>
             </span>
             <div class="service-1-contents">
-              <h3>Lorem ipsum dolor</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+              <h3>24/7 Support</h3>
+              <p>Round-the-clock customer service for your peace of mind.</p>
               <p class="mb-0"><a href="#">Learn more</a></p>
             </div>
           </div>
@@ -440,8 +410,8 @@
               <span class="icon-verified_user"></span>
             </span>
             <div class="service-1-contents">
-              <h3>Lorem ipsum dolor</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+              <h3>Insurance Coverage</h3>
+              <p>Comprehensive insurance coverage for worry-free rentals.</p>
               <p class="mb-0"><a href="#">Learn more</a></p>
             </div>
           </div>
@@ -452,8 +422,8 @@
               <span class="icon-video_library"></span>
             </span>
             <div class="service-1-contents">
-              <h3>Lorem ipsum dolor</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+              <h3>Digital Documentation</h3>
+              <p>Paperless and hassle-free booking process.</p>
               <p class="mb-0"><a href="#">Learn more</a></p>
             </div>
           </div>
@@ -464,8 +434,8 @@
               <span class="icon-vpn_key"></span>
             </span>
             <div class="service-1-contents">
-              <h3>Lorem ipsum dolor</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+              <h3>Secure Payments</h3>
+              <p>Safe and encrypted payment options for your transactions.</p>
               <p class="mb-0"><a href="#">Learn more</a></p>
             </div>
           </div>
@@ -479,20 +449,20 @@
       <div class="row">
         <div class="col-lg-7">
           <h2 class="section-heading"><strong>Testimonials</strong></h2>
-          <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>    
+          <p class="mb-5">What our customers say about us</p>    
         </div>
       </div>
       <div class="row">
         <div class="col-lg-4 mb-4 mb-lg-0">
           <div class="testimonial-2">
             <blockquote class="mb-4">
-              <p>"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem, deserunt eveniet veniam. Ipsam, nam, voluptatum"</p>
+              <p>"Excellent service and well-maintained cars. The booking process was smooth and hassle-free."</p>
             </blockquote>
             <div class="d-flex v-card align-items-center">
               <img src="{% static 'indexall/images/person_1.jpg'%}" alt="Image" class="img-fluid mr-3">
               <div class="author-name">
                 <span class="d-block">Mike Fisher</span>
-                <span>Owner, Ford</span>
+                <span>Business Owner</span>
               </div>
             </div>
           </div>
@@ -500,13 +470,13 @@
         <div class="col-lg-4 mb-4 mb-lg-0">
           <div class="testimonial-2">
             <blockquote class="mb-4">
-              <p>"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem, deserunt eveniet veniam. Ipsam, nam, voluptatum"</p>
+              <p>"Great prices and fantastic customer service. I highly recommend their rental services!"</p>
             </blockquote>
             <div class="d-flex v-card align-items-center">
               <img src="{% static 'indexall/images/person_2.jpg'%}" alt="Image" class="img-fluid mr-3">
               <div class="author-name">
                 <span class="d-block">Jean Stanley</span>
-                <span>Traveler</span>
+                <span>Frequent Traveler</span>
               </div>
             </div>
           </div>
@@ -514,13 +484,13 @@
         <div class="col-lg-4 mb-4 mb-lg-0">
           <div class="testimonial-2">
             <blockquote class="mb-4">
-              <p>"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem, deserunt eveniet veniam. Ipsam, nam, voluptatum"</p>
+              <p>"Professional staff and clean vehicles. Made my trip comfortable and enjoyable."</p>
             </blockquote>
             <div class="d-flex v-card align-items-center">
               <img src="{% static 'indexall/images/person_3.jpg'%}" alt="Image" class="img-fluid mr-3">
               <div class="author-name">
                 <span class="d-block">Katie Rose</span>
-                <span >Customer</span>
+                <span>Satisfied Customer</span>
               </div>
             </div>
           </div>
@@ -534,7 +504,7 @@
       <div class="row align-items-center">
         <div class="col-lg-7 mb-4 mb-md-0">
           <h2 class="mb-0 text-white">What are you waiting for?</h2>
-          <p class="mb-0 opa-7">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+          <p class="mb-0 opa-7">Start your journey with us today and experience hassle-free car rentals.</p>
         </div>
         <div class="col-lg-5 text-md-right">
           <a href="{% url 'user_login' %}" class="btn btn-primary btn-white">Rent a car now</a>

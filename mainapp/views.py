@@ -243,7 +243,7 @@ def book_vehicle(request, id):
             logger.info("Vehicle is available for the selected dates.")
 
             # Calculate the total amount
-            duration = (end_date.date() - start_date.date()).days  # Duration in days
+            duration = (end_date.date() - start_date.date()).days + 1  # Duration in days (inclusive)
             total_amount = duration * vehicle.rental_rate
 
             # Create the booking
@@ -255,7 +255,6 @@ def book_vehicle(request, id):
                 status='pending',
                 total_amount=total_amount
             )
-            
             logger.info(f"Booking created successfully: {booking.booking_id}")
 
             # Generate and send QR code

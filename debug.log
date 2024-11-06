@@ -4,3 +4,66 @@ INFO 2024-11-04 13:55:46,345 pipeline Starting create_user pipeline with details
 INFO 2024-11-04 13:55:46,347 pipeline Found existing user by email: jobsonkmathew@gmail.com
 INFO 2024-11-04 13:57:05,013 pipeline Starting create_user pipeline with details: {'username': 'jobsonkmathew', 'email': 'jobsonkmathew@gmail.com', 'fullname': 'Jobson K Mathew', 'first_name': 'Jobson', 'last_name': 'K Mathew'}
 INFO 2024-11-04 13:57:05,015 pipeline User already exists in pipeline: jobsonkmathew@gmail.com
+INFO 2024-11-06 14:27:01,537 views Booking view called for vehicle id: 1
+INFO 2024-11-06 14:27:13,930 views Booking view called for vehicle id: 1
+INFO 2024-11-06 14:27:13,932 views POST request received
+INFO 2024-11-06 14:27:13,932 views Start date: 2024-11-06, End date: 2024-11-07
+INFO 2024-11-06 14:27:13,947 views Adjusted dates - Start: 2024-11-06 00:00:00+00:00, End: 2024-11-07 23:59:59.999999+00:00
+INFO 2024-11-06 14:27:13,947 models Checking availability for vehicle 1 from 2024-11-06 00:00:00+00:00 to 2024-11-07 23:59:59.999999+00:00
+INFO 2024-11-06 14:27:13,952 models Overlapping bookings found: 0
+INFO 2024-11-06 14:27:13,953 models Is vehicle available: True
+INFO 2024-11-06 14:27:13,953 views Vehicle is available for the selected dates.
+INFO 2024-11-06 14:27:13,961 views Booking created successfully: 3
+INFO 2024-11-06 14:27:45,069 views Confirmation email sent for booking 3
+INFO 2024-11-06 14:29:44,348 views Confirmation email sent for booking 3
+INFO 2024-11-06 14:32:57,420 views Booking view called for vehicle id: 1
+INFO 2024-11-06 14:33:08,942 views Booking view called for vehicle id: 1
+INFO 2024-11-06 14:33:08,943 views POST request received
+INFO 2024-11-06 14:33:08,944 views Start date: 2024-11-06, End date: 2024-11-07
+INFO 2024-11-06 14:33:08,944 views Adjusted dates - Start: 2024-11-06 00:00:00+00:00, End: 2024-11-07 23:59:59.999999+00:00
+INFO 2024-11-06 14:33:08,944 models Checking availability for vehicle 1 from 2024-11-06 00:00:00+00:00 to 2024-11-07 23:59:59.999999+00:00
+INFO 2024-11-06 14:33:08,946 models Overlapping bookings found: 1
+INFO 2024-11-06 14:33:08,946 models Is vehicle available: False
+WARNING 2024-11-06 14:33:08,946 views Vehicle is not available for the selected dates.
+INFO 2024-11-06 14:33:30,657 views Booking view called for vehicle id: 1
+INFO 2024-11-06 14:33:30,658 views POST request received
+INFO 2024-11-06 14:33:30,659 views Start date: 2024-11-08, End date: 2024-11-09
+INFO 2024-11-06 14:33:30,659 views Adjusted dates - Start: 2024-11-08 00:00:00+00:00, End: 2024-11-09 23:59:59.999999+00:00
+INFO 2024-11-06 14:33:30,659 models Checking availability for vehicle 1 from 2024-11-08 00:00:00+00:00 to 2024-11-09 23:59:59.999999+00:00
+INFO 2024-11-06 14:33:30,661 models Overlapping bookings found: 0
+INFO 2024-11-06 14:33:30,661 models Is vehicle available: True
+INFO 2024-11-06 14:33:30,662 views Vehicle is available for the selected dates.
+INFO 2024-11-06 14:33:30,667 views Booking created successfully: 4
+INFO 2024-11-06 14:33:34,312 views Booking view called for vehicle id: 1
+INFO 2024-11-06 14:33:34,314 views POST request received
+INFO 2024-11-06 14:33:34,314 views Start date: 2024-11-08, End date: 2024-11-09
+INFO 2024-11-06 14:33:34,314 views Adjusted dates - Start: 2024-11-08 00:00:00+00:00, End: 2024-11-09 23:59:59.999999+00:00
+INFO 2024-11-06 14:33:34,315 models Checking availability for vehicle 1 from 2024-11-08 00:00:00+00:00 to 2024-11-09 23:59:59.999999+00:00
+INFO 2024-11-06 14:33:34,317 models Overlapping bookings found: 1
+INFO 2024-11-06 14:33:34,317 models Is vehicle available: False
+WARNING 2024-11-06 14:33:34,317 views Vehicle is not available for the selected dates.
+INFO 2024-11-06 14:35:09,711 views Confirmation email sent for booking 4
+INFO 2024-11-06 14:37:58,573 views Booking view called for vehicle id: 1
+INFO 2024-11-06 14:38:23,699 views Booking view called for vehicle id: 1
+INFO 2024-11-06 14:38:23,700 views POST request received
+INFO 2024-11-06 14:38:23,701 views Start date: 2024-11-10, End date: 2024-11-11
+INFO 2024-11-06 14:38:23,705 views Adjusted dates - Start: 2024-11-10 00:00:00+00:00, End: 2024-11-11 23:59:59.999999+00:00
+INFO 2024-11-06 14:38:23,705 models Checking availability for vehicle 1 from 2024-11-10 00:00:00+00:00 to 2024-11-11 23:59:59.999999+00:00
+INFO 2024-11-06 14:38:23,707 models Overlapping bookings found: 0
+INFO 2024-11-06 14:38:23,708 models Is vehicle available: True
+INFO 2024-11-06 14:38:23,708 views Vehicle is available for the selected dates.
+INFO 2024-11-06 14:38:23,714 views Booking created successfully: 5
+INFO 2024-11-06 14:38:44,356 views Confirmation email sent for booking 5
+INFO 2024-11-06 14:39:32,922 views Booking view called for vehicle id: 1
+INFO 2024-11-06 14:41:31,436 views Booking view called for vehicle id: 1
+INFO 2024-11-06 14:41:55,203 views Booking view called for vehicle id: 1
+INFO 2024-11-06 14:41:55,204 views POST request received
+INFO 2024-11-06 14:41:55,205 views Start date: 2024-11-13, End date: 2024-11-14
+INFO 2024-11-06 14:41:55,205 views Adjusted dates - Start: 2024-11-13 00:00:00+00:00, End: 2024-11-14 23:59:59.999999+00:00
+INFO 2024-11-06 14:41:55,205 models Checking availability for vehicle 1 from 2024-11-13 00:00:00+00:00 to 2024-11-14 23:59:59.999999+00:00
+INFO 2024-11-06 14:41:55,209 models Overlapping bookings found: 0
+INFO 2024-11-06 14:41:55,210 models Is vehicle available: True
+INFO 2024-11-06 14:41:55,210 views Vehicle is available for the selected dates.
+INFO 2024-11-06 14:41:55,216 views Booking created successfully: 6
+INFO 2024-11-06 14:42:23,867 views Confirmation email sent for booking 6
+INFO 2024-11-06 15:41:08,933 views Sending cancellation email to affair-veal-ovary@duck.com

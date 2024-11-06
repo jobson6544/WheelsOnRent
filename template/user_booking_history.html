@@ -17,6 +17,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>S.No</th>
                     <th>Booking ID</th>
                     <th>Vehicle</th>
                     <th>Start Date</th>
@@ -29,6 +30,7 @@
             <tbody>
                 {% for booking in bookings %}
                     <tr>
+                        <td>{{ forloop.counter }}</td>
                         <td>{{ booking.booking_id }}</td>
                         <td>{{ booking.vehicle.model }}</td>
                         <td>{{ booking.start_date }}</td>
@@ -39,7 +41,7 @@
                             <div class="btn-group" role="group">
                                 <a href="{% url 'booking_detail' booking.booking_id %}" class="btn btn-info btn-sm">View Details</a>
                                 {% if booking.status == 'pending' or booking.status == 'confirmed' %}
-                                    <a href="{% url 'booking_detail' booking.booking_id %}" class="btn btn-info btn-sm">View Details</a>
+                                    <!-- <a href="{% url 'booking_detail' booking.booking_id %}" class="btn btn-info btn-sm">View Details</a> -->
                                     <form method="post" action="{% url 'cancel_booking' booking.booking_id %}" class="d-inline">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this booking?')">Cancel</button>

@@ -102,24 +102,24 @@
             color: #007bff;
         }
         .custom-nav {
-            background-color: #007bff; /* Change this to your desired background color */
-            color: white; /* Change text color if needed */
+            background-color: #007bff;
+            color: white;
         }
 
         .custom-nav .nav-link {
-            color: white; /* Change link color */
+            color: white;
         }
 
         .custom-nav .nav-link:hover {
-            color: #ffcc00; /* Change hover color */
+            color: #ffcc00;
         }
 
         .custom-nav .navbar-brand {
-            color: white; /* Change brand color */
+            color: white;
         }
 
         .custom-nav .navbar-toggler {
-            border-color: rgba(255, 255, 255, 0.1); /* Change the border color of the toggler */
+            border-color: rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
@@ -137,39 +137,7 @@
           </div>
           <div class="site-mobile-menu-body"></div>
         </div>
-  
-  
-  
-  
-    <!-- Navigation Bar -->
-    <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">WheelsOnRent</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'profile_view' %}">My Profile</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link btn btn-danger text-white" href="{% url 'logout' %}">Logout</a>
-                </li>
-            </ul>
-        </div>
-    </nav> --> 
 
-    <!-- <div class="container mt-5"> -->
-        <!-- Account Options -->
-        <!-- <div class="account-options text-center">
-            <h2>Welcome, </h2>
-        </div> -->
-
-        <!-- Page Content -->
-        <!-- Banner Starts Here -->
         <div class="hero" style="background-image: url('{% static "indexall/images/hero_1_a.jpg" %}');">
             <div class="container">
                 <div class="row align-items-center justify-content-center">
@@ -179,34 +147,6 @@
                                 <h1><strong>Rent a car</strong> is within your finger tips.</h1>
                             </div>
                         </div>
-                        <form class="trip-form">
-                            <div class="row align-items-center">
-                                <div class="mb-3 mb-md-0 col-md-3">
-                                    <select name="" id="" class="custom-select form-control">
-                                        <option value="">Select Type</option>
-                                        <option value="">Ferrari</option>
-                                        <option value="">Toyota</option>
-                                        <option value="">Ford</option>
-                                        <option value="">Lamborghini</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3 mb-md-0 col-md-3">
-                                    <div class="form-control-wrap">
-                                        <input type="text" id="cf-3" placeholder="Pick up" class="form-control datepicker px-3">
-                                        <span class="icon icon-date_range"></span>
-                                    </div>
-                                </div>
-                                <div class="mb-3 mb-md-0 col-md-3">
-                                    <div class="form-control-wrap">
-                                        <input type="text" id="cf-4" placeholder="Drop off" class="form-control datepicker px-3">
-                                        <span class="icon icon-date_range"></span>
-                                    </div>
-                                </div>
-                                <div class="mb-3 mb-md-0 col-md-3">
-                                    <input type="submit" value="Search Now" class="btn btn-primary btn-block py-3">
-                                </div>
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -223,7 +163,7 @@
                             <div class="step-inner">
                                 <span class="number text-primary">01.</span>
                                 <h3>Select a car</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, laboriosam!</p>
+                                <p>Choose from our wide selection of vehicles to find the perfect car for your needs.</p>
                             </div>
                         </div>
                     </div>
@@ -233,7 +173,7 @@
                             <div class="step-inner">
                                 <span class="number text-primary">02.</span>
                                 <h3>Fill up form</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, laboriosam!</p>
+                                <p>Complete the booking form with your details and rental requirements.</p>
                             </div>
                         </div>
                     </div>
@@ -243,19 +183,36 @@
                             <div class="step-inner">
                                 <span class="number text-primary">03.</span>
                                 <h3>Payment</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, laboriosam!</p>
+                                <p>Securely pay for your rental and get ready to hit the road.</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-4 mx-auto">
-                        <a href="#" class="d-flex align-items-center play-now mx-auto">
+                        <a href="#" class="d-flex align-items-center play-now mx-auto" data-bs-toggle="modal" data-bs-target="#howItWorksModal">
                             <span class="icon">
                                 <span class="icon-play"></span>
                             </span>
-                            <span class="caption">Video how it works</span>
+                            <span class="caption">Rent a car Feel the adventure</span>
                         </a>
+                    </div>
+                </div>
+
+                <!-- Video Modal -->
+                <div class="modal fade" id="howItWorksModal" tabindex="-1" aria-labelledby="howItWorksModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="howItWorksModalLabel">Adventure make the life beautiful</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="ratio ratio-16x9">
+                                    <iframe src="https://www.youtube.com/embed/AFtUpMTs4vI" title="Adventure make the life beautiful" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -270,9 +227,9 @@
                         </div>
                     </div>
                     <div class="col-lg-4 ml-auto order-lg-1">
-                        <h3 class="mb-4 section-heading"><strong>You can easily avail our promo for renting a car.</strong></h3>
-                        <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae, explicabo iste a labore id est quas, doloremque veritatis! Provident odit pariatur dolorem quisquam, voluptatibus voluptates optio accusamus, vel quasi quidem!</p>
-                        <p><a href="#" class="btn btn-primary">Meet them now</a></p>
+                        <h3 class="mb-4 section-heading"><strong>Take advantage of our special rental promotions.</strong></h3>
+                        <p class="mb-5">We offer great deals and discounts to help you save on your car rental. Check out our current promotions and special offers to make your journey even more affordable.</p>
+                        <p><a href="#" class="btn btn-primary">View Promotions</a></p>
                     </div>
                 </div>
             </div>
@@ -283,11 +240,10 @@
                 <div class="row">
                     <div class="col-lg-7">
                         <h2 class="section-heading"><strong>Vehicle Listings</strong></h2>
-                        <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>    
+                        <p class="mb-5">Browse our selection of available vehicles.</p>    
                     </div>
                 </div>
                     <div class="container mt-4">
-                        <!-- <h1 class="mb-4">Available Vehicles</h1> -->
                         <div class="row">
                             {% for vehicle in vehicles %}
                             <div class="col-md-4 mb-4">
@@ -305,7 +261,7 @@
                                             <strong>Type:</strong> {{ vehicle.model.sub_category.category.category_name }}<br>
                                             <strong>Company:</strong> {{ vehicle.model.sub_category.company_name }}<br>
                                             <strong>Year:</strong> {{ vehicle.model.model_year }}<br>
-                                            <strong>Rental Rate:</strong> ${{ vehicle.rental_rate }} per day
+                                            <strong>Rental Rate:</strong> ₹{{ vehicle.rental_rate }} per day
                                         </p>
                                         <h6>Features:</h6>
                                         <ul class="list-unstyled">
@@ -339,9 +295,6 @@
                             {% endfor %}
                         </div>
                     </div>
-            
-                    <!-- Repeat similar blocks for other car listings -->
-                </div>
             </div>
         </div>
 
@@ -351,7 +304,7 @@
                 <div class="row">
                     <div class="col-lg-7">
                         <h2 class="section-heading"><strong>Features</strong></h2>
-                        <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>    
+                        <p class="mb-5">Discover what makes our service special.</p>    
                     </div>
                 </div>
                 <div class="row">
@@ -361,8 +314,8 @@
                                 <span class="icon-home"></span>
                             </span>
                             <div class="service-1-contents">
-                                <h3>Lorem ipsum dolor</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+                                <h3>Door-to-Door Service</h3>
+                                <p>We offer convenient pickup and drop-off services right at your doorstep.</p>
                                 <p class="mb-0"><a href="#">Learn more</a></p>
                             </div>
                         </div>
@@ -373,8 +326,8 @@
                                 <span class="icon-gear"></span>
                             </span>
                             <div class="service-1-contents">
-                                <h3>Lorem ipsum dolor</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+                                <h3>Well-Maintained Vehicles</h3>
+                                <p>All our vehicles undergo regular maintenance checks for your safety.</p>
                                 <p class="mb-0"><a href="#">Learn more</a></p>
                             </div>
                         </div>
@@ -385,8 +338,8 @@
                                 <span class="icon-watch_later"></span>
                             </span>
                             <div class="service-1-contents">
-                                <h3>Lorem ipsum dolor</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+                                <h3>24/7 Support</h3>
+                                <p>Our customer support team is available round the clock to assist you.</p>
                                 <p class="mb-0"><a href="#">Learn more</a></p>
                             </div>
                         </div>
@@ -397,8 +350,8 @@
                                 <span class="icon-verified_user"></span>
                             </span>
                             <div class="service-1-contents">
-                                <h3>Lorem ipsum dolor</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+                                <h3>Insurance Coverage</h3>
+                                <p>Comprehensive insurance coverage for peace of mind during your rental.</p>
                                 <p class="mb-0"><a href="#">Learn more</a></p>
                             </div>
                         </div>
@@ -409,8 +362,8 @@
                                 <span class="icon-video_library"></span>
                             </span>
                             <div class="service-1-contents">
-                                <h3>Lorem ipsum dolor</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+                                <h3>Digital Documentation</h3>
+                                <p>Easy and paperless documentation process for quick rentals.</p>
                                 <p class="mb-0"><a href="#">Learn more</a></p>
                             </div>
                         </div>
@@ -421,8 +374,8 @@
                                 <span class="icon-vpn_key"></span>
                             </span>
                             <div class="service-1-contents">
-                                <h3>Lorem ipsum dolor</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+                                <h3>Flexible Rental Options</h3>
+                                <p>Choose from various rental durations to suit your needs.</p>
                                 <p class="mb-0"><a href="#">Learn more</a></p>
                             </div>
                         </div>
@@ -436,20 +389,20 @@
                 <div class="row">
                     <div class="col-lg-7">
                         <h2 class="section-heading"><strong>Testimonials</strong></h2>
-                        <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>    
+                        <p class="mb-5">What our customers say about us.</p>    
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-4 mb-4 mb-lg-0">
                         <div class="testimonial-2">
                             <blockquote class="mb-4">
-                                <p>"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem, deserunt eveniet veniam. Ipsam, nam, voluptatum"</p>
+                                <p>"Excellent service and well-maintained vehicles. The booking process was smooth and hassle-free."</p>
                             </blockquote>
                             <div class="d-flex v-card align-items-center">
                                 <img src="{% static 'indexall/images/person_1.jpg' %}" alt="Image" class="img-fluid mr-3">
                                 <div class="author-name">
                                     <span class="d-block">Mike Fisher</span>
-                                    <span>Owner, Ford</span>
+                                    <span>Business Traveler</span>
                                 </div>
                             </div>
                         </div>
@@ -457,13 +410,13 @@
                     <div class="col-lg-4 mb-4 mb-lg-0">
                         <div class="testimonial-2">
                             <blockquote class="mb-4">
-                                <p>"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem, deserunt eveniet veniam. Ipsam, nam, voluptatum"</p>
+                                <p>"Great prices and fantastic customer service. I highly recommend their rental services."</p>
                             </blockquote>
                             <div class="d-flex v-card align-items-center">
                                 <img src="{% static 'indexall/images/person_2.jpg' %}" alt="Image" class="img-fluid mr-3">
                                 <div class="author-name">
                                     <span class="d-block">Jean Stanley</span>
-                                    <span>Traveler</span>
+                                    <span>Tourist</span>
                                 </div>
                             </div>
                         </div>
@@ -471,13 +424,13 @@
                     <div class="col-lg-4 mb-4 mb-lg-0">
                         <div class="testimonial-2">
                             <blockquote class="mb-4">
-                                <p>"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatem, deserunt eveniet veniam. Ipsam, nam, voluptatum"</p>
+                                <p>"Professional and reliable service. The car was in perfect condition and exactly as advertised."</p>
                             </blockquote>
                             <div class="d-flex v-card align-items-center">
                                 <img src="{% static 'indexall/images/person_3.jpg' %}" alt="Image" class="img-fluid mr-3">
                                 <div class="author-name">
                                     <span class="d-block">Katie Rose</span>
-                                    <span>Customer</span>
+                                    <span>Regular Customer</span>
                                 </div>
                             </div>
                         </div>
@@ -490,8 +443,8 @@
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-7 mb-4 mb-md-0">
-                        <h2 class="mb-0 text-white">What are you waiting for?</h2>
-                        <p class="mb-0 opa-7">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati, laboriosam.</p>
+                        <h2 class="mb-0 text-white">Ready to start your journey?</h2>
+                        <p class="mb-0 opa-7">Book your perfect rental car today and hit the road with confidence.</p>
                     </div>
                     <div class="col-lg-5 text-md-right">
                         <a href="#" class="btn btn-primary btn-white">Rent a car now</a>
@@ -501,80 +454,7 @@
         </div>
 
     </div>
-    <footer class="site-footer">
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-3">
-              <h2 class="footer-heading mb-4">About Us</h2>
-              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. </p>
-              <ul class="list-unstyled social">
-                <li><a href="#"><span class="icon-facebook"></span></a></li>
-                <li><a href="#"><span class="icon-instagram"></span></a></li>
-                <li><a href="#"><span class="icon-twitter"></span></a></li>
-                <li><a href="#"><span class="icon-linkedin"></span></a></li>
-              </ul>
-            </div>
-            <div class="col-lg-8 ml-auto">
-              <div class="row">
-                <div class="col-lg-3">
-                  <h2 class="footer-heading mb-4">Quick Links</h2>
-                  <ul class="list-unstyled">
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Testimonials</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Privacy</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                  </ul>
-                </div>
-                <div class="col-lg-3">
-                  <h2 class="footer-heading mb-4">Resources</h2>
-                  <ul class="list-unstyled">
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Testimonials</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Privacy</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                  </ul>
-                </div>
-                <div class="col-lg-3">
-                  <h2 class="footer-heading mb-4">Support</h2>
-                  <ul class="list-unstyled">
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Testimonials</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Privacy</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                  </ul>
-                </div>
-                <div class="col-lg-3">
-                  <h2 class="footer-heading mb-4">Company</h2>
-                  <ul class="list-unstyled">
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Testimonials</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Privacy</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row pt-5 mt-5 text-center">
-            <div class="col-md-12">
-              <div class="border-top pt-5">
-                <p>
-              <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-              Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart text-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" >PixelNex</a>
-              <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-              </p>
-              </div>
-            </div>
-      
-          </div>
-        </div>
-      </footer>
-      
-      </div>
+
       {% endblock %}
       <script src="{%static 'indexall/js/jquery-3.3.1.min.js' %}"></script>
       <script src="{%static 'indexall/js/popper.min.js' %}"></script>
@@ -593,5 +473,3 @@
       </body>
       
       </html>
-      
-      

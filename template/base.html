@@ -2,15 +2,16 @@
 <!doctype html>
 <html lang="en">
 
-  <head>
+<head>
     <title>WheelsOnRent</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Core CSS -->
     <link rel="stylesheet" href="{% static 'indexall/fonts/icomoon/style.css' %}">
-
     <link rel="stylesheet" href="{% static 'indexall/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'indexall/css/bootstrap-datepicker.css '%}">
     <link rel="stylesheet" href="{% static 'indexall/css/jquery.fancybox.min.css '%}">
@@ -19,136 +20,170 @@
     <link rel="stylesheet" href="{% static 'indexall/fonts/flaticon/font/flaticon.css '%}">
     <link rel="stylesheet" href="{% static 'indexall/css/aos.css'%}">
 
-    <!-- MAIN CSS -->
+    <!-- Additional CSS -->
     <link rel="stylesheet" href="{% static 'indexall/css/style.css '%}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .site-footer {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            padding: 40px 0 20px;
+            position: relative;
+            font-size: 14px;
+        }
 
-  </head>
+        .footer-heading {
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+            margin-bottom: 20px;
+        }
 
-  <body>
+        .footer-heading:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 30px;
+            height: 2px;
+            background: #4CAF50;
+        }
 
-    
+        .site-footer p {
+            line-height: 1.6;
+        }
+
+        .site-footer a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .site-footer a:hover {
+            color: #4CAF50;
+            padding-left: 5px;
+        }
+
+        .social {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .social a:hover {
+            background: #4CAF50;
+            transform: translateY(-3px);
+        }
+
+        .border-top {
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+
+        .list-unstyled li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
     <div class="site-wrap" id="home-section">
-
-      <div class="site-mobile-menu site-navb/ar-target">
-        <div class="site-mobile-menu-header">
-          <div class="site-mobile-menu-close mt-3">
-            <span class="icon-close2 js-menu-toggle"></span>
-          </div>
+        <div class="site-mobile-menu site-navbar-target">
+            <div class="site-mobile-menu-header">
+                <div class="site-mobile-menu-close mt-3">
+                    <span class="icon-close2 js-menu-toggle"></span>
+                </div>
+            </div>
+            <div class="site-mobile-menu-body"></div>
         </div>
-        <div class="site-mobile-menu-body"></div>
-      </div>
 
+        {% block extra_css %}
+        {% endblock %}
 
+        {% block content %}
+        {% endblock %}
 
-      
-
-
-      {% block extra_css %}
-      
-      {% endblock %}
-
-
-{% block content %}
-
-{% endblock %}
-
-  
-<footer class="site-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-3">
-        <h2 class="footer-heading mb-4">About Us</h2>
-        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. </p>
-        <ul class="list-unstyled social">
-          <li><a href="#"><span class="icon-facebook"></span></a></li>
-          <li><a href="#"><span class="icon-instagram"></span></a></li>
-          <li><a href="#"><span class="icon-twitter"></span></a></li>
-          <li><a href="#"><span class="icon-linkedin"></span></a></li>
-        </ul>
-      </div>
-      <div class="col-lg-8 ml-auto">
-        <div class="row">
-          <div class="col-lg-3">
-            <h2 class="footer-heading mb-4">Quick Links</h2>
-            <ul class="list-unstyled">
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Testimonials</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Privacy</a></li>
-              <li><a href="#">Contact Us</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-3">
-            <h2 class="footer-heading mb-4">Resources</h2>
-            <ul class="list-unstyled">
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Testimonials</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Privacy</a></li>
-              <li><a href="#">Contact Us</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-3">
-            <h2 class="footer-heading mb-4">Support</h2>
-            <ul class="list-unstyled">
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Testimonials</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Privacy</a></li>
-              <li><a href="#">Contact Us</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-3">
-            <h2 class="footer-heading mb-4">Company</h2>
-            <ul class="list-unstyled">
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Testimonials</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Privacy</a></li>
-              <li><a href="#">Contact Us</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
+        <footer class="site-footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <h2 class="footer-heading">About WheelsOnRent</h2>
+                        <p>Your trusted partner for hassle-free car rentals. Quality vehicles and exceptional service for memorable journeys.</p>
+                        <ul class="list-unstyled social">
+                            <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                            <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6">
+                                <h2 class="footer-heading">Quick Links</h2>
+                                <ul class="list-unstyled">
+                                    <li><a href="{% url 'home' %}"><i class="fas fa-chevron-right me-2"></i>Home</a></li>
+                                </ul>
+                            </div>
+                           
+                            <div class="col-lg-4 col-md-6">
+                                <h2 class="footer-heading">Contact Info</h2>
+                                <ul class="list-unstyled">
+                                    <li><a href="https://goo.gl/maps/123"><i class="fas fa-map-marker-alt me-2"></i>123 Main Street, NY 10001</a></li>
+                                    <li><a href="tel:+12125551234"><i class="fas fa-phone me-2"></i>+1 (212) 555-1234</a></li>
+                                    <li><a href="mailto:contact@wheelsonrent.com"><i class="fas fa-envelope me-2"></i>contact@wheelsonrent.com</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-4 mt-4 text-center">
+                    <div class="col-md-12">
+                        <div class="border-top pt-4">
+                            <p>
+                                Copyright &copy;<script>document.write(new Date().getFullYear());</script> 
+                                All rights reserved | Made with <i class="fas fa-heart text-danger"></i> by 
+                                <a href="#" target="_blank" class="text-success">PixelNex</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
-    <div class="row pt-5 mt-5 text-center">
-      <div class="col-md-12">
-        <div class="border-top pt-5">
-          <p>
-        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart text-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" >PixelNex</a>
-        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-        </p>
-        </div>
-      </div>
 
-    </div>
-  </div>
-</footer>
-
-</div>
-
-<script src="{%static 'indexall/js/jquery-3.3.1.min.js' %}"></script>
-<script src="{%static 'indexall/js/popper.min.js' %}"></script>
-<script src="{%static 'indexall/js/bootstrap.min.js' %}"></script>
-<script src="{%static 'indexall/js/owl.carousel.min.js' %}"></script>
-<script src="{%static 'indexall/js/jquery.sticky.js' %}"></script>
-<script src="{%static 'indexall/js/jquery.waypoints.min.js' %}"></script>
-<script src="{%static 'indexall/js/jquery.animateNumber.min.js' %}"></script>
-<script src="{%static 'indexall/js/jquery.fancybox.min.js' %}"></script>
-<script src="{%static 'indexall/js/jquery.easing.1.3.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{%static 'indexall/js/bootstrap-datepicker.min.js' %}"></script>
-<script src="{%static 'indexall/js/aos.js' %}"></script>
-
-<script src="{%static 'indexall/js/main.js' %}"></script>
-
+    <!-- Scripts -->
+    <script src="{% static 'indexall/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'indexall/js/popper.min.js' %}"></script>
+    <script src="{% static 'indexall/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'indexall/js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'indexall/js/jquery.sticky.js' %}"></script>
+    <script src="{% static 'indexall/js/jquery.waypoints.min.js' %}"></script>
+    <script src="{% static 'indexall/js/jquery.animateNumber.min.js' %}"></script>
+    <script src="{% static 'indexall/js/jquery.fancybox.min.js' %}"></script>
+    <script src="{% static 'indexall/js/jquery.easing.1.3.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'indexall/js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'indexall/js/aos.js' %}"></script>
+    <script src="{% static 'indexall/js/main.js' %}"></script>
 </body>
-
 </html>

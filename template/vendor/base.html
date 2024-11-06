@@ -182,6 +182,19 @@
         </ul>
       </li><!-- End Forms Nav -->
 
+      <li class="nav-item"></li>
+        <a class="nav-link collapsed" data-bs-target="#reports-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Reports</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="reports-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'vendor:reports_dashboard' %}">
+                  <i class="bi bi-circle"></i><span>Reports</span>
+                </a>
+            </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
     </ul>
 
   </aside><!-- End Sidebar-->

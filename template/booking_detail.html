@@ -139,7 +139,7 @@
                             <p><strong>Status:</strong> {{ booking.get_status_display }}</p>
                             <p><strong>Start Date:</strong> {{ booking.start_date|date:"F d, Y" }}</p>
                             <p><strong>End Date:</strong> {{ booking.end_date|date:"F d, Y" }}</p>
-                            <p><strong>Total Amount:</strong> ${{ booking.total_amount|floatformat:2 }}</p>
+                            <p><strong>Total Amount:</strong> ₹{{ booking.total_amount|floatformat:2 }}</p>
                         </div>
                         <div class="col-md-6">
                             {% if vehicle_details.image %}
@@ -238,7 +238,7 @@
 
     <div class="row mt-4 mb-5 animate__animated animate__fadeInUp">
         <div class="col-md-4 text-center">
-            <a href="{% url 'user_bookings' %}" class="btn btn-primary btn-lg btn-back animate__animated animate__pulse">
+            <a href="{% url 'user_booking_history' %}" class="btn btn-primary btn-lg btn-back animate__animated animate__pulse">
                 <i class="fas fa-arrow-left mr-2"></i> Back to Bookings
             </a>
         </div>

@@ -5,92 +5,89 @@
 <div class="container my-5">
     <div class="row">
         <div class="col-md-4">
-            <div class="card">
+            <div class="card shadow-lg rounded-lg animate__animated animate__fadeInLeft">
                 <div class="card-body text-center">
-                    {% if profile.profile_photo %}
-                        <img src="{{ profile.profile_photo.url }}" alt="Profile Photo" class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                    {% else %}
-                        <img src="{% static 'images/default_profile.png' %}" alt="Default Profile" class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                    {% endif %}
-                    <h3 class="card-title mb-0">{{ request.user.full_name }}</h3>
-                    <p class="text-muted">{{ request.user.email }}</p>
-                    <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
-                    <a href="{% url 'home' %}" class="btn btn-primary">Home</a>
+                    <div class="profile-photo-container mb-4">
+                        {% if profile.profile_photo %}
+                            <img src="{{ profile.profile_photo.url }}" alt="Profile Photo" class="rounded-circle img-fluid shadow-sm hover-zoom" style="width: 180px; height: 180px; object-fit: cover; border: 4px solid #fff;">
+                        {% else %}
+                            <img src="{% static 'images/default_profile.png' %}" alt="Default Profile" class="rounded-circle img-fluid shadow-sm hover-zoom" style="width: 180px; height: 180px; object-fit: cover; border: 4px solid #fff;">
+                        {% endif %}
+                    </div>
+                    <h3 class="card-title mb-2 text-primary">{{ request.user.full_name }}</h3>
+                    <p class="text-muted mb-4"><i class="fas fa-envelope me-2"></i>{{ request.user.email }}</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'edit_profile' %}" class="btn btn-primary btn-lg rounded-pill shadow-sm"><i class="fas fa-edit me-2"></i>Edit Profile</a>
+                        <a href="{% url 'home' %}" class="btn btn-outline-primary btn-lg rounded-pill"><i class="fas fa-home me-2"></i>Home</a>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-8">
-            <div class="card">
+            <div class="card shadow-lg rounded-lg mb-4 animate__animated animate__fadeInRight">
                 <div class="card-body">
-                    <h4 class="card-title">Profile Information</h4>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Phone Number</h6>
+                    <h4 class="card-title text-primary mb-4"><i class="fas fa-user-circle me-2"></i>Profile Information</h4>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-phone me-2"></i>Phone Number</div>
+                            <div class="info-value">{{ profile.phone_number }}</div>
                         </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ profile.phone_number }}
+                        
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-map-marker-alt me-2"></i>Address</div>
+                            <div class="info-value">{{ profile.address }}</div>
                         </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Address</h6>
+                        
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-city me-2"></i>City</div>
+                            <div class="info-value">{{ profile.city }}</div>
                         </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ profile.address }}
+                        
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-map-pin me-2"></i>Pin Code</div>
+                            <div class="info-value">{{ profile.pin_code }}</div>
                         </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">City</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ profile.city }}
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">Pin Code</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ profile.pin_code }}
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <h6 class="mb-0">License Number</h6>
-                        </div>
-                        <div class="col-sm-9 text-secondary">
-                            {{ profile.license_number }}
+                        
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-id-card me-2"></i>License Number</div>
+                            <div class="info-value">{{ profile.license_number }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row mt-3">
+
+            <div class="row animate__animated animate__fadeInUp">
                 <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">License Front</h5>
+                    <div class="card shadow-lg rounded-lg h-100">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-primary mb-3"><i class="fas fa-id-card me-2"></i>License Front</h5>
                             {% if profile.license_front %}
-                                <img src="{{ profile.license_front.url }}" alt="License Front" class="img-fluid">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#licenseFrontModal">
+                                    <i class="fas fa-eye me-2"></i>View License Front
+                                </button>
                             {% else %}
-                                <p class="text-muted">No license front image uploaded</p>
+                                <div class="no-image-placeholder">
+                                    <i class="fas fa-image"></i>
+                                    <p>No license front image uploaded</p>
+                                </div>
                             {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">License Back</h5>
+                    <div class="card shadow-lg rounded-lg h-100">
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-primary mb-3"><i class="fas fa-id-card me-2"></i>License Back</h5>
                             {% if profile.license_back %}
-                                <img src="{{ profile.license_back.url }}" alt="License Back" class="img-fluid">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#licenseBackModal">
+                                    <i class="fas fa-eye me-2"></i>View License Back
+                                </button>
                             {% else %}
-                                <p class="text-muted">No license back image uploaded</p>
+                                <div class="no-image-placeholder">
+                                    <i class="fas fa-image"></i>
+                                    <p>No license back image uploaded</p>
+                                </div>
                             {% endif %}
                         </div>
                     </div>
@@ -99,73 +96,92 @@
         </div>
     </div>
 </div>
+
+<!-- License Front Modal -->
+<div class="modal fade" id="licenseFrontModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">License Front</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="{{ profile.license_front.url }}" alt="License Front" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- License Back Modal -->
+<div class="modal fade" id="licenseBackModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">License Back</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="{{ profile.license_back.url }}" alt="License Back" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-zoom {
+        transition: transform 0.3s ease;
+    }
+    .hover-zoom:hover {
+        transform: scale(1.05);
+    }
+    .info-grid {
+        display: grid;
+        gap: 1.5rem;
+    }
+    .info-item {
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    .info-item:hover {
+        background: #fff;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        transform: translateY(-3px);
+    }
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+    .info-value {
+        color: #212529;
+        font-size: 1.1rem;
+    }
+    .no-image-placeholder {
+        text-align: center;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        color: #6c757d;
+    }
+    .no-image-placeholder i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    .license-image-container {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+</style>
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Preview profile photo
-        const profilePhotoInput = document.getElementById('{{ profile_form.profile_photo.id_for_label }}');
-        const profileImg = document.querySelector('.profile-img');
-        
-        profilePhotoInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    profileImg.src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Preview license images
-        const licenseInputs = [
-            document.getElementById('{{ profile_form.license_front.id_for_label }}'),
-            document.getElementById('{{ profile_form.license_back.id_for_label }}')
-        ];
-        
-        licenseInputs.forEach(input => {
-            input.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    const imgContainer = this.closest('.card-body').querySelector('.license-img-container');
-                    reader.onload = function(e) {
-                        imgContainer.innerHTML = `<img src="${e.target.result}" alt="License" class="license-img">`;
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-        });
-
-        // Form validation
-        const form = document.querySelector('form');
-        form.addEventListener('submit', function(e) {
-            let isValid = true;
-            const requiredFields = form.querySelectorAll('input[required]');
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    isValid = false;
-                    field.classList.add('is-invalid');
-                    const errorDiv = field.nextElementSibling || document.createElement('div');
-                    errorDiv.className = 'invalid-feedback';
-                    errorDiv.textContent = 'This field is required.';
-                    field.parentNode.insertBefore(errorDiv, field.nextSibling);
-                } else {
-                    field.classList.remove('is-invalid');
-                    const errorDiv = field.nextElementSibling;
-                    if (errorDiv && errorDiv.className === 'invalid-feedback') {
-                        errorDiv.remove();
-                    }
-                }
-            });
-
-            if (!isValid) {
-                e.preventDefault();
-            }
-        });
+        // Your existing JavaScript code...
     });
 </script>
 {% endblock %}
