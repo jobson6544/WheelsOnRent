@@ -67,3 +67,115 @@ INFO 2024-11-06 14:41:55,210 views Vehicle is available for the selected dates.
 INFO 2024-11-06 14:41:55,216 views Booking created successfully: 6
 INFO 2024-11-06 14:42:23,867 views Confirmation email sent for booking 6
 INFO 2024-11-06 15:41:08,933 views Sending cancellation email to affair-veal-ovary@duck.com
+INFO 2024-11-08 01:20:28,932 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:20:40,547 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:20:40,548 views POST request received
+INFO 2024-11-08 01:20:40,549 views Start date: 2024-11-23, End date: 2024-11-24
+INFO 2024-11-08 01:20:40,550 views Adjusted dates - Start: 2024-11-23 00:00:00+00:00, End: 2024-11-24 23:59:59.999999+00:00
+INFO 2024-11-08 01:20:40,550 models Checking availability for vehicle 1 from 2024-11-23 00:00:00+00:00 to 2024-11-24 23:59:59.999999+00:00
+INFO 2024-11-08 01:20:40,552 models Overlapping bookings found: 0
+INFO 2024-11-08 01:20:40,553 models Is vehicle available: True
+INFO 2024-11-08 01:20:40,553 views Vehicle is available for the selected dates.
+INFO 2024-11-08 01:20:40,558 views Booking created successfully: 7
+INFO 2024-11-08 01:21:03,679 views Confirmation email sent for booking 7
+INFO 2024-11-08 01:26:16,683 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:26:30,810 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:26:30,811 views POST request received
+INFO 2024-11-08 01:26:30,812 views Start date: 2024-11-27, End date: 2024-11-28
+INFO 2024-11-08 01:26:30,812 views Adjusted dates - Start: 2024-11-27 00:00:00+00:00, End: 2024-11-28 23:59:59.999999+00:00
+INFO 2024-11-08 01:26:30,813 models Checking availability for vehicle 1 from 2024-11-27 00:00:00+00:00 to 2024-11-28 23:59:59.999999+00:00
+INFO 2024-11-08 01:26:30,815 models Overlapping bookings found: 0
+INFO 2024-11-08 01:26:30,816 models Is vehicle available: True
+INFO 2024-11-08 01:26:30,816 views Vehicle is available for the selected dates.
+INFO 2024-11-08 01:26:30,822 views Booking created successfully: 8
+INFO 2024-11-08 01:26:54,333 views Confirmation email sent for booking 8
+INFO 2024-11-08 01:30:55,851 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:35:02,327 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:35:05,104 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:35:05,106 views POST request received
+INFO 2024-11-08 01:35:05,106 views Start date: 41127-02-20, End date: 41128-02-20
+ERROR 2024-11-08 01:35:05,106 views An error occurred: time data '41127-02-20' does not match format '%Y-%m-%d'
+INFO 2024-11-08 01:37:40,180 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:37:42,956 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:37:42,957 views POST request received
+INFO 2024-11-08 01:37:42,957 views Start date: 2024-11-27, End date: 2024-11-28
+INFO 2024-11-08 01:37:42,958 views Adjusted dates - Start: 2024-11-27 00:00:00+00:00, End: 2024-11-28 23:59:59.999999+00:00
+INFO 2024-11-08 01:37:42,958 models Checking availability for vehicle 1 from 2024-11-27 00:00:00+00:00 to 2024-11-28 23:59:59.999999+00:00
+INFO 2024-11-08 01:37:42,959 models Overlapping bookings found: 1
+INFO 2024-11-08 01:37:42,960 models Is vehicle available: False
+WARNING 2024-11-08 01:37:42,960 views Vehicle is not available for the selected dates.
+INFO 2024-11-08 01:38:16,927 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:38:19,699 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:38:19,700 views POST request received
+INFO 2024-11-08 01:38:19,700 views Start date: 2024-11-29, End date: 2024-11-30
+INFO 2024-11-08 01:38:19,701 views Adjusted dates - Start: 2024-11-29 00:00:00+00:00, End: 2024-11-30 23:59:59.999999+00:00
+INFO 2024-11-08 01:38:19,701 models Checking availability for vehicle 1 from 2024-11-29 00:00:00+00:00 to 2024-11-30 23:59:59.999999+00:00
+INFO 2024-11-08 01:38:19,702 models Overlapping bookings found: 0
+INFO 2024-11-08 01:38:19,703 models Is vehicle available: True
+INFO 2024-11-08 01:38:19,703 views Vehicle is available for the selected dates.
+INFO 2024-11-08 01:38:19,708 views Booking created successfully: 9
+INFO 2024-11-08 01:42:32,877 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:42:35,672 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:42:35,673 views POST request received
+INFO 2024-11-08 01:42:35,673 views Start date: 2024-11-22, End date: 2024-11-23
+INFO 2024-11-08 01:42:35,673 views Adjusted dates - Start: 2024-11-22 00:00:00+00:00, End: 2024-11-23 23:59:59.999999+00:00
+INFO 2024-11-08 01:42:35,673 models Checking availability for vehicle 1 from 2024-11-22 00:00:00+00:00 to 2024-11-23 23:59:59.999999+00:00
+INFO 2024-11-08 01:42:35,675 models Overlapping bookings found: 1
+INFO 2024-11-08 01:42:35,676 models Is vehicle available: False
+WARNING 2024-11-08 01:42:35,676 views Vehicle is not available for the selected dates.
+INFO 2024-11-08 01:44:37,586 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:44:40,368 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:44:40,369 views POST request received
+INFO 2024-11-08 01:44:40,370 views Start date: 2024-11-27, End date: 2024-11-28
+INFO 2024-11-08 01:44:40,370 views Adjusted dates - Start: 2024-11-27 00:00:00+00:00, End: 2024-11-28 23:59:59.999999+00:00
+INFO 2024-11-08 01:44:40,370 models Checking availability for vehicle 1 from 2024-11-27 00:00:00+00:00 to 2024-11-28 23:59:59.999999+00:00
+INFO 2024-11-08 01:44:40,372 models Overlapping bookings found: 0
+INFO 2024-11-08 01:44:40,372 models Is vehicle available: True
+INFO 2024-11-08 01:44:40,372 views Vehicle is available for the selected dates.
+INFO 2024-11-08 01:44:40,377 views Booking created successfully: 10
+INFO 2024-11-08 01:47:49,523 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:47:52,313 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:47:52,314 views POST request received
+INFO 2024-11-08 01:47:52,315 views Start date: 2024-11-27, End date: 2024-11-28
+INFO 2024-11-08 01:47:52,315 views Adjusted dates - Start: 2024-11-27 00:00:00+00:00, End: 2024-11-28 23:59:59.999999+00:00
+INFO 2024-11-08 01:47:52,316 models Checking availability for vehicle 1 from 2024-11-27 00:00:00+00:00 to 2024-11-28 23:59:59.999999+00:00
+INFO 2024-11-08 01:47:52,318 models Overlapping bookings found: 0
+INFO 2024-11-08 01:47:52,318 models Is vehicle available: True
+INFO 2024-11-08 01:47:52,318 views Vehicle is available for the selected dates.
+INFO 2024-11-08 01:47:52,323 views Booking created successfully: 11
+INFO 2024-11-08 01:50:15,274 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:50:18,048 views Booking view called for vehicle id: 1
+INFO 2024-11-08 01:50:18,049 views POST request received
+INFO 2024-11-08 01:50:18,049 views Start date: 2024-11-29, End date: 2024-11-30
+INFO 2024-11-08 01:50:18,049 views Adjusted dates - Start: 2024-11-29 00:00:00+00:00, End: 2024-11-30 23:59:59.999999+00:00
+INFO 2024-11-08 01:50:18,050 models Checking availability for vehicle 1 from 2024-11-29 00:00:00+00:00 to 2024-11-30 23:59:59.999999+00:00
+INFO 2024-11-08 01:50:18,051 models Overlapping bookings found: 0
+INFO 2024-11-08 01:50:18,051 models Is vehicle available: True
+INFO 2024-11-08 01:50:18,051 views Vehicle is available for the selected dates.
+INFO 2024-11-08 01:50:18,057 views Booking created successfully: 12
+INFO 2024-11-08 01:50:37,390 views Confirmation email sent for booking 12
+INFO 2024-11-12 11:54:58,931 views Booking view called for vehicle id: 3
+INFO 2024-11-12 11:55:18,526 views Booking view called for vehicle id: 3
+INFO 2024-11-12 11:55:18,528 views POST request received
+INFO 2024-11-12 11:55:18,528 views Start date: 2024-11-12, End date: 2024-11-13
+INFO 2024-11-12 11:55:18,529 views Adjusted dates - Start: 2024-11-12 00:00:00+00:00, End: 2024-11-13 23:59:59.999999+00:00
+INFO 2024-11-12 11:55:18,529 models Checking availability for vehicle 3 from 2024-11-12 00:00:00+00:00 to 2024-11-13 23:59:59.999999+00:00
+INFO 2024-11-12 11:55:18,532 models Overlapping bookings found: 0
+INFO 2024-11-12 11:55:18,532 models Is vehicle available: True
+INFO 2024-11-12 11:55:18,533 views Vehicle is available for the selected dates.
+INFO 2024-11-12 11:55:18,538 views Booking created successfully: 13
+INFO 2024-11-12 11:55:23,233 views Booking view called for vehicle id: 3
+INFO 2024-11-12 11:55:23,235 views POST request received
+INFO 2024-11-12 11:55:23,236 views Start date: 2024-11-12, End date: 2024-11-13
+INFO 2024-11-12 11:55:23,236 views Adjusted dates - Start: 2024-11-12 00:00:00+00:00, End: 2024-11-13 23:59:59.999999+00:00
+INFO 2024-11-12 11:55:23,237 models Checking availability for vehicle 3 from 2024-11-12 00:00:00+00:00 to 2024-11-13 23:59:59.999999+00:00
+INFO 2024-11-12 11:55:23,239 models Overlapping bookings found: 1
+INFO 2024-11-12 11:55:23,239 models Is vehicle available: False
+WARNING 2024-11-12 11:55:23,240 views Vehicle is not available for the selected dates.
+INFO 2024-11-12 11:55:41,681 views Confirmation email sent for booking 13
+INFO 2024-11-12 12:00:25,519 views Attempting to submit feedback for booking 12
+INFO 2024-11-12 12:00:25,519 views Booking status: returned
+INFO 2024-11-12 12:00:25,521 views Can submit feedback: True
+INFO 2024-11-12 12:00:25,521 views Received rating: 4
+INFO 2024-11-12 12:00:25,522 views Received comment: good
+INFO 2024-11-12 12:00:25,528 views Feedback created successfully: 3

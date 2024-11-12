@@ -15,6 +15,7 @@ import random
 import string
 import joblib
 from django.db.models import Avg
+from mainapp.constants import PLATFORM_FEE_PERCENTAGE
 
 class Vendor(models.Model):
     STATUS_CHOICES = [
@@ -231,7 +232,7 @@ class Vehicle(models.Model):
         base_price = prediction[0]
         
         # Add platform fee to suggested price
-        platform_fee_multiplier = 1 + (Booking.PLATFORM_FEE_PERCENTAGE / 100)
+        platform_fee_multiplier = 1 + (PLATFORM_FEE_PERCENTAGE / 100)
         adjusted_price = base_price * platform_fee_multiplier
         
         # Weather adjustments
@@ -340,7 +341,7 @@ class Vehicle(models.Model):
         predicted_price = model.predict(features)[0]
         
         # Add platform fee to predicted price
-        platform_fee_multiplier = 1 + (Booking.PLATFORM_FEE_PERCENTAGE / 100)
+        platform_fee_multiplier = 1 + (PLATFORM_FEE_PERCENTAGE / 100)
         adjusted_price = predicted_price * platform_fee_multiplier
         
         return round(adjusted_price, 2)

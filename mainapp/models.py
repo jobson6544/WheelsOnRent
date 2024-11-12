@@ -17,6 +17,7 @@ import logging
 import random
 from django.utils import timezone
 import string
+from .constants import PLATFORM_FEE_PERCENTAGE  # Add this import
 
 logger = logging.getLogger(__name__)
 
@@ -93,38 +94,8 @@ class User(AbstractUser):
         except UserProfile.DoesNotExist:
             return False
 
-# Model for storing additional user details
-# class Customer(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-#     phone = models.CharField(max_length=15)
-#     driving_license = models.CharField(max_length=50)
-    
-#     def __str__(self):
-#         return self.user.username
 
 
-#old name 
-# class Profile(models.Model):
-
-# #new name
-# class Address(models.Model):
-#     ADDRESS_TYPE_CHOICES = (
-#         ('home', 'Home'),
-#         ('office', 'Office'),
-#     )
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='address')
-#     flat_house_no = models.CharField(max_length=255, verbose_name="Flat/House No:/Building/Company/Apartment")
-#     area_street = models.CharField(max_length=255, verbose_name="Area/Street/Sector/Village")
-#     landmark = models.CharField(max_length=255)
-#     pincode = models.CharField(max_length=10)
-#     town_city = models.CharField(max_length=100, verbose_name="Town/City")
-#     state = models.CharField(max_length=100)
-#     country = models.CharField(max_length=100)
-#     address_type = models.CharField(max_length=10, choices=ADDRESS_TYPE_CHOICES, default='home')
-#     is_primary = models.BooleanField(default=False)
-
-#     def _str_(self):
-#         return f"{self.user.username}'s Address"
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -141,40 +112,27 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
-# class Vendor(models.Model):
-#     STATUS_CHOICES = [
-#         ('pending', 'Pending'),
-#         ('approved', 'Approved'),
-#         ('rejected', 'Rejected'),
-#     ]
 
-#     vendor_id = models.AutoField(primary_key=True)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     business_name = models.CharField(max_length=255)
-#     address = models.TextField(blank=True, null=True)
-#     city = models.CharField(max_length=255)
-#     state = models.CharField(max_length=255)
-#     zip_code = models.CharField(max_length=10)
-#     contact_number = models.CharField(max_length=15)
-#     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-
-#     def __str__(self):
-#         return self.business_name
 
 from vendor.models import Vehicle  # Import Vehicle from vendor app
 
 class Booking(models.Model):
+    # Add platform fee constant
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('picked_up', 'Picked Up'),
+        ('returned', 'Returned'),
+        ('cancelled', 'Cancelled'),
+        ('completed', 'Completed')
+    ]
+
     booking_id = models.AutoField(primary_key=True)  # This replaces the default 'id' field
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     vehicle = models.ForeignKey('vendor.Vehicle', on_delete=models.CASCADE, related_name='bookings')
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    status = models.CharField(max_length=20, choices=[
-        ('pending', 'Pending'),
-        ('confirmed', 'Confirmed'),
-        ('cancelled', 'Cancelled'),
-        ('completed', 'Completed'),
-    ], default='pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     refund_status = models.CharField(max_length=20, choices=[
@@ -309,6 +267,68 @@ class Booking(models.Model):
             self.status == 'returned' and 
             not hasattr(self, 'feedback')
         )
+
+    def get_status_display_class(self):
+        """Return Bootstrap class based on status"""
+        status_classes = {
+            'pending': 'warning',
+            'confirmed': 'primary',
+            'picked_up': 'info',
+            'returned': 'success',
+            'cancelled': 'danger',
+            'completed': 'success'
+        }
+        return status_classes.get(self.status, 'secondary')
+
+    def can_be_cancelled(self):
+        """Check if booking can be cancelled"""
+        return self.status in ['pending', 'confirmed']
+
+    def can_be_picked_up(self):
+        """Check if vehicle can be picked up"""
+        return self.status == 'confirmed' and self.start_date <= timezone.now()
+
+    def can_be_returned(self):
+        """Check if vehicle can be returned"""
+        return self.status == 'picked_up'
+
+    def update_status(self, new_status, user=None):
+        """Update booking status with logging"""
+        if new_status in dict(self.STATUS_CHOICES):
+            old_status = self.status
+            self.status = new_status
+            self.save()
+            
+            # Log status change
+            BookingStatusLog.objects.create(
+                booking=self,
+                old_status=old_status,
+                new_status=new_status,
+                changed_by=user
+            )
+
+            # Send appropriate notifications
+            self.send_status_notification()
+            
+            return True
+        return False
+
+    def send_status_notification(self):
+        """Send notifications based on status changes"""
+        templates = {
+            'confirmed': 'emails/booking_confirmed.html',
+            'picked_up': 'emails/vehicle_picked_up.html',
+            'returned': 'emails/vehicle_returned.html',
+            'cancelled': 'emails/booking_cancelled.html',
+            'completed': 'emails/booking_completed.html'
+        }
+        
+        if self.status in templates:
+            context = {
+                'booking': self,
+                'customer_name': self.user.get_full_name()
+            }
+            send_status_email(self.user.email, self.status, context)
 
 class Feedback(models.Model):
     RATING_CHOICES = (

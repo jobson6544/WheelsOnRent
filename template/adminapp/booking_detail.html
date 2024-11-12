@@ -1,0 +1,125 @@
+{% extends 'adminapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<main id="main" class="main">
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4">Booking Details #{{ booking.booking_id }}</h1>
+        <a href="{% url 'adminapp:all_bookings' %}" class="btn btn-secondary">Back to All Bookings</a>
+    </div>
+
+    <!-- Booking Status Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Booking Status</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Status:</strong>
+                    <span class="badge bg-{{ booking.get_status_display_class }}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </div>
+                <div class="col-md-3">
+                    
+                </div>
+                <div class="col-md-3">
+                   
+                </div>
+                <div class="col-md-3">
+                    <strong>Total Amount:</strong> ₹{{ booking.total_amount }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Customer Details -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Customer Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> {{ customer.full_name }}</p>
+                    <p><strong>Email:</strong> {{ customer.email }}</p>
+                    <p><strong>Phone:</strong> {{ customer.profile.phone_number }}</p>
+                    <p><strong>Address:</strong> {{ customer.profile.address }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vendor Details -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Vendor Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Business Name:</strong> {{ vendor.business_name }}</p>
+                    <p><strong>Contact Number:</strong> {{ vendor.contact_number }}</p>
+                    <p><strong>Address:</strong> {{ vendor.full_address }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vehicle Details -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Vehicle Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Model:</strong> {{ vehicle.model }}</p>
+                    <p><strong>Registration Number:</strong> {{ vehicle.registration.registration_number }}</p>
+                    <p><strong>Fuel Type:</strong> {{ vehicle.get_fuel_type_display }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Daily Rate:</strong> ₹{{ vehicle.rental_rate }}</p>
+                    <p><strong>Features:</strong> 
+                        {% for feature in vehicle.features.all %}
+                        <span class="badge bg-secondary">{{ feature.feature_name }}</span>
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pickup and Return Details -->
+    <div class="row">
+        {% if pickup %}
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Pickup Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Pickup Time:</strong> {{ pickup.pickup_time|default:"Not picked up yet" }}</p>
+                    <p><strong>Verified:</strong> {{ pickup.is_verified|yesno:"Yes,No" }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if return_details %}
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Return Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Return Time:</strong> {{ return_details.return_time|default:"Not returned yet" }}</p>
+                    <p><strong>Verified:</strong> {{ return_details.is_verified|yesno:"Yes,No" }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+</main>
+{% endblock %}

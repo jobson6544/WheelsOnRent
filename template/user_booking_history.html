@@ -17,7 +17,6 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>S.No</th>
                     <th>Booking ID</th>
                     <th>Vehicle</th>
                     <th>Start Date</th>
@@ -30,7 +29,6 @@
             <tbody>
                 {% for booking in bookings %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
                         <td>{{ booking.booking_id }}</td>
                         <td>{{ booking.vehicle.model }}</td>
                         <td>{{ booking.start_date }}</td>

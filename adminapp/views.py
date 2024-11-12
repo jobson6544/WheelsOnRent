@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse  # Add this import
 from django.contrib import messages
 from .forms import VehicleTypeForm, VehicleCompanyForm, ModelForm, FeaturesForm
-from vendor.models import VehicleType, VehicleCompany, Model, Features, Vendor
+from vendor.models import VehicleType, VehicleCompany, Model, Features, Vendor, Vehicle  # Add this import for the Vehicle model
 from django.template.loader import render_to_string  # Add this import
 import os
 from django.conf import settings
@@ -19,6 +19,16 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.http import HttpResponse
 from mainapp.models import Feedback
+from django.db.models import Q
+from django.core.paginator import PageNotAnInteger, EmptyPage
+from mainapp.models import Booking
+from django.http import HttpResponseNotAllowed
+import csv
+from datetime import datetime
+import xlsxwriter
+from io import BytesIO
+from mainapp.models import Booking  # Ensure Booking model is imported
+from django.db.models import Count
 
 logger = logging.getLogger(__name__)
 
@@ -168,10 +178,25 @@ def admin_login(request):
 
 def admin_logout(request):
     logout(request)
-    return redirect('adminapp:login')
+    return redirect('index')
 @user_passes_test(is_admin, login_url='adminapp:login')
 def admin_dashboard(request):
-    return render(request, 'adminapp/admin_dashboard.html')  # Note the change here
+    # Fetch all bookings with related data
+    bookings = Booking.objects.select_related('user', 'vehicle', 'vehicle__vendor').order_by('-start_date')
+
+    # Fetch top renting vehicles (you may need to adjust the logic based on your model)
+    top_renting_vehicles = Vehicle.objects.annotate(
+        times_rented=Count('bookings')  # Assuming you have a related name 'bookings' in Vehicle model
+    ).order_by('-times_rented')[:5]  # Get top 5 renting vehicles
+
+    context = {
+        'bookings': bookings,
+        'customers': User.objects.filter(role='user', is_active=True),
+        'vehicles': Vehicle.objects.all(),  # Assuming you have a Vehicle model
+        'top_renting_vehicles': top_renting_vehicles,  # Add this line
+    }
+    
+    return render(request, 'adminapp/admin_dashboard.html', context)
 
 # Use this decorator for all admin views
 def admin_required(view_func):
@@ -486,4 +511,238 @@ def view_all_feedback(request):
         'selected_rating': rating
     }
     return render(request, 'adminapp/feedback_list.html', context)
+
+@staff_member_required(login_url='adminapp:login')
+def all_bookings(request):
+    # Get all bookings with related data
+    bookings = Booking.objects.select_related(
+        'user', 
+        'vehicle', 
+        'vehicle__vendor'
+    ).order_by('-start_date')
+    
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        bookings = bookings.filter(
+            Q(user__full_name__icontains=search_query) |
+            Q(vehicle__vendor__business_name__icontains=search_query) |
+            Q(booking_id__icontains=search_query)
+        )
+    
+    # Filter by status
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        bookings = bookings.filter(status=status_filter)
+    
+    # Filter by date range
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    if start_date and end_date:
+        bookings = bookings.filter(
+            start_date__gte=start_date,
+            end_date__lte=end_date
+        )
+    
+    # Pagination
+    paginator = Paginator(bookings, 20)  # Show 20 bookings per page
+    page = request.GET.get('page')
+    try:
+        bookings_page = paginator.page(page)
+    except PageNotAnInteger:
+        bookings_page = paginator.page(1)
+    except EmptyPage:
+        bookings_page = paginator.page(paginator.num_pages)
+    
+    context = {
+        'bookings': bookings_page,
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'start_date': start_date,
+        'end_date': end_date,
+        'status_choices': Booking.STATUS_CHOICES,
+    }
+    
+    return render(request, 'adminapp/all_bookings.html', context)
+
+@staff_member_required(login_url='adminapp:login')
+def booking_detail(request, booking_id):
+    booking = get_object_or_404(Booking.objects.select_related(
+        'user',
+        'vehicle',
+        'vehicle__vendor',
+        'pickup',
+        'vehicle_return'
+    ), booking_id=booking_id)
+    
+    context = {
+        'booking': booking,
+        'customer': booking.user,
+        'vendor': booking.vehicle.vendor,
+        'vehicle': booking.vehicle,
+        'pickup': booking.pickup if hasattr(booking, 'pickup') else None,
+        'return_details': booking.vehicle_return if hasattr(booking, 'vehicle_return') else None,
+    }
+    
+    return render(request, 'adminapp/booking_detail.html', context)
+
+@staff_member_required(login_url='adminapp:login')
+def export_bookings(request):
+    response = None
+    bookings = Booking.objects.select_related(
+        'user',
+        'vehicle',
+        'vehicle__vendor'
+    ).all()
+
+    export_format = request.GET.get('format', 'csv')
+
+    if export_format == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="bookings_export_{datetime.now().strftime("%Y%m%d")}.csv"'
+        
+        writer = csv.writer(response)
+        # Write header
+        writer.writerow([
+            'Booking ID',
+            'Customer Name',
+            'Customer Email',
+            'Vehicle',
+            'Vendor',
+            'Start Date',
+            'End Date',
+            'Total Amount',
+            'Status',
+            'Created At'
+        ])
+
+        # Write data
+        for booking in bookings:
+            writer.writerow([
+                booking.booking_id,
+                booking.user.get_full_name(),
+                booking.user.email,
+                str(booking.vehicle.model),
+                booking.vehicle.vendor.business_name,
+                booking.start_date.strftime('%Y-%m-%d'),
+                booking.end_date.strftime('%Y-%m-%d'),
+                booking.total_amount,
+                booking.get_status_display(),
+                booking.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            ])
+
+    elif export_format == 'excel':
+        output = BytesIO()
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet()
+
+        # Add headers
+        headers = [
+            'Booking ID',
+            'Customer Name',
+            'Customer Email',
+            'Vehicle',
+            'Vendor',
+            'Start Date',
+            'End Date',
+            'Total Amount',
+            'Status',
+            'Created At'
+        ]
+
+        # Add formats
+        header_format = workbook.add_format({
+            'bold': True,
+            'bg_color': '#f0f0f0',
+            'border': 1
+        })
+
+        # Write headers
+        for col, header in enumerate(headers):
+            worksheet.write(0, col, header, header_format)
+
+        # Write data
+        for row, booking in enumerate(bookings, start=1):
+            worksheet.write(row, 0, booking.booking_id)
+            worksheet.write(row, 1, booking.user.get_full_name())
+            worksheet.write(row, 2, booking.user.email)
+            worksheet.write(row, 3, str(booking.vehicle.model))
+            worksheet.write(row, 4, booking.vehicle.vendor.business_name)
+            worksheet.write(row, 5, booking.start_date.strftime('%Y-%m-%d'))
+            worksheet.write(row, 6, booking.end_date.strftime('%Y-%m-%d'))
+            worksheet.write(row, 7, float(booking.total_amount))
+            worksheet.write(row, 8, booking.get_status_display())
+            worksheet.write(row, 9, booking.created_at.strftime('%Y-%m-%d %H:%M:%S'))
+
+        # Adjust column widths
+        for col in range(len(headers)):
+            worksheet.set_column(col, col, 15)
+
+        workbook.close()
+        
+        # Create the HttpResponse
+        output.seek(0)
+        response = HttpResponse(
+            output.read(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename="bookings_export_{datetime.now().strftime("%Y%m%d")}.xlsx"'
+
+    return response
+
+@staff_member_required(login_url='adminapp:login')
+def cancel_booking(request, booking_id):
+    if request.method == 'POST':
+        booking = get_object_or_404(Booking, booking_id=booking_id)
+        booking.status = 'cancelled'
+        booking.save()
+        messages.success(request, f'Booking #{booking_id} has been cancelled.')
+        return redirect('adminapp:booking_detail', booking_id=booking_id)
+    return HttpResponseNotAllowed(['POST'])
+
+@staff_member_required(login_url='adminapp:login')
+def update_booking_status(request, booking_id):
+    if request.method == 'POST':
+        booking = get_object_or_404(Booking, booking_id=booking_id)
+        new_status = request.POST.get('status')
+        if new_status in dict(Booking.STATUS_CHOICES):
+            booking.status = new_status
+            booking.save()
+            messages.success(request, f'Booking #{booking_id} status updated to {booking.get_status_display()}')
+        else:
+            messages.error(request, 'Invalid status provided')
+        return redirect('adminapp:booking_detail', booking_id=booking_id)
+    return HttpResponseNotAllowed(['POST'])
+
+@staff_member_required(login_url='adminapp:login')
+def create_booking(request):
+    if request.method == 'POST':
+        customer_id = request.POST.get('customer')
+        vehicle_id = request.POST.get('vehicle')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        # Create a new booking
+        booking = Booking(
+            user_id=customer_id,
+            vehicle_id=vehicle_id,
+            start_date=start_date,
+            end_date=end_date,
+            total_amount=0,  # Set this based on your business logic
+            status='confirmed'  # Set default status
+        )
+        booking.save()
+        messages.success(request, 'Booking created successfully.')
+        return redirect('adminapp:admin_dashboard')  # Redirect to the dashboard
+
+    # If GET request, render the dashboard with necessary context
+    customers = User.objects.filter(role='user', is_active=True)
+    vehicles = Vehicle.objects.all()  # Assuming you have a Vehicle model
+    return render(request, 'adminapp/admin_dashboard.html', {
+        'customers': customers,
+        'vehicles': vehicles,
+    })
+
+
+
 

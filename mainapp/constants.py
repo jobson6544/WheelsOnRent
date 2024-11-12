@@ -1,0 +1,1 @@
+PLATFORM_FEE_PERCENTAGE = 10  # 10% platform fee 
