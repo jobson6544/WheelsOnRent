@@ -26,4 +26,6 @@ urlpatterns = [
     path('bookings/', views.user_bookings, name='user_bookings'),
     path('booking/<int:booking_id>/', views.booking_detail, name='booking_detail'),
     path('submit-feedback/<int:booking_id>/', views.submit_feedback, name='submit_feedback'),
+    path('chatbot/response/', views.chatbot_response, name='chatbot_response'),
+    path('chatbot/message/', views.chatbot_message, name='chatbot_message'),
 ]

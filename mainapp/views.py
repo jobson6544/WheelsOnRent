@@ -26,12 +26,22 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.csrf import csrf_exempt
+import json  # Also make sure this is imported
+from openai import OpenAI
+import os
 
 User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+# Initialize OpenAI client with GitHub model configuration
+client = OpenAI(
+    base_url="https://models.inference.ai.azure.com",
+    api_key=os.environ["GITHUB_TOKEN"],
+)
 
 def index(request):
     return render(request, 'index.html')
@@ -699,3 +709,157 @@ def submit_feedback(request, booking_id):
             'message': f'An error occurred: {str(e)}'
         })
 
+@csrf_exempt
+def chatbot_message(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user_message = data.get('message', '')
+            
+            # Get user info if logged in
+            user_context = ""
+            greeting = "Hello! Welcome to WheelsOnRent."
+            
+            if request.user.is_authenticated:
+                user = request.user
+                # Get user's name
+                user_name = user.get_full_name() or user.username
+                greeting = f"Hello {user_name}! Welcome back to WheelsOnRent."
+                
+                # Get user's current bookings
+                current_bookings = Booking.objects.filter(
+                    user=user, 
+                    status__in=['pending', 'confirmed']
+                ).order_by('-start_date')
+                
+                if current_bookings.exists():
+                    latest_booking = current_bookings[0]
+                    user_context = f"""
+                    Customer Name: {user_name}
+                    Current Booking:
+                    - Vehicle: {latest_booking.vehicle.model}
+                    - Start Date: {latest_booking.start_date}
+                    - End Date: {latest_booking.end_date}
+                    - Status: {latest_booking.status}
+                    """
+                else:
+                    user_context = f"Customer Name: {user_name}\nNo current bookings."
+
+            # Get available vehicles and format them nicely
+            available_vehicles = Vehicle.objects.filter(status=1)
+            vehicle_info = "\n".join([
+                f"🚗 {v.model} ({v.year})\n"
+                f"   💰 Daily Rate: ₹{v.rental_rate:,}\n"
+                f"   ✨ Features: {v.features}\n"
+                "   ──────────────"
+                for v in available_vehicles
+            ])
+
+            try:
+                response = client.chat.completions.create(
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": f"""You are a helpful assistant for WheelsOnRent, a car rental website.
+                            
+                            {user_context}
+                            
+                            Our Premium Vehicle Collection:
+                            {vehicle_info}
+                            
+                            Help customers with:
+                            - Finding suitable vehicles from the list above
+                            - Providing accurate pricing information
+                            - Explaining booking process
+                            - Answering questions about rental policies
+                            
+                            Always address the customer by name if available.
+                            Keep responses friendly and concise."""
+                        },
+                        {
+                            "role": "user",
+                            "content": user_message,
+                        }
+                    ],
+                    model="gpt-4o",
+                    temperature=0.7,
+                    max_tokens=4096,
+                    top_p=1
+                )
+
+                # Get AI response and add greeting for first-time messages
+                ai_response = response.choices[0].message.content
+                if request.user.is_authenticated:
+                    ai_response = f"{greeting}\n\n{ai_response}"
+
+                return JsonResponse({
+                    'status': 'success',
+                    'message': ai_response
+                })
+
+            except Exception as e:
+                logger.error(f"AI model error: {str(e)}")
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Error getting response from AI model'
+                }, status=500)
+
+        except Exception as e:
+            logger.error(f"Error: {str(e)}")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'An error occurred'
+            }, status=500)
+
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Method not allowed'
+    }, status=405)
+
+@csrf_exempt
+def chatbot_response(request):
+    if request.method == 'POST':
+        message = request.POST.get('message', '')
+        
+        # Get personalized responses if user is logged in
+        if request.user.is_authenticated:
+            user = request.user
+            responses = {
+                'hi': f'Hello {user.get_full_name() or user.username}! How can I help you today?',
+                'hello': f'Hi {user.get_full_name() or user.username}! How can I assist you?',
+                'my bookings': 'Let me check your bookings...',
+                'booking': 'To make a booking, please browse our vehicles and click the "Book Now" button on your preferred vehicle.',
+                'cancel': 'You can cancel your booking from your booking history page, at least 24 hours before the start time.',
+                'payment': 'We accept all major credit cards and provide secure payment processing.',
+                'contact': 'You can reach our support team at support@wheelsonrent.com',
+                'price': 'Our prices vary depending on the vehicle. Please check individual vehicle listings for exact rates.',
+                'location': 'We operate in multiple locations. You can find specific location details on each vehicle listing.',
+            }
+            
+            if message.lower().strip() == 'my bookings':
+                current_bookings = Booking.objects.filter(user=user, status__in=['pending', 'confirmed']).order_by('-start_date')
+                if current_bookings.exists():
+                    booking = current_bookings[0]
+                    return JsonResponse({'reply': f'Your current booking is for a {booking.vehicle.model}, from {booking.start_date} to {booking.end_date}. Status: {booking.status}'})
+                else:
+                    return JsonResponse({'reply': 'You have no current bookings.'})
+        else:
+            responses = {
+                'hi': 'Hello! How can I help you today?',
+                'hello': 'Hi there! How can I assist you?',
+                'booking': 'To make a booking, please browse our vehicles and click the "Book Now" button on your preferred vehicle.',
+                'cancel': 'You can cancel your booking from your booking history page, at least 24 hours before the start time.',
+                'payment': 'We accept all major credit cards and provide secure payment processing.',
+                'contact': 'You can reach our support team at support@wheelsonrent.com',
+                'price': 'Our prices vary depending on the vehicle. Please check individual vehicle listings for exact rates.',
+                'location': 'We operate in multiple locations. You can find specific location details on each vehicle listing.',
+            }
+
+        # Default response if no keyword matches
+        reply = responses.get(message.lower().strip(), 
+            "I'm here to help with bookings, cancellations, payments, and general inquiries. "
+            "Could you please be more specific about what you'd like to know?")
+
+        return JsonResponse({'reply': reply})
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)

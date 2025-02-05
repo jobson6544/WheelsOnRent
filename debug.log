@@ -179,3 +179,21 @@ INFO 2024-11-12 12:00:25,521 views Can submit feedback: True
 INFO 2024-11-12 12:00:25,521 views Received rating: 4
 INFO 2024-11-12 12:00:25,522 views Received comment: good
 INFO 2024-11-12 12:00:25,528 views Feedback created successfully: 3
+ERROR 2025-02-02 22:40:45,771 views Error: 'Vehicle' object has no attribute 'brand'
+INFO 2025-02-02 22:50:27,370 views Booking view called for vehicle id: 1
+INFO 2025-02-02 22:50:43,664 views Booking view called for vehicle id: 1
+INFO 2025-02-02 22:50:43,666 views POST request received
+INFO 2025-02-02 22:50:43,666 views Start date: 2025-02-03, End date: 2025-02-04
+INFO 2025-02-02 22:50:43,676 views Adjusted dates - Start: 2025-02-03 00:00:00+00:00, End: 2025-02-04 23:59:59.999999+00:00
+INFO 2025-02-02 22:50:43,676 models Checking availability for vehicle 1 from 2025-02-03 00:00:00+00:00 to 2025-02-04 23:59:59.999999+00:00
+INFO 2025-02-02 22:50:43,678 models Overlapping bookings found: 0
+INFO 2025-02-02 22:50:43,680 models Is vehicle available: True
+INFO 2025-02-02 22:50:43,680 views Vehicle is available for the selected dates.
+INFO 2025-02-02 22:50:43,682 views Booking created successfully: 14
+INFO 2025-02-02 22:51:09,531 views Confirmation email sent for booking 14
+ERROR 2025-02-02 22:54:54,019 views Error: Cannot resolve keyword 'created_at' into field. Choices are: booking_id, end_date, feedback, pickup, refund_status, start_date, status, stripe_payment_intent_id, total_amount, user, user_id, vehicle, vehicle_id, vehicle_return
+ERROR 2025-02-02 22:55:27,095 views Error: Cannot resolve keyword 'created_at' into field. Choices are: booking_id, end_date, feedback, pickup, refund_status, start_date, status, stripe_payment_intent_id, total_amount, user, user_id, vehicle, vehicle_id, vehicle_return
+ERROR 2025-02-02 22:59:43,068 views AI model error: name 'chatMessages' is not defined
+ERROR 2025-02-02 23:16:28,787 views AI model error: Error code: 429 - {'error': {'code': 'RateLimitReached', 'message': 'Rate limit of 50 per 86400s exceeded for UserByModelByDay. Please wait 83416 seconds before retrying.', 'details': 'Rate limit of 50 per 86400s exceeded for UserByModelByDay. Please wait 83416 seconds before retrying.'}}
+ERROR 2025-02-03 08:58:57,590 views AI model error: Connection error.
+ERROR 2025-02-03 08:59:59,635 views AI model error: Error code: 429 - {'error': {'code': 'RateLimitReached', 'message': 'Rate limit of 50 per 86400s exceeded for UserByModelByDay. Please wait 48406 seconds before retrying.', 'details': 'Rate limit of 50 per 86400s exceeded for UserByModelByDay. Please wait 48406 seconds before retrying.'}}

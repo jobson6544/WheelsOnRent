@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+
+# GitHub token for AI model
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')  # Set this in your environment variables
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -291,4 +296,10 @@ from django.conf import settings
 print(f"API Key: {settings.OPENWEATHERMAP_API_KEY}")
 
 GOOGLE_MAPS_API_KEY = 'AIzaSyAR5UzoEbsm9hdEdoEP_aHzpBxsVz-ROqI'
+
+# Replace OpenAI settings with GitHub token
+
+AI_BASE_URL = "https://models.inference.ai.azure.com"  # The base URL for the model
+
+
 

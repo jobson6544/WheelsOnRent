@@ -1236,5 +1236,13 @@ def generate_excel_report(data, headers, report_type):
     wb.close()
     return response
 
+def chatbot_response(request):
+    if request.method == 'POST':
+        message = request.POST.get('message')
+        # Add your chatbot logic here
+        response = {'reply': 'This is a sample response'}
+        return JsonResponse(response)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 
