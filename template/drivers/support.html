@@ -1,0 +1,31 @@
+{% extends 'drivers/base.html' %}
+
+{% block title %} - Support{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="pagetitle">
+        <h1>Support</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'drivers:dashboard' %}">Home</a></li>
+                <li class="breadcrumb-item active">Support</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Need Help?</h5>
+                        <!-- Add support content here -->
+                        <p>Support page content will go here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %} 

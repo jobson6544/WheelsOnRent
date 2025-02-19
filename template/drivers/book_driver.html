@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Book Driver</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            {% if driver.profile_photo %}
+                                <img src="{{ driver.profile_photo.url }}" alt="{{ driver.full_name }}" class="img-fluid rounded">
+                            {% else %}
+                                <img src="{% static 'images/default-driver.png' %}" alt="Default Driver Image" class="img-fluid rounded">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <h4>{{ driver.full_name }}</h4>
+                            <p><strong>Experience:</strong> {{ driver.driving_experience }} years</p>
+                            <p><strong>Skills:</strong> {{ driver.get_driving_skill_display }}</p>
+                            <p><strong>Rate:</strong> ₹500 per day</p>
+                            
+                            <form id="bookingForm" method="POST">
+                                {% csrf_token %}
+                                <div class="form-group mb-3">
+                                    <label for="start_date">Start Date and Time:</label>
+                                    <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="end_date">End Date and Time:</label>
+                                    <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="bookButton">
+                                    Book Now
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe('{{ stripe_publishable_key }}');
+const form = document.getElementById('bookingForm');
+const bookButton = document.getElementById('bookButton');
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    bookButton.disabled = true;
+    bookButton.textContent = 'Processing...';
+
+    try {
+        const formData = new FormData(form);
+        const response = await fetch(window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            const { error } = await stripe.redirectToCheckout({
+                sessionId: data.session_id
+            });
+
+            if (error) {
+                throw error;
+            }
+        } else {
+            throw new Error(data.message || 'Booking failed');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message || 'An error occurred. Please try again.');
+    } finally {
+        bookButton.disabled = false;
+        bookButton.textContent = 'Book Now';
+    }
+});
+</script>
+{% endblock %}{% endblock %} 

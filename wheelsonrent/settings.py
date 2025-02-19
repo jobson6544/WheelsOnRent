@@ -62,9 +62,10 @@ INSTALLED_APPS = [
     'adminapp',
     'django.contrib.humanize',
     'crispy_forms',
-    'crispy_bootstrap4',
+    'crispy_bootstrap5',
     'formtools',
-    'widget_tweaks'
+    'widget_tweaks',
+    'drivers'
 ]
 
 
@@ -124,7 +125,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -205,7 +207,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # LOGIN_REDIRECT_URL = 'complete_profile'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
-LOGIN_URL = '/login/'
+LOGIN_URL = 'user_login'
 
 # SOCIAL_AUTH_URL_NAMESPACE = 'social'
 # ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
@@ -232,7 +234,7 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'complete_profile'
 LOGIN_REDIRECT_URL = 'complete_profile'
 
 # Redirect to login page if not logged in
-LOGIN_URL = 'login'
+LOGIN_URL = 'user_login'
 
 # URL to redirect after logout
 LOGOUT_REDIRECT_URL = 'index'
@@ -251,18 +253,27 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {asctime} {message}',
             'style': '{',
         },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+            'formatter': 'simple',
         },
         'file': {
             'class': 'logging.FileHandler',
             'filename': 'debug.log',
+            'formatter': 'verbose',
+        },
+        'driver_file': {
+            'class': 'logging.FileHandler',
+            'filename': 'driver_debug.log',
             'formatter': 'verbose',
         },
     },
@@ -270,10 +281,12 @@ LOGGING = {
         'mainapp': {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
+            'propagate': True,
         },
-        'social_core': {
-            'handlers': ['console', 'file'],
+        'drivers': {
+            'handlers': ['console', 'driver_file'],
             'level': 'DEBUG',
+            'propagate': True,
         },
     },
 }
@@ -300,6 +313,9 @@ GOOGLE_MAPS_API_KEY = 'AIzaSyAR5UzoEbsm9hdEdoEP_aHzpBxsVz-ROqI'
 # Replace OpenAI settings with GitHub token
 
 AI_BASE_URL = "https://models.inference.ai.azure.com"  # The base URL for the model
+
+# Update these settings
+DRIVER_LOGIN_URL = 'drivers:driver_login'  # New setting for drivers
 
 
 

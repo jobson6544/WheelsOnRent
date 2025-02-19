@@ -134,12 +134,12 @@ class Features(models.Model):
         return self.feature_name
 
 class Vehicle(models.Model):
-    STATUS_CHOICES = [
-        (1, 'Available'),
-        (2, 'Rented'),
-        (3, 'Maintenance'),
-        (4, 'Delivered'),
-    ]
+    STATUS_CHOICES = (
+        ('available', 'Available'),
+        ('booked', 'Booked'),
+        ('maintenance', 'Under Maintenance'),
+        ('unavailable', 'Unavailable'),
+    )
 
     FUEL_CHOICES = [
         ('petrol', 'Petrol'),
@@ -157,7 +157,7 @@ class Vehicle(models.Model):
     features = models.ManyToManyField('Features')
     availability = models.BooleanField(default=True)
     rental_rate = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
     fuel_type = models.CharField(max_length=20, choices=FUEL_CHOICES)
     engine_number = models.CharField(max_length=50)
     chassis_number = models.CharField(max_length=50)
@@ -294,15 +294,15 @@ class Vehicle(models.Model):
         return self.bookings.all()  # Assuming you've set up a related_name in the Booking model
 
     def mark_as_rented(self):
-        self.status = 2  # Use the integer value for 'Rented'
+        self.status = 'booked'
         self.save()
 
     def mark_as_returned(self):
-        self.status = 1  # Use the integer value for 'Available'
+        self.status = 'available'
         self.save()
 
     def mark_as_delivered(self):
-        self.status = 4  # Use the integer value for 'Delivered'
+        self.status = 'unavailable'
         self.save()
 
     def get_status_display(self):

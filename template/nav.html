@@ -1,4 +1,3 @@
-
 <header class="site-navbar site-navbar-target" role="banner">
 
     <div class="container">
@@ -26,6 +25,7 @@
               <li><a href="{% url 'vendor:vendor_login' %}" class="nav-link font-weight-bold">Join With Us</a></li>
               {% endif %}
               <li><a href="#" class="nav-link font-weight-bold">Contact</a></li>
+              <li><a href="{% url 'drivers:driver_login' %}" class="nav-link font-weight-bold">Driver Register</a></li>
               {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link font-weight-bold" href="{% url 'user_booking_history' %}">My Bookings</a>

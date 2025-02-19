@@ -202,6 +202,34 @@
         </ul>
       </li><!-- End vehicle Nav -->
 
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#driver-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-person-badge"></i><span>Driver Management</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="driver-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="{% url 'adminapp:pending_drivers' %}">
+              <i class="bi bi-circle"></i><span>Pending Approvals</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'adminapp:approved_drivers' %}">
+              <i class="bi bi-circle"></i><span>Approved Drivers</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'adminapp:rejected_drivers' %}">
+              <i class="bi bi-circle"></i><span>Rejected Drivers</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'adminapp:all_drivers' %}">
+              <i class="bi bi-circle"></i><span>All Drivers</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
     </ul>
 
   </aside><!-- End Sidebar-->

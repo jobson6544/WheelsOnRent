@@ -12,8 +12,9 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
 from .forms import UserRegistrationForm, UserProfileForm, UserEditForm, UserProfileEditForm, FeedbackForm
-from .models import UserProfile, Booking, User, Feedback  # Import User directly from your models
+from .models import UserProfile, Booking, User, Feedback
 from vendor.models import Vehicle
+from drivers.models import Driver, DriverBooking
 from datetime import datetime, timedelta
 import logging
 import stripe
@@ -30,6 +31,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json  # Also make sure this is imported
 from openai import OpenAI
 import os
+from django.db.models import Avg
 
 User = get_user_model()
 
@@ -147,8 +149,37 @@ def complete_profile(request):
         return redirect('home')
 
 def home(request):
-    vehicles = Vehicle.objects.filter(status=1).select_related('vendor', 'model__sub_category__category').prefetch_related('features')
-    return render(request, 'home.html', {'vehicles': vehicles})
+    # Get available vehicles with related data
+    vehicles = Vehicle.objects.filter(
+        status='available',  # Changed from status=1 to status='available'
+        availability=True
+    ).select_related(
+        'vendor', 
+        'model__sub_category__category'
+    ).prefetch_related('features')
+    
+    # Get available drivers who are approved and active
+    available_drivers = Driver.objects.filter(
+        status='approved',
+        availability_status='available',
+        auth__is_active=True
+    ).select_related(
+        'auth'
+    ).annotate(
+        rating_avg=Avg('driver_bookings__reviews__rating')
+    )
+    
+    context = {
+        'vehicles': vehicles,
+        'drivers': available_drivers
+    }
+    
+    # Add debug information
+    print(f"Number of vehicles found: {vehicles.count()}")
+    for vehicle in vehicles:
+        print(f"Vehicle: {vehicle.model}, Status: {vehicle.status}, Available: {vehicle.availability}")
+    
+    return render(request, 'home.html', context)
 
 def success(request):
     return render(request, 'success.html')
@@ -289,8 +320,46 @@ def book_vehicle(request, id):
 
 @login_required
 def user_booking_history(request):
-    bookings = Booking.objects.filter(user=request.user).order_by('-start_date')
-    return render(request, 'user_booking_history.html', {'bookings': bookings})
+    try:
+        # Get vehicle bookings
+        bookings_list = Booking.objects.filter(user=request.user).order_by('-booking_id')
+        paginator = Paginator(bookings_list, 10)  # Show 10 bookings per page
+        page = request.GET.get('page')
+        try:
+            bookings = paginator.page(page)
+        except PageNotAnInteger:
+            bookings = paginator.page(1)
+        except EmptyPage:
+            bookings = paginator.page(paginator.num_pages)
+
+        # Get driver bookings
+        driver_bookings_list = DriverBooking.objects.filter(
+            user=request.user
+        ).select_related(
+            'driver'  # Include driver details
+        ).order_by('-id')
+        
+        driver_paginator = Paginator(driver_bookings_list, 6)
+        driver_page = request.GET.get('driver_page')
+        try:
+            driver_bookings = driver_paginator.page(driver_page)
+        except PageNotAnInteger:
+            driver_bookings = driver_paginator.page(1)
+        except EmptyPage:
+            driver_bookings = driver_paginator.page(driver_paginator.num_pages)
+        
+        context = {
+            'bookings': bookings,
+            'driver_bookings': driver_bookings,
+            'has_bookings': bookings_list.exists(),
+            'has_driver_bookings': driver_bookings_list.exists(),
+            'active_tab': request.GET.get('tab', 'vehicles'),
+        }
+        return render(request, 'user_booking_history.html', context)
+    except Exception as e:
+        logger.error(f"Error in user_booking_history: {str(e)}")
+        messages.error(request, 'An error occurred while retrieving your bookings. Please try again.')
+        return redirect('home')
 
 @login_required
 def cancel_booking(request, booking_id):

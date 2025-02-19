@@ -37,4 +37,13 @@ urlpatterns = [
     path('bookings/export/', views.export_bookings, name='export_bookings'),
     path('bookings/<int:booking_id>/cancel/', views.cancel_booking, name='cancel_booking'),
     path('bookings/<int:booking_id>/update-status/', views.update_booking_status, name='update_booking_status'),
+    path('drivers/pending/', views.pending_drivers, name='pending_drivers'),
+    path('drivers/approved/', views.approved_drivers, name='approved_drivers'),
+    path('drivers/rejected/', views.rejected_drivers, name='rejected_drivers'),
+    path('drivers/all/', views.all_drivers, name='all_drivers'),
+    path('drivers/<int:driver_id>/approve/', views.approve_driver, name='approve_driver'),
+    path('drivers/<int:driver_id>/reject/', views.reject_driver, name='reject_driver'),
+    path('drivers/<int:driver_id>/view/', views.view_driver_details, name='view_driver_details'),
+    path('drivers/document/<int:document_id>/view/', views.view_driver_document, name='view_driver_document'),
+    path('drivers/document/<int:document_id>/verify/', views.verify_driver_document, name='verify_driver_document'),
 ]

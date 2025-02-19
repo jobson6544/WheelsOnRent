@@ -25,6 +25,7 @@ urlpatterns = [
     path('', include('mainapp.urls')),
     path('vendor/', include('vendor.urls', namespace='vendor')),
     path('adminapp/', include('adminapp.urls', namespace='adminapp')),
+    path('drivers/', include('drivers.urls', namespace='drivers')),
     path('auth/', include('social_django.urls', namespace='social')),
 ]
 

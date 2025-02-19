@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Book a Driver</h2>
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Booking Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Booking Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Booking ID:</strong> {{ booking.booking_id }}</p>
+                    <p><strong>Vehicle:</strong> {{ booking.vehicle.model.model_name }}</p>
+                    <p><strong>Trip Dates:</strong> {{ booking.start_date|date:"M d, Y" }} - {{ booking.end_date|date:"M d, Y" }}</p>
+                </div>
+            </div>
+
+            <!-- Driver Selection -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Available Drivers</h5>
+                </div>
+                <div class="card-body">
+                    <form id="driverBookingForm">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            <label for="booking_date">Select Date:</label>
+                            <input type="date" class="form-control" id="booking_date" name="booking_date" 
+                                   min="{{ booking.start_date|date:'Y-m-d' }}" 
+                                   max="{{ booking.end_date|date:'Y-m-d' }}" required>
+                        </div>
+                        
+                        <div class="row">
+                            {% for driver in available_drivers %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        {% if driver.profile_photo %}
+                                        <img src="{{ driver.profile_photo.url }}" class="img-fluid rounded mb-2" style="max-height: 150px;">
+                                        {% endif %}
+                                        <h5 class="card-title">{{ driver.full_name }}</h5>
+                                        <p class="card-text">
+                                            Experience: {{ driver.driving_experience }} years<br>
+                                            Skills: {{ driver.get_driving_skill_display }}
+                                        </p>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="driver_id" 
+                                                   value="{{ driver.id }}" id="driver_{{ driver.id }}" required>
+                                            <label class="form-check-label" for="driver_{{ driver.id }}">
+                                                Select Driver
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12">
+                                <p class="text-center">No drivers available for the selected date.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mt-3" id="bookDriverBtn">
+                            Book Driver (₹500)
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Stripe.js -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe('{{ stripe_publishable_key }}');
+
+document.getElementById('driverBookingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const button = document.getElementById('bookDriverBtn');
+    button.disabled = true;
+    button.innerHTML = 'Processing...';
+    
+    try {
+        const formData = new FormData(this);
+        const response = await fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            // Redirect to Stripe checkout
+            const result = await stripe.redirectToCheckout({
+                sessionId: data.session_id
+            });
+            
+            if (result.error) {
+                alert(result.error.message);
+            }
+        } else {
+            alert(data.message || 'An error occurred while booking the driver.');
+        }
+    } catch (error) {
+        console.error('Booking error:', error);
+        alert('An error occurred. Please try again.');
+    } finally {
+        button.disabled = false;
+        button.innerHTML = 'Book Driver (₹500)';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,308 @@
+{% load static %}
+<header id="header" class="header fixed-top">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <!-- Logo and Brand -->
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'drivers:dashboard' %}">
+                <img src="{% static 'img/logo.png' %}" alt="Logo" class="me-2" style="height: 35px;" onerror="this.style.display='none'">
+                <span>WheelsOnRent</span>
+            </a>
+
+            <!-- Sidebar Toggle Button -->
+            <button class="btn toggle-sidebar-btn d-lg-none">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Navbar Toggler -->
+            <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <i class="fas fa-ellipsis-v text-white"></i>
+            </button>
+
+            <!-- Navbar Content -->
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <!-- Search Form -->
+                <form class="search-form d-flex ms-auto my-3 my-lg-0">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search...">
+                        <button class="btn btn-outline-light" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Right-aligned nav items -->
+                <ul class="navbar-nav ms-auto">
+                    <!-- Notifications -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle position-relative" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                3
+                                <span class="visually-hidden">unread notifications</span>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end notifications">
+                            <li class="dropdown-header">
+                                You have 3 new notifications
+                                <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="notification-item">
+                                <i class="fas fa-car text-primary"></i>
+                                <div>
+                                    <h4>New booking request</h4>
+                                    <p>You have a new trip request from John Doe</p>
+                                    <p>30 min. ago</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Profile -->
+                    <li class="nav-item dropdown pe-3">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            {% if driver.profile_photo %}
+                                <img src="{{ driver.profile_photo.url }}" alt="Profile" class="rounded-circle" width="32">
+                            {% else %}
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-user text-primary"></i>
+                                </div>
+                            {% endif %}
+                            <span class="d-none d-md-block dropdown-toggle ps-2 text-white">{{ driver.full_name }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end profile">
+                            <li class="dropdown-header">
+                                <h6>{{ driver.full_name }}</h6>
+                                <span>Professional Driver</span>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'drivers:profile' %}">
+                                    <i class="fas fa-user me-2"></i>
+                                    <span>My Profile</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'drivers:settings' %}">
+                                    <i class="fas fa-cog me-2"></i>
+                                    <span>Settings</span>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'drivers:driver_logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>
+                                    <span>Sign Out</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <style>
+    /* Header and Navbar Styles */
+    .header {
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+        padding: 0;
+        transition: all 0.5s;
+        z-index: 997;
+        height: 60px;
+        box-shadow: 0 2px 20px rgba(1, 41, 112, 0.1);
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+    }
+
+    /* Main Content Spacing */
+    main {
+        margin-top: 60px; /* Match header height */
+        min-height: calc(100vh - 60px);
+        padding: 20px;
+        transition: all 0.3s;
+    }
+
+    .navbar {
+        padding: 0;
+        height: 60px;
+    }
+
+    /* Responsive Container Padding */
+    .container-fluid {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    /* Brand Styles */
+    .navbar-brand {
+        color: #fff !important;
+        font-size: 1.6rem;
+        font-weight: 700;
+        padding: 0;
+        margin-right: 30px;
+    }
+
+    .navbar-brand span {
+        opacity: 1;
+        transition: 0.3s;
+    }
+
+    /* Search Form Styles */
+    .search-form {
+        max-width: 400px;
+        margin: 0 20px;
+    }
+
+    .search-form input {
+        border: 0;
+        font-size: 14px;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 7px 38px 7px 8px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+        transition: 0.3s;
+    }
+
+    .search-form input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Navbar Items Spacing */
+    .navbar-nav {
+        margin-left: auto;
+        align-items: center;
+    }
+
+    .nav-item {
+        padding: 0 8px;
+    }
+
+    .nav-link {
+        color: #fff !important;
+        padding: 10px 0;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 1199px) {
+        .navbar-brand span {
+            display: none;
+        }
+
+        .container-fluid {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        main {
+            margin-left: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .search-form {
+            display: none;
+        }
+
+        .nav-item {
+            padding: 0 5px;
+        }
+
+        .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    }
+
+    /* Dropdown Menus */
+    .navbar .dropdown-menu {
+        margin-top: 5px;
+        border: 0;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 5px 30px rgba(1, 41, 112, 0.1);
+        background: #fff;
+    }
+
+    .navbar .dropdown-menu .dropdown-header {
+        padding: 10px 15px;
+    }
+
+    .navbar .dropdown-menu .dropdown-header h6 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #012970;
+    }
+
+    .navbar .dropdown-menu .dropdown-header span {
+        font-size: 14px;
+        color: #899bbd;
+    }
+
+    .navbar .dropdown-item {
+        padding: 10px 15px;
+        transition: 0.3s;
+    }
+
+    .navbar .dropdown-item:hover {
+        background-color: #f6f9ff;
+    }
+
+    .navbar .dropdown-item i {
+        margin-right: 10px;
+        font-size: 18px;
+        color: #4154f1;
+    }
+
+    .notifications {
+        min-width: 300px;
+    }
+
+    .notifications .notification-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 10px;
+        transition: 0.3s;
+    }
+
+    .notifications .notification-item i {
+        margin: 0 20px 0 10px;
+        font-size: 24px;
+    }
+
+    .notifications .notification-item h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .notifications .notification-item p {
+        font-size: 13px;
+        margin-bottom: 3px;
+        color: #919191;
+    }
+
+    .toggle-sidebar-btn {
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        height: 40px;
+        width: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+    }
+
+    .toggle-sidebar-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+    </style>
+</header> 

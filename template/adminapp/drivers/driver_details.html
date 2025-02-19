@@ -1,0 +1,152 @@
+{% extends 'adminapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Driver Details</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'adminapp:dashboard' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'adminapp:all_drivers' %}">Drivers</a></li>
+                <li class="breadcrumb-item active">Details</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section profile">
+        <div class="row">
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                        {% if driver.profile_photo %}
+                            <img src="{{ driver.profile_photo.url }}" alt="Profile" class="rounded-circle">
+                        {% else %}
+                            <img src="{% static 'adminapp/assets/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
+                        {% endif %}
+                        <h2>{{ driver.full_name }}</h2>
+                        <h3>Driver</h3>
+                        <div class="social-links mt-2">
+                            <span class="badge 
+                                {% if driver.status == 'approved' %}bg-success
+                                {% elif driver.status == 'pending_approval' %}bg-warning
+                                {% else %}bg-danger{% endif %}">
+                                {{ driver.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-body pt-3">
+                        <ul class="nav nav-tabs nav-tabs-bordered">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-documents">Documents</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-logs">Application Logs</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content pt-2">
+                            <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                                <h5 class="card-title">Profile Details</h5>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Full Name</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.full_name }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Email</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.auth.email }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Phone</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.phone_number }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Address</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.address }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">City</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.city }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">License Number</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.license_number }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Experience</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.driving_experience }} years</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">Driving Skill</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.get_driving_skill_display }}</div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade profile-documents" id="profile-documents">
+                                <h5 class="card-title">Documents</h5>
+                                {% for document in documents %}
+                                    <div class="row mb-3">
+                                        <div class="col-lg-3 col-md-4 label">{{ document.get_document_type_display }}</div>
+                                        <div class="col-lg-9 col-md-8 d-flex align-items-center">
+                                            <a href="{% url 'adminapp:view_driver_document' document.id %}" target="_blank" class="btn btn-primary btn-sm me-2">
+                                                <i class="bi bi-file-earmark-text"></i> View Document
+                                            </a>
+                                            {% if not document.is_verified %}
+                                                <a href="{% url 'adminapp:verify_driver_document' document.id %}" class="btn btn-success btn-sm">
+                                                    <i class="bi bi-check-circle"></i> Verify Document
+                                                </a>
+                                            {% else %}
+                                                <span class="badge bg-success ms-2">Verified</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <p>No documents uploaded.</p>
+                                {% endfor %}
+                            </div>
+
+                            <div class="tab-pane fade profile-logs" id="profile-logs">
+                                <h5 class="card-title">Application History</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Action</th>
+                                                <th>Admin</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for log in application_logs %}
+                                                <tr>
+                                                    <td>{{ log.timestamp|date:"M d, Y H:i" }}</td>
+                                                    <td>{{ log.get_action_display }}</td>
+                                                    <td>{{ log.admin.email }}</td>
+                                                    <td>{{ log.notes }}</td>
+                                                </tr>
+                                            {% empty %}
+                                                <tr>
+                                                    <td colspan="4">No application history available.</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %} 

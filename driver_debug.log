@@ -1,0 +1,261 @@
+INFO 2025-02-13 09:43:34,451 views 20616 21804 Driver registration process started
+INFO 2025-02-13 09:43:34,451 views 20616 21804 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['4GrxAqN8WLaYmpWko4sb0I5mSNleuPbZNeRYJzq1Nm0uOEJn541DJxel7bbpoTSf'], 'full_name': ['Adarsh E Umesh '], 'email': ['dosage-awoke-chair@duck.com'], 'password': ['Jobzz@6544'], 'confirm_password': ['Jobzz@6544'], 'phone_number': ['6238330942'], 'license_number': ['tem12563'], 'driving_experience': ['5'], 'driving_skill': ['car'], 'address': ['Kottayam'], 'city': ['Kottayam']}>
+INFO 2025-02-13 09:43:34,451 views 20616 21804 FILES received: <MultiValueDict: {'profile_photo': [<TemporaryUploadedFile: photos.jpg (image/jpeg)>], 'license_document': [<TemporaryUploadedFile: BD_Module_1.pdf (application/pdf)>]}>
+INFO 2025-02-13 09:43:34,451 views 20616 21804 Form instance created
+ERROR 2025-02-13 09:43:34,566 views 20616 21804 Form validation failed. Errors: <ul class="errorlist"><li>__all__<ul class="errorlist nonfield"><li>Email already registered</li></ul></li></ul>
+INFO 2025-02-13 09:43:34,566 views 20616 21804 Invalid form data: <QueryDict: {'csrfmiddlewaretoken': ['4GrxAqN8WLaYmpWko4sb0I5mSNleuPbZNeRYJzq1Nm0uOEJn541DJxel7bbpoTSf'], 'full_name': ['Adarsh E Umesh '], 'email': ['dosage-awoke-chair@duck.com'], 'password': ['Jobzz@6544'], 'confirm_password': ['Jobzz@6544'], 'phone_number': ['6238330942'], 'license_number': ['tem12563'], 'driving_experience': ['5'], 'driving_skill': ['car'], 'address': ['Kottayam'], 'city': ['Kottayam']}>
+INFO 2025-02-13 09:44:45,168 views 4452 14048 Driver registration process started
+INFO 2025-02-13 09:44:45,168 views 4452 14048 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['4GrxAqN8WLaYmpWko4sb0I5mSNleuPbZNeRYJzq1Nm0uOEJn541DJxel7bbpoTSf'], 'full_name': ['Adarsh E Umesh '], 'email': ['dosage-awoke-chair@duck.com'], 'password': ['Jobzz@6544'], 'confirm_password': ['Jobzz@6544'], 'phone_number': ['6238330942'], 'license_number': ['tem12563'], 'driving_experience': ['5'], 'driving_skill': ['car'], 'address': ['Kottayam'], 'city': ['Kottayam']}>
+INFO 2025-02-13 09:44:45,168 views 4452 14048 FILES received: <MultiValueDict: {'profile_photo': [<TemporaryUploadedFile: photos.jpg (image/jpeg)>], 'license_document': [<TemporaryUploadedFile: BD_Module_1.pdf (application/pdf)>]}>
+ERROR 2025-02-13 09:44:45,249 views 4452 14048 Form validation failed. Errors: <ul class="errorlist"><li>email<ul class="errorlist"><li>This email address is already registered. Please use a different email or login to your existing account.</li></ul></li></ul>
+INFO 2025-02-13 09:45:14,556 views 4452 18916 Driver registration process started
+INFO 2025-02-13 09:45:14,556 views 4452 18916 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['idTX3Ut5ZaGQWoD1WcoPy9y8Zys0j4EV1Ljoc36YQLwmoDq4DcXhhYH7eWibd8lb'], 'full_name': ['Adarsh E Umesh '], 'email': ['affair-veal-ovary@duck.com'], 'password': ['Jobzz@6544'], 'confirm_password': ['Jobzz@6544'], 'phone_number': ['6238330942'], 'license_number': ['tem12563'], 'driving_experience': ['5'], 'driving_skill': ['car'], 'address': ['Kottayam'], 'city': ['Kottayam']}>
+INFO 2025-02-13 09:45:14,557 views 4452 18916 FILES received: <MultiValueDict: {'profile_photo': [<TemporaryUploadedFile: photos.jpg (image/jpeg)>], 'license_document': [<TemporaryUploadedFile: BD_Module_1.pdf (application/pdf)>]}>
+INFO 2025-02-13 09:45:14,955 views 4452 18916 DriverAuth created for email: affair-veal-ovary@duck.com
+ERROR 2025-02-13 09:45:14,956 views 4452 18916 Registration failed with error: UNIQUE constraint failed: drivers_driver.license_number
+ERROR 2025-02-13 09:45:14,956 views 4452 18916 Full error traceback:
+Traceback (most recent call last):
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\sqlite3\base.py", line 329, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: drivers_driver.license_number
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\S9\wheelsonrent\drivers\views.py", line 140, in register_driver
+    driver = Driver.objects.create(
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 679, in create
+    obj.save(force_insert=True, using=self.db)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 822, in save
+    self.save_base(
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 909, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 1071, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 1112, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1847, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\compiler.py", line 1823, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\sqlite3\base.py", line 329, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: UNIQUE constraint failed: drivers_driver.license_number
+INFO 2025-02-13 09:46:11,360 views 4452 8512 Driver registration process started
+INFO 2025-02-13 09:46:11,361 views 4452 8512 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['CDYoKHiNNyX6daWANY7Gy0RrX6v8sUXPlboPTQVGE9NCFpJDuYG8hP0qculjmYE5'], 'full_name': ['Adarsh E Umesh '], 'email': ['affair-veal-ovary@duck.com'], 'password': ['Jobzz@6544`'], 'confirm_password': ['Jobzz@6544'], 'phone_number': ['6238330942'], 'license_number': ['tem12589'], 'driving_experience': ['5'], 'driving_skill': ['car'], 'address': ['Kottayam'], 'city': ['Kottayam']}>
+INFO 2025-02-13 09:46:11,361 views 4452 8512 FILES received: <MultiValueDict: {'profile_photo': [<TemporaryUploadedFile: photos.jpg (image/jpeg)>], 'license_document': [<TemporaryUploadedFile: BD_Module_1.pdf (application/pdf)>]}>
+ERROR 2025-02-13 09:46:11,372 views 4452 8512 Form validation failed. Errors: <ul class="errorlist"><li>email<ul class="errorlist"><li>This email address is already registered. Please use a different email or login to your existing account.</li></ul></li><li>__all__<ul class="errorlist nonfield"><li>Passwords do not match</li></ul></li></ul>
+INFO 2025-02-13 09:46:43,636 views 4452 18596 Driver registration process started
+INFO 2025-02-13 09:46:43,637 views 4452 18596 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['YivZZ9GTSuFVuBfNYJBUm4zLhGMgVJS9HQVq8ijMJ5vrWQ2QFJam5TIKw4CrPNzp'], 'full_name': ['Adarsh E Umesh '], 'email': ['dosage-awoke-chair@duck.com'], 'password': ['Jobzz@6544'], 'confirm_password': ['Jobzz@6544'], 'phone_number': ['6238330942'], 'license_number': ['tem12586'], 'driving_experience': ['5'], 'driving_skill': ['car'], 'address': ['Kottayam'], 'city': ['Kottayam']}>
+INFO 2025-02-13 09:46:43,637 views 4452 18596 FILES received: <MultiValueDict: {'profile_photo': [<TemporaryUploadedFile: photos.jpg (image/jpeg)>], 'license_document': [<TemporaryUploadedFile: BD_Module_1.pdf (application/pdf)>]}>
+ERROR 2025-02-13 09:46:43,648 views 4452 18596 Form validation failed. Errors: <ul class="errorlist"><li>email<ul class="errorlist"><li>This email address is already registered. Please use a different email or login to your existing account.</li></ul></li></ul>
+INFO 2025-02-13 10:00:03,347 views 3096 18856 Driver registration process started
+INFO 2025-02-13 10:00:03,347 views 3096 18856 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['YivZZ9GTSuFVuBfNYJBUm4zLhGMgVJS9HQVq8ijMJ5vrWQ2QFJam5TIKw4CrPNzp'], 'full_name': ['Adarsh E Umesh '], 'email': ['dosage-awoke-chair@duck.com'], 'password': ['Jobzz@6544'], 'confirm_password': ['Jobzz@6544'], 'phone_number': ['6238330942'], 'license_number': ['tem12586'], 'driving_experience': ['5'], 'driving_skill': ['car'], 'address': ['Kottayam'], 'city': ['Kottayam']}>
+INFO 2025-02-13 10:00:03,347 views 3096 18856 FILES received: <MultiValueDict: {'profile_photo': [<TemporaryUploadedFile: photos.jpg (image/jpeg)>], 'license_document': [<TemporaryUploadedFile: BD_Module_1.pdf (application/pdf)>]}>
+ERROR 2025-02-13 10:00:03,448 views 3096 18856 Form validation failed. Errors: <ul class="errorlist"><li>email<ul class="errorlist"><li>This email address is already registered. Please use a different email or login to your existing account.</li></ul></li></ul>
+INFO 2025-02-13 10:00:43,191 views 3096 11972 Driver registration process started
+INFO 2025-02-13 10:00:43,191 views 3096 11972 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['nPDlxlEdvMWHotJafYn9g03HFL7woyhI6n3MGuh6mnMdQIwdWYWBZPcGU9XHiCYY'], 'full_name': ['Adarsh E Umesh '], 'email': ['study-overhear-wow@duck.com'], 'password': ['Jobzz@6544'], 'confirm_password': ['Jobzz@6544'], 'phone_number': ['6238330942'], 'license_number': ['tem123987'], 'driving_experience': ['5'], 'driving_skill': ['car'], 'address': ['Kottayam'], 'city': ['Kottayam']}>
+INFO 2025-02-13 10:00:43,191 views 3096 11972 FILES received: <MultiValueDict: {'profile_photo': [<TemporaryUploadedFile: photos.jpg (image/jpeg)>], 'license_document': [<TemporaryUploadedFile: BD_Module_1.pdf (application/pdf)>]}>
+INFO 2025-02-13 10:00:43,601 views 3096 11972 DriverAuth created for email: study-overhear-wow@duck.com
+INFO 2025-02-13 10:00:43,608 views 3096 11972 Driver profile created for: Adarsh E Umesh
+INFO 2025-02-13 10:00:43,640 views 3096 11972 License document uploaded
+INFO 2025-02-13 10:00:43,640 views 3096 11972 Session variables set
+INFO 2025-02-13 10:00:43,640 views 3096 11972 Registration completed successfully
+INFO 2025-02-13 10:02:52,464 views 3096 4936 Driver registration process started
+INFO 2025-02-14 14:15:28,947 views 27484 24276 Driver registration process started
+INFO 2025-02-18 10:03:35,982 views 2820 26544 Driver registration process started
+INFO 2025-02-18 14:39:04,565 views 432 15528 Driver registration process started
+INFO 2025-02-18 14:40:54,556 views 432 13316 Driver registration process started
+INFO 2025-02-18 14:43:42,228 views 432 18820 Driver registration process started
+INFO 2025-02-18 15:34:44,230 views 2624 6416 Driver registration process started
+INFO 2025-02-18 16:02:42,130 views 2624 16080 Driver registration process started
+INFO 2025-02-18 16:04:14,296 views 2624 13836 Driver registration process started
+INFO 2025-02-18 16:04:14,297 views 2624 13836 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['mOOajGc03ZULJekEVNM8niPnOirkqkboKKHqVYiIEzpfC17rPZFSfFqNLb7Ug1wC'], 'full_name': ['Adarsh E Umesh '], 'email': ['roykmathew@duck.com'], 'password': ['Jobzz@6544'], 'confirm_password': ['Jobzz@6544'], 'phone_number': ['6238330942'], 'license_number': ['Tem156'], 'driving_experience': ['2'], 'driving_skill': ['bike'], 'address': ['Manimala'], 'city': ['Kottayam']}>
+INFO 2025-02-18 16:04:14,297 views 2624 13836 FILES received: <MultiValueDict: {'profile_photo': [<InMemoryUploadedFile: photos.jpg (image/jpeg)>], 'license_document': [<InMemoryUploadedFile: Abin Jomon.png (image/png)>]}>
+INFO 2025-02-18 16:04:14,702 views 2624 13836 DriverAuth created for email: roykmathew@duck.com
+INFO 2025-02-18 16:04:14,708 views 2624 13836 Driver profile created for: Adarsh E Umesh
+ERROR 2025-02-18 16:04:14,708 views 2624 13836 Registration failed with error: DriverDocument() got unexpected keyword arguments: 'license_document'
+ERROR 2025-02-18 16:04:14,708 views 2624 13836 Full error traceback:
+Traceback (most recent call last):
+  File "D:\S9\wheelsonrent\drivers\views.py", line 188, in register_driver
+    DriverDocument.objects.create(
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 677, in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 567, in __init__
+    raise TypeError(
+TypeError: DriverDocument() got unexpected keyword arguments: 'license_document'
+INFO 2025-02-18 16:14:20,320 views 4228 17664 Driver registration process started
+INFO 2025-02-18 16:14:20,320 views 4228 17664 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['nf81YBiDNGQkRlcrSIZ6Gl5bwle8lTAmLb1hATologlOK8ZeMUSQyIGBteUIbAVA'], 'full_name': ['Adarsh E Umesh '], 'email': ['roykmathew@duck.com'], 'password': ['Jobzz@6544'], 'confirm_password': ['Jobzz@6544'], 'phone_number': ['6238330942'], 'license_number': ['Tem156'], 'driving_experience': ['2'], 'driving_skill': ['bike'], 'address': ['Manimala'], 'city': ['Kottayam']}>
+INFO 2025-02-18 16:14:20,322 views 4228 17664 FILES received: <MultiValueDict: {'profile_photo': [<TemporaryUploadedFile: IMG_23-09-01_20-25-27-134.jpg (image/jpeg)>], 'license_document': [<TemporaryUploadedFile: Abin Jomon.png (image/png)>]}>
+ERROR 2025-02-18 16:14:20,324 views 4228 17664 Registration failed with error: UNIQUE constraint failed: drivers_driverauth.email
+ERROR 2025-02-18 16:14:20,384 views 4228 17664 Full error traceback:
+Traceback (most recent call last):
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\sqlite3\base.py", line 329, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: drivers_driverauth.email
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\S9\wheelsonrent\drivers\views.py", line 127, in register_driver
+    driver_auth = DriverAuth.objects.create(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 679, in create
+    obj.save(force_insert=True, using=self.db)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 822, in save
+    self.save_base(
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 909, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 1071, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 1112, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1847, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\compiler.py", line 1823, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\sqlite3\base.py", line 329, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: UNIQUE constraint failed: drivers_driverauth.email
+
+INFO 2025-02-18 16:17:05,273 views 4228 17664 Driver registration process started
+INFO 2025-02-18 16:17:05,274 views 4228 17664 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['nf81YBiDNGQkRlcrSIZ6Gl5bwle8lTAmLb1hATologlOK8ZeMUSQyIGBteUIbAVA'], 'full_name': ['Adarsh E Umesh '], 'email': ['roykmathew@duck.com'], 'password': ['Jobzz@6544'], 'confirm_password': ['Jobzz@6544'], 'phone_number': ['6238330942'], 'license_number': ['Tem156'], 'driving_experience': ['2'], 'driving_skill': ['bike'], 'address': ['Manimala'], 'city': ['Kottayam']}>
+INFO 2025-02-18 16:17:05,275 views 4228 17664 FILES received: <MultiValueDict: {'profile_photo': [<TemporaryUploadedFile: IMG_23-09-01_20-25-27-134.jpg (image/jpeg)>], 'license_document': [<TemporaryUploadedFile: Abin Jomon.png (image/png)>]}>
+ERROR 2025-02-18 16:17:05,276 views 4228 17664 Registration failed with error: UNIQUE constraint failed: drivers_driverauth.email
+ERROR 2025-02-18 16:17:05,278 views 4228 17664 Full error traceback:
+Traceback (most recent call last):
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\sqlite3\base.py", line 329, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: drivers_driverauth.email
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\S9\wheelsonrent\drivers\views.py", line 127, in register_driver
+    driver_auth = DriverAuth.objects.create(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 679, in create
+    obj.save(force_insert=True, using=self.db)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 822, in save
+    self.save_base(
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 909, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 1071, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 1112, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1847, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\compiler.py", line 1823, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\backends\sqlite3\base.py", line 329, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: UNIQUE constraint failed: drivers_driverauth.email
+
+INFO 2025-02-19 09:07:34,873 views 6780 21244 Driver registration process started
+INFO 2025-02-19 09:07:35,263 views 6780 21244 DriverAuth created for email: blip-stunner-woozy@duck.com
+INFO 2025-02-19 09:07:35,276 views 6780 21244 Driver profile created for: Albin K Roby
+INFO 2025-02-19 09:07:35,292 views 6780 21244 License document uploaded successfully
+ERROR 2025-02-19 21:58:02,905 views 36168 28480 Error in driver booking: Unexpected error communicating with Stripe.  If this problem persists,
+let us know at support@stripe.com.
+
+(Network error: ConnectionError: HTTPSConnectionPool(host='api.stripe.com', port=443): Max retries exceeded with url: /v1/checkout/sessions (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000205E8FFE870>: Failed to resolve 'api.stripe.com' ([Errno 11001] getaddrinfo failed)")))
+ERROR 2025-02-19 23:14:15,697 views 12364 21404 Error in driver booking: Request req_ypuS0f1X2qP87h: Invalid non-negative integer

@@ -45,6 +45,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from datetime import datetime
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Spacer, Paragraph
+import os
 
 Booking = apps.get_model('mainapp', 'Booking')
 User = get_user_model()
@@ -167,20 +168,25 @@ def add_vehicle(request):
         vehicle_form = VehicleForm(request.POST, request.FILES, vendor=request.user.vendor)
         document_form = VehicleDocumentForm(request.POST, request.FILES)
         
-        logger.debug(f"POST data: {request.POST}")
-        logger.debug(f"FILES data: {request.FILES}")
-        
         if vehicle_form.is_valid() and document_form.is_valid():
             logger.debug("Both forms are valid")
             try:
                 with transaction.atomic():
                     # Save Vehicle
                     vehicle = vehicle_form.save(commit=False)
-                    vehicle.vendor = request.user.vendor  # Set the vendor to the logged-in user
+                    vehicle.vendor = request.user.vendor
+                    
+                    # Set initial rental rate if not provided
+                    if not vehicle.rental_rate:
+                        try:
+                            predicted_price = vehicle.predict_price()
+                            vehicle.rental_rate = predicted_price
+                        except Exception as e:
+                            logger.error(f"Price prediction failed: {str(e)}")
+                            vehicle.rental_rate = 50.00  # Default price
+                    
                     vehicle.save()
-                    logger.info(f"Vehicle saved to database: {vehicle.id}")
-                    vehicle_form.save_m2m()  # Save many-to-many relationships
-                    logger.debug("Many-to-many relationships saved")
+                    vehicle_form.save_m2m()
                     
                     # Save Registration
                     registration = Registration.objects.create(
@@ -188,7 +194,6 @@ def add_vehicle(request):
                         registration_date=vehicle_form.cleaned_data['registration_date'],
                         registration_end_date=vehicle_form.cleaned_data['registration_end_date']
                     )
-                    logger.debug(f"Registration created: {registration.__dict__}")
                     vehicle.registration = registration
                     vehicle.save()
                     
@@ -217,27 +222,18 @@ def add_vehicle(request):
                     document.save()
                     logger.info(f"Document saved: {document.id}")
                     
-                    # Predict price
-                    predicted_price = vehicle.predict_price()
-                    
-                    # You can choose to set this as the initial rental rate or just display it
-                    vehicle.rental_rate = predicted_price
-                    vehicle.save()
-
-                    messages.success(request, f'Vehicle added successfully! Suggested rental rate: ${predicted_price:.2f} per day.')
-                    logger.info("Vehicle addition process completed successfully")
+                    messages.success(request, f'Vehicle added successfully! Initial rental rate set to ${vehicle.rental_rate:.2f} per day.')
                     return redirect('vendor:vendor_vehicles')
+                    
             except Exception as e:
                 logger.error(f"Error saving vehicle: {str(e)}", exc_info=True)
-                messages.error(request, f"An error occurred while saving the vehicle: {str(e)}")
-                # Rollback the vehicle save if any error occurs
+                messages.error(request, "An error occurred while saving the vehicle. Please try again.")
                 if 'vehicle' in locals():
                     vehicle.delete()
         else:
             logger.error(f"Form errors: {vehicle_form.errors}, {document_form.errors}")
             messages.error(request, 'Please correct the errors in the form.')
     else:
-        logger.debug("GET request received, initializing forms")
         vehicle_form = VehicleForm(vendor=request.user.vendor)
         document_form = VehicleDocumentForm()
     
@@ -246,18 +242,33 @@ def add_vehicle(request):
         'document_form': document_form,
         'today_date': timezone.now().date(),
     }
-    logger.debug("Rendering add_vehicle template")
     return render(request, 'vendor/add_vehicle.html', context)
 
 @never_cache
 @vendor_required
 def vendor_vehicles(request):
-    vehicles = Vehicle.objects.filter(vendor__user=request.user, status=1).select_related(
-        'model__sub_category__category', 'registration'
-    ).prefetch_related('features')
-    for vehicle in vehicles:
-        print(f"Vehicle ID: {vehicle.id}")  # Add this line for debugging
-    return render(request, 'vendor/vehicle_list.html', {'vehicles': vehicles})
+    try:
+        # Get all vehicles for the current vendor
+        vehicles = Vehicle.objects.filter(
+            vendor=request.user.vendor
+        ).select_related(
+            'model',
+            'model__sub_category',
+            'model__sub_category__category',
+            'registration',
+            'insurance'
+        ).prefetch_related('features')
+
+        context = {
+            'vehicles': vehicles,
+            'has_vehicles': vehicles.exists(),
+            'active_page': 'vehicles'
+        }
+        return render(request, 'vendor/vehicle_list.html', context)
+    except Exception as e:
+        logger.error(f"Error in vendor_vehicles view: {str(e)}")
+        messages.error(request, "An error occurred while retrieving vehicles.")
+        return redirect('vendor:dashboard')
 
 @never_cache
 @vendor_required
@@ -720,13 +731,79 @@ def verify_otp(request, booking_id):
 
 @never_cache
 @vendor_required
+@login_required
 def predict_price(request, vehicle_id):
-    vehicle = get_object_or_404(Vehicle, id=vehicle_id, vendor__user=request.user)
-    predicted_price = vehicle.predict_price()
-    vehicle.predicted_price = predicted_price  # Store the predicted price temporarily
-    vehicle.save(update_fields=['predicted_price'])
-    messages.success(request, f'Predicted rental rate for {vehicle.model}: ${predicted_price:.2f} per day.')
-    return redirect('vendor:vehicle_detail', vehicle_id=vehicle.id)
+    try:
+        vehicle = get_object_or_404(Vehicle, id=vehicle_id, vendor=request.user.vendor)
+        
+        # Prepare features for prediction
+        features = np.array([[
+            float(vehicle.year),
+            float(vehicle.mileage),
+            float(vehicle.seating_capacity),
+            1.0 if vehicle.transmission == 'automatic' else 0.0,
+            1.0 if vehicle.air_conditioning else 0.0,
+            float(vehicle.fuel_efficiency),
+            float(vehicle.model.model_year),
+            float(vehicle.features.count()),
+            float({'petrol': 0, 'diesel': 1, 'electric': 2, 'hybrid': 3, 'cng': 4, 'lpg': 5}.get(vehicle.fuel_type, 0)),
+            float(vehicle.rental_rate),
+            float({'available': 1, 'booked': 2, 'maintenance': 3, 'unavailable': 0}.get(vehicle.status, 0)),
+            float(vehicle.created_at.year),
+            float(vehicle.created_at.month),
+            float(vehicle.created_at.day),
+            float(vehicle.updated_at.year),
+            float(vehicle.updated_at.month),
+            float(vehicle.updated_at.day),
+            float(vehicle.vendor.vendor_id),
+            float(vehicle.model.model_id),
+            float(vehicle.registration.id)
+        ]])
+
+        try:
+            # Load the model
+            model_path = os.path.join(settings.BASE_DIR, 'vendor', 'ml_models', 'rental_price_model.joblib')
+            model = joblib.load(model_path)
+            
+            # Make prediction
+            predicted_price = model.predict(features)[0]
+            
+            # Add platform fee
+            platform_fee_multiplier = 1 + (PLATFORM_FEE_PERCENTAGE / 100)
+            final_price = round(float(predicted_price) * platform_fee_multiplier, 2)
+            
+            if request.method == 'POST' and 'update_price' in request.POST:
+                vehicle.rental_rate = final_price
+                vehicle.save()
+                messages.success(request, 'Rental rate updated successfully!')
+                return redirect('vendor:vehicle_detail', vehicle_id=vehicle.id)
+            
+            context = {
+                'vehicle': vehicle,
+                'predicted_price': final_price,
+                'current_price': vehicle.rental_rate,
+                'vehicle_types': vehicle.model.sub_category.category.all()
+            }
+            
+            return render(request, 'vendor/predict_price.html', context)
+            
+        except FileNotFoundError:
+            logger.error("ML model file not found at path: %s", model_path)
+            messages.warning(request, "Using fallback price prediction method.")
+            # Fallback calculation
+            base_price = float(vehicle.rental_rate) if vehicle.rental_rate else 50.0
+            predicted_price = base_price * (1 + (vehicle.features.count() * 0.05))
+            return render(request, 'vendor/predict_price.html', {
+                'vehicle': vehicle,
+                'predicted_price': round(predicted_price, 2),
+                'current_price': vehicle.rental_rate,
+                'vehicle_types': vehicle.model.sub_category.category.all()
+            })
+            
+    except Exception as e:
+        logger.error(f"Error in predict_price view for vehicle {vehicle_id}: {str(e)}", exc_info=True)
+        messages.error(request, "An error occurred while predicting the price.")
+        return redirect('vendor:vendor_vehicles')
 
 @require_http_methods(["GET", "POST"])
 def vendor_forgot_password(request):
@@ -973,268 +1050,125 @@ def generate_report(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
-    # Convert string dates to datetime objects
-    if start_date and end_date:
-        start_date = datetime.strptime(start_date, '%Y-%m-%d')
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
-        # Set time to start and end of day
-        start_date = start_date.replace(hour=0, minute=0, second=0)
-        end_date = end_date.replace(hour=23, minute=59, second=59)
-
-    # Get headers and data based on report type
-    if report_type == 'booking':
-        headers = ['Booking ID', 'Customer', 'Vehicle', 'Start Date', 'End Date', 'Status', 'Amount']
-        data = get_booking_report_data(vendor, start_date, end_date)
-    elif report_type == 'revenue':
-        headers = ['Date', 'Total Bookings', 'Revenue', 'Platform Fees', 'Net Amount']
-        data = get_revenue_report_data(vendor, start_date, end_date)
-    elif report_type == 'vehicle':
-        headers = ['Vehicle ID', 'Model', 'Registration', 'Status', 'Total Bookings', 'Total Revenue']
-        data = get_vehicle_report_data(vendor)
-
-    # If no data found
-    if not data:
-        data = [['No data available for the selected period'] * len(headers)]
-
-    # Generate report in requested format
-    if file_format == 'pdf':
-        return generate_pdf_report(data, headers, report_type)
-    elif file_format == 'excel':
-        return generate_excel_report(data, headers, report_type)
-
-def get_booking_report_data(vendor, start_date, end_date):
-    bookings = Booking.objects.filter(
-        vehicle__vendor=vendor,
-        start_date__range=[start_date, end_date]
-    ).select_related('user', 'vehicle')
-    
-    return [
-        [
-            booking.booking_id,
-            booking.user.get_full_name(),
-            str(booking.vehicle),
-            booking.start_date.strftime('%Y-%m-%d'),
-            booking.end_date.strftime('%Y-%m-%d'),
-            booking.status,
-            float(booking.total_amount)  # Convert to float
-        ] for booking in bookings
-    ]
-
-def get_revenue_report_data(vendor, start_date, end_date):
-    bookings = Booking.objects.filter(
-        vehicle__vendor=vendor,
-        start_date__range=[start_date, end_date],
-        status='returned'
-    ).values('start_date__date').annotate(
-        daily_bookings=Count('booking_id'),
-        daily_revenue=Sum('total_amount')
-    ).order_by('start_date__date')
-
-    report_data = []
-    for booking in bookings:
-        try:
-            date = booking['start_date__date']
-            daily_bookings = booking['daily_bookings']
-            daily_revenue = float(booking['daily_revenue'] or 0)
-            platform_fees = round(daily_revenue * 0.10, 2)
-            net_amount = round(daily_revenue - platform_fees, 2)
-
-            report_data.append([
-                date.strftime('%Y-%m-%d'),
-                daily_bookings,
-                daily_revenue,
-                platform_fees,
-                net_amount
-            ])
-        except Exception as e:
-            logger.error(f"Error processing booking data: {e}")
-            continue
-
-    return report_data
-
-def get_vehicle_report_data(vendor):
-    vehicles = Vehicle.objects.filter(vendor=vendor).annotate(
-        total_bookings=Count('bookings', filter=Q(bookings__status='returned')),
-        total_revenue=Sum('bookings__total_amount', filter=Q(bookings__status='returned'))
-    )
-    
-    return [
-        [
-            vehicle.id,
-            str(vehicle.model),
-            vehicle.registration.registration_number,
-            vehicle.get_status_display(),
-            vehicle.total_bookings or 0,
-            float(vehicle.total_revenue or 0)  # Raw number for Excel
-        ] for vehicle in vehicles
-    ]
-
-# Add these functions after the existing imports
-def generate_pdf_report(data, headers, report_type):
-    # Create the HttpResponse object with PDF headers
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{report_type}_report.pdf"'
-
-    # Create the PDF object using ReportLab
-    buffer = BytesIO()
-    
-    # Set up the document with proper page size and margins
-    doc = SimpleDocTemplate(
-        buffer,
-        pagesize=letter,
-        rightMargin=30,
-        leftMargin=30,
-        topMargin=30,
-        bottomMargin=30,
-        encoding='utf-8'  # Add encoding for ₹ symbol
-    )
-
-    # Create the list to hold the 'Flowables' (elements)
-    elements = []
-
-    # Add title
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=16,
-        spaceAfter=30,
-        alignment=1  # Center alignment
-    )
-    elements.append(Paragraph(f"{report_type.title()} Report", title_style))
-
-    # Format the data for the table
-    formatted_data = []
-    for row in data:
-        formatted_row = []
-        for col, value in enumerate(row):
-            if isinstance(value, (int, float)) and any(word in headers[col].lower() for word in ['amount', 'revenue', 'fees']):
-                formatted_row.append(f"₹{value:,.2f}")
-            elif isinstance(value, str) and value.count('-') == 2:  # Date
-                try:
-                    date_obj = datetime.strptime(value, '%Y-%m-%d')
-                    formatted_row.append(date_obj.strftime('%d-%m-%Y'))
-                except ValueError:
-                    formatted_row.append(value)
-            else:
-                formatted_row.append(str(value))
-        formatted_data.append(formatted_row)
-
-    # Create the table
-    table_data = [headers] + formatted_data
-    
-    # Calculate column widths
-    col_widths = [max(len(str(row[i])) * 7 for row in table_data) for i in range(len(headers))]
-    col_widths = [min(width, 120) for width in col_widths]  # Cap maximum width
-
-    table = Table(table_data, colWidths=col_widths, repeatRows=1)
-
-    # Style the table
-    style = TableStyle([
-        # Header style
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4B5563')),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        
-        # Data style
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 9),
-        ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        
-        # Alternate row colors
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8f9fa')]),
-        
-        # Cell padding
-        ('TOPPADDING', (0, 0), (-1, -1), 6),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-    ])
-
-    table.setStyle(style)
-    elements.append(table)
-
-    # Add timestamp
-    timestamp_style = ParagraphStyle(
-        'Timestamp',
-        parent=styles['Normal'],
-        fontSize=8,
-        textColor=colors.gray,
-        alignment=0,  # Left alignment
-        spaceBefore=20,
-    )
-    timestamp = f"Generated on: {datetime.now().strftime('%d-%m-%Y %H:%M:%S')}"
-    elements.append(Paragraph(timestamp, timestamp_style))
-
     try:
-        # Build the PDF
-        doc.build(elements)
-        pdf = buffer.getvalue()
-        buffer.close()
-        response.write(pdf)
-        return response
-    except Exception as e:
-        logger.error(f"PDF generation error: {str(e)}")
-        return HttpResponse("Error generating PDF", status=500)
+        # Convert string dates to datetime objects
+        if start_date and end_date:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+            start_date = start_date.replace(hour=0, minute=0, second=0)
+            end_date = end_date.replace(hour=23, minute=59, second=59)
 
-def generate_excel_report(data, headers, report_type):
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = f'attachment; filename="{report_type}_report.xlsx"'
-    
-    wb = xlsxwriter.Workbook(response, {'constant_memory': True})
-    ws = wb.add_worksheet()
-    
-    # Add formats
-    header_format = wb.add_format({
-        'bold': True,
-        'bg_color': '#4B5563',
-        'font_color': 'white',
-        'align': 'center',
-        'valign': 'vcenter',
-        'border': 1,
-        'text_wrap': True
-    })
-    
-    date_format = wb.add_format({
-        'num_format': 'yyyy-mm-dd',
-        'align': 'center',
-        'border': 1
-    })
-    
-    currency_format = wb.add_format({
-        'num_format': '[₹]#,##0.00',
-        'align': 'center',
-        'border': 1
-    })
-    
-    number_format = wb.add_format({
-        'align': 'center',
-        'border': 1
-    })
-    
-    # Set column widths
-    for col, header in enumerate(headers):
-        width = max(len(header) + 2, 15)
-        ws.set_column(col, col, width)
-    
-    # Write headers
-    for col, header in enumerate(headers):
-        ws.write(0, col, header, header_format)
-    
-    # Write data
-    for row, row_data in enumerate(data, start=1):
-        for col, value in enumerate(row_data):
-            if isinstance(value, str) and value.count('-') == 2:  # Date
-                ws.write_datetime(row, col, datetime.strptime(value, '%Y-%m-%d'), date_format)
-            elif isinstance(value, (int, float)) and any(word in headers[col].lower() for word in ['amount', 'revenue', 'fees']):
-                ws.write_number(row, col, value, currency_format)
-            else:
-                ws.write(row, col, value, number_format)
-    
-    wb.close()
-    return response
+        # Get data based on report type
+        if report_type == 'booking':
+            headers = ['Booking ID', 'Customer', 'Vehicle', 'Start Date', 'End Date', 'Status', 'Amount']
+            bookings = Booking.objects.filter(vehicle__vendor=vendor)
+            if start_date and end_date:
+                bookings = bookings.filter(created_at__range=[start_date, end_date])
+            
+            table_data = [[
+                booking.booking_id,
+                booking.user.get_full_name(),
+                str(booking.vehicle),
+                booking.start_date.strftime('%Y-%m-%d'),
+                booking.end_date.strftime('%Y-%m-%d'),
+                booking.status,
+                f"₹{booking.total_amount}"
+            ] for booking in bookings]
+
+        elif report_type == 'revenue':
+            headers = ['Month', 'Total Bookings', 'Total Revenue']
+            # Add revenue report logic here
+            pass
+
+        elif report_type == 'vehicle':
+            headers = ['Vehicle', 'Total Bookings', 'Revenue Generated', 'Average Rating']
+            # Add vehicle report logic here
+            pass
+
+        elif report_type == 'feedback':
+            headers = ['Booking ID', 'Customer', 'Vehicle', 'Rating', 'Comment', 'Date']
+            # Add feedback report logic here
+            pass
+
+        # Calculate column widths
+        col_widths = []
+        for i in range(len(headers)):
+            max_width = len(headers[i])
+            for row in table_data:
+                max_width = max(max_width, len(str(row[i])))
+            col_widths.append(max_width * 7)  # Multiply by 7 for better readability
+
+        # Generate report based on format
+        if file_format == 'pdf':
+            buffer = BytesIO()
+            doc = SimpleDocTemplate(buffer, pagesize=letter)
+            elements = []
+            
+            # Add title
+            title = f"{report_type.title()} Report"
+            elements.append(Paragraph(title, getSampleStyleSheet()['Heading1']))
+            
+            # Create table
+            table = Table([headers] + table_data, colWidths=col_widths)
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 14),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, -1), 12),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            elements.append(table)
+            
+            doc.build(elements)
+            pdf = buffer.getvalue()
+            buffer.close()
+            
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{report_type}_report.pdf"'
+            response.write(pdf)
+            return response
+
+        elif file_format == 'excel':
+            response = HttpResponse(content_type='application/ms-excel')
+            response['Content-Disposition'] = f'attachment; filename="{report_type}_report.xlsx"'
+            
+            wb = Workbook()
+            ws = wb.active
+            ws.title = f"{report_type.title()} Report"
+            
+            # Write headers
+            ws.append(headers)
+            
+            # Write data
+            for row in table_data:
+                ws.append(row)
+            
+            wb.save(response)
+            return response
+
+        elif file_format == 'csv':
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = f'attachment; filename="{report_type}_report.csv"'
+            
+            writer = csv.writer(response)
+            writer.writerow(headers)
+            writer.writerows(table_data)
+            
+            return response
+
+    except Exception as e:
+        logger.error(f"Error generating {report_type} report: {str(e)}")
+        messages.error(request, f"Error generating report: {str(e)}")
+        return redirect('vendor:reports_dashboard')
+
+    return redirect('vendor:reports_dashboard')
 
 def chatbot_response(request):
     if request.method == 'POST':

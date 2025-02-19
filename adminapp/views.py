@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse  # Add this import
+from django.http import JsonResponse, FileResponse, Http404  # Add this import
 from django.contrib import messages
 from .forms import VehicleTypeForm, VehicleCompanyForm, ModelForm, FeaturesForm
 from vendor.models import VehicleType, VehicleCompany, Model, Features, Vendor, Vehicle  # Add this import for the Vehicle model
@@ -29,6 +29,9 @@ import xlsxwriter
 from io import BytesIO
 from mainapp.models import Booking  # Ensure Booking model is imported
 from django.db.models import Count
+from django.utils import timezone
+from drivers.models import Driver, DriverAuth, DriverDocument, DriverApplicationLog
+from django.db import models
 
 logger = logging.getLogger(__name__)
 
@@ -742,6 +745,181 @@ def create_booking(request):
         'customers': customers,
         'vehicles': vehicles,
     })
+
+@staff_member_required(login_url='adminapp:login')
+def pending_drivers(request):
+    drivers = Driver.objects.filter(status='pending_approval').order_by('-id')
+    paginator = Paginator(drivers, 10)
+    page = request.GET.get('page')
+    drivers = paginator.get_page(page)
+    
+    return render(request, 'adminapp/drivers/driver_list.html', {
+        'drivers': drivers,
+        'section': 'pending'
+    })
+
+@staff_member_required(login_url='adminapp:login')
+def approved_drivers(request):
+    drivers = Driver.objects.filter(status='approved').order_by('-approved_at')
+    paginator = Paginator(drivers, 10)
+    page = request.GET.get('page')
+    drivers = paginator.get_page(page)
+    
+    return render(request, 'adminapp/drivers/driver_list.html', {
+        'drivers': drivers,
+        'section': 'approved'
+    })
+
+@staff_member_required(login_url='adminapp:login')
+def rejected_drivers(request):
+    drivers = Driver.objects.filter(status='rejected').order_by('-id')
+    paginator = Paginator(drivers, 10)
+    page = request.GET.get('page')
+    drivers = paginator.get_page(page)
+    
+    return render(request, 'adminapp/drivers/driver_list.html', {
+        'drivers': drivers,
+        'section': 'rejected'
+    })
+
+@staff_member_required(login_url='adminapp:login')
+def all_drivers(request):
+    drivers = Driver.objects.all().order_by('-id')
+    paginator = Paginator(drivers, 10)
+    page = request.GET.get('page')
+    drivers = paginator.get_page(page)
+    
+    return render(request, 'adminapp/drivers/driver_list.html', {
+        'drivers': drivers,
+        'section': 'all'
+    })
+
+@staff_member_required(login_url='adminapp:login')
+def view_driver_details(request, driver_id):
+    driver = get_object_or_404(Driver, id=driver_id)
+    documents = DriverDocument.objects.filter(driver=driver)
+    application_logs = DriverApplicationLog.objects.filter(driver=driver).order_by('-timestamp')
+    
+    # Check if all required documents are verified
+    all_documents_verified = documents.exists() and all(doc.is_verified for doc in documents)
+    
+    return render(request, 'adminapp/drivers/driver_details.html', {
+        'driver': driver,
+        'documents': documents,
+        'application_logs': application_logs,
+        'all_documents_verified': all_documents_verified
+    })
+
+@staff_member_required(login_url='adminapp:login')
+def approve_driver(request, driver_id):
+    driver = get_object_or_404(Driver, id=driver_id)
+    documents = DriverDocument.objects.filter(driver=driver)
+    
+    # Check if all required documents are verified
+    if not all(doc.is_verified for doc in documents):
+        messages.error(request, 'All documents must be verified before approving the driver')
+        return redirect('adminapp:view_driver_details', driver_id=driver.id)
+    
+    if request.method == 'POST':
+        driver.status = 'approved'
+        driver.approved_at = timezone.now()
+        driver.approved_by = request.user
+        driver.save()
+        
+        # Create application log
+        DriverApplicationLog.objects.create(
+            driver=driver,
+            admin=request.user,
+            action='approve',
+            notes=request.POST.get('notes', '')
+        )
+        
+        # Send email notification
+        try:
+            driver.send_approval_email()
+            messages.success(request, f'Driver {driver.full_name} has been approved and notified')
+        except Exception as e:
+            messages.warning(request, f'Driver approved but email notification failed: {str(e)}')
+        
+        return redirect('adminapp:pending_drivers')
+    
+    return render(request, 'adminapp/drivers/approve_driver.html', {'driver': driver})
+
+@staff_member_required(login_url='adminapp:login')
+def reject_driver(request, driver_id):
+    driver = get_object_or_404(Driver, id=driver_id)
+    if request.method == 'POST':
+        driver.status = 'rejected'
+        driver.save()
+        
+        # Create application log
+        DriverApplicationLog.objects.create(
+            driver=driver,
+            admin=request.user,
+            action='reject',
+            notes=request.POST.get('notes', '')
+        )
+        
+        # Send email notification
+        try:
+            subject = 'Your Driver Application Status'
+            html_message = render_to_string('adminapp/email/driver_rejected.html', {
+                'driver': driver,
+                'reason': request.POST.get('notes', '')
+            })
+            plain_message = strip_tags(html_message)
+            send_mail(
+                subject,
+                plain_message,
+                settings.DEFAULT_FROM_EMAIL,
+                [driver.auth.email],
+                html_message=html_message
+            )
+        except Exception as e:
+            messages.warning(request, f'Driver rejected but email notification failed: {str(e)}')
+        else:
+            messages.success(request, f'Driver {driver.full_name} has been rejected and notified')
+        
+        return redirect('adminapp:pending_drivers')
+    
+    return render(request, 'adminapp/drivers/reject_driver.html', {'driver': driver})
+
+@staff_member_required(login_url='adminapp:login')
+def view_driver_document(request, document_id):
+    try:
+        document = get_object_or_404(DriverDocument, id=document_id)
+        
+        # Check if file exists and get its path
+        if document.document and hasattr(document.document, 'path'):
+            file_path = document.document.path
+            
+            if os.path.exists(file_path):
+                # Determine content type based on file extension
+                content_type = 'application/pdf'  # Default to PDF
+                if file_path.lower().endswith(('.png', '.jpg', '.jpeg')):
+                    content_type = 'image/jpeg'
+                elif file_path.lower().endswith('.pdf'):
+                    content_type = 'application/pdf'
+                
+                response = FileResponse(open(file_path, 'rb'), content_type=content_type)
+                # Set content disposition to inline for viewing in browser
+                response['Content-Disposition'] = f'inline; filename="{os.path.basename(file_path)}"'
+                return response
+            
+        raise Http404("Document not found")
+    except Exception as e:
+        logger.error(f"Error viewing document {document_id}: {str(e)}")
+        messages.error(request, f'Error viewing document: {str(e)}')
+        return redirect('adminapp:view_driver_details', driver_id=document.driver.id)
+
+@staff_member_required(login_url='adminapp:login')
+def verify_driver_document(request, document_id):
+    document = get_object_or_404(DriverDocument, id=document_id)
+    document.is_verified = True
+    document.save()
+    
+    messages.success(request, f'{document.get_document_type_display()} has been verified')
+    return redirect('adminapp:view_driver_details', driver_id=document.driver.id)
 
 
 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Driver Booking Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        .booking-details {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Driver Booking Confirmation</h1>
+        </div>
+        
+        <div class="content">
+            <p>Dear {{ booking.user.full_name }},</p>
+            
+            <p>Your driver booking has been confirmed. Here are the details:</p>
+            
+            <div class="booking-details">
+                <p><strong>Driver Name:</strong> {{ booking.driver.full_name }}</p>
+                <p><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
+                <p><strong>Amount:</strong> ₹{{ booking.amount }}</p>
+                <p><strong>Status:</strong> {{ booking.get_status_display }}</p>
+                <p><strong>Payment Status:</strong> {{ booking.payment_status }}</p>
+            </div>
+            
+            <p>Driver Contact Details:</p>
+            <ul>
+                <li>Phone: {{ booking.driver.phone_number }}</li>
+                <li>Experience: {{ booking.driver.driving_experience }} years</li>
+                <li>Skills: {{ booking.driver.get_driving_skill_display }}</li>
+            </ul>
+            
+            <p>If you have any questions or need to make changes to your booking, please contact our support team.</p>
+        </div>
+        
+        <div class="footer">
+            <p>Thank you for choosing WheelsOnRent!</p>
+            <p>This is an automated email. Please do not reply to this message.</p>
+        </div>
+    </div>
+</body>
+</html> 

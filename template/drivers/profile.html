@@ -1,0 +1,351 @@
+{% extends 'drivers/base.html' %}
+
+{% block title %} - Profile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="pagetitle">
+        <h1>Profile</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'drivers:dashboard' %}">Home</a></li>
+                <li class="breadcrumb-item active">Profile</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section profile">
+        <div class="row">
+            <!-- Profile Card -->
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                        {% if driver.profile_photo %}
+                            <img src="{{ driver.profile_photo.url }}" alt="Profile" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                        {% else %}
+                            <div class="profile-placeholder rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                                <i class="bi bi-person-fill text-white" style="font-size: 3rem;"></i>
+                            </div>
+                        {% endif %}
+                        <h2 class="mt-3">{{ driver.full_name }}</h2>
+                        <h3 class="text-muted">Professional Driver</h3>
+                        <div class="social-links mt-2">
+                            <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+                            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Card -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Status Information</h5>
+                        <div class="status-item pb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                <div>
+                                    <h4 class="mb-0">Account Status</h4>
+                                    <span class="badge bg-success">{{ driver.get_status_display }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="status-item pb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-car-front me-2"></i>
+                                <div>
+                                    <h4 class="mb-0">Availability</h4>
+                                    <span class="badge {% if driver.availability_status == 'available' %}bg-success{% else %}bg-warning{% endif %}">
+                                        {{ driver.get_availability_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Details -->
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-body pt-3">
+                        <!-- Tabs -->
+                        <ul class="nav nav-tabs nav-tabs-bordered">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content pt-4">
+                            <!-- Overview Tab -->
+                            <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                                <h5 class="card-title">Profile Details</h5>
+                                <div class="row mb-3">
+                                    <div class="col-lg-3 col-md-4 label">Full Name</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.full_name }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-lg-3 col-md-4 label">Email</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.auth.email }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-lg-3 col-md-4 label">Phone</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.phone_number }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-lg-3 col-md-4 label">Address</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.address }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-lg-3 col-md-4 label">City</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.city }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-lg-3 col-md-4 label">License Number</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.license_number }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-lg-3 col-md-4 label">Experience</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.driving_experience }} years</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-lg-3 col-md-4 label">Driving Skill</div>
+                                    <div class="col-lg-9 col-md-8">{{ driver.get_driving_skill_display }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Edit Profile Tab -->
+                            <div class="tab-pane fade profile-edit" id="profile-edit">
+                                <h5 class="card-title">Edit Profile</h5>
+                                <form method="post" action="{% url 'drivers:profile' %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <!-- Profile Photo -->
+                                    <div class="row mb-3">
+                                        <label class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <div class="d-flex align-items-start">
+                                                {% if driver.profile_photo %}
+                                                    <img src="{{ driver.profile_photo.url }}" alt="Profile" class="img-fluid" style="max-width: 120px;">
+                                                {% else %}
+                                                    <div class="profile-placeholder bg-light d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                                                        <i class="bi bi-person text-secondary" style="font-size: 3rem;"></i>
+                                                    </div>
+                                                {% endif %}
+                                                <div class="pt-2 ms-3">
+                                                    <input type="file" name="profile_photo" class="form-control" accept="image/*">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Other Fields -->
+                                    <div class="row mb-3">
+                                        <label class="col-md-4 col-lg-3 col-form-label">Full Name</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="full_name" type="text" class="form-control" value="{{ driver.full_name }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label class="col-md-4 col-lg-3 col-form-label">Phone</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="phone_number" type="text" class="form-control" value="{{ driver.phone_number }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label class="col-md-4 col-lg-3 col-form-label">Address</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <textarea name="address" class="form-control" rows="3">{{ driver.address }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label class="col-md-4 col-lg-3 col-form-label">City</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="city" type="text" class="form-control" value="{{ driver.city }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Settings Tab -->
+                            <div class="tab-pane fade" id="profile-settings">
+                                <h5 class="card-title">Settings</h5>
+                                <form>
+                                    <div class="row mb-3">
+                                        <label class="col-md-4 col-lg-3 col-form-label">Email Notifications</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="newBookings" checked>
+                                                <label class="form-check-label" for="newBookings">
+                                                    New booking notifications
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="tripUpdates" checked>
+                                                <label class="form-check-label" for="tripUpdates">
+                                                    Trip updates
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="earnings" checked>
+                                                <label class="form-check-label" for="earnings">
+                                                    Earnings reports
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Change Password Tab -->
+                            <div class="tab-pane fade" id="profile-change-password">
+                                <h5 class="card-title">Change Password</h5>
+                                
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        {% if 'password' in message.tags %}
+                                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                                {{ message }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                
+                                <form method="post" action="{% url 'drivers:change_password' %}">
+                                    {% csrf_token %}
+                                    <div class="row mb-3">
+                                        <label class="col-md-4 col-lg-3 col-form-label">Current Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="current_password" type="password" class="form-control" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label class="col-md-4 col-lg-3 col-form-label">New Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="new_password" type="password" class="form-control" required 
+                                                   minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
+                                                   title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <label class="col-md-4 col-lg-3 col-form-label">Confirm Password</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="confirm_password" type="password" class="form-control" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Change Password</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+.profile .profile-card img {
+    max-width: 120px;
+}
+
+.profile .profile-card h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c384e;
+    margin: 10px 0 0 0;
+}
+
+.profile .profile-card h3 {
+    font-size: 18px;
+}
+
+.profile .profile-card .social-links a {
+    font-size: 20px;
+    display: inline-block;
+    color: rgba(1, 41, 112, 0.5);
+    line-height: 0;
+    margin-right: 10px;
+    transition: 0.3s;
+}
+
+.profile .profile-card .social-links a:hover {
+    color: #012970;
+}
+
+.profile .profile-overview .row {
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.profile .profile-overview .label {
+    font-weight: 600;
+    color: rgba(1, 41, 112, 0.6);
+}
+
+.profile .profile-edit .card-title {
+    color: #012970;
+    font-weight: 500;
+}
+
+.profile .profile-edit label {
+    font-weight: 600;
+    color: rgba(1, 41, 112, 0.6);
+}
+
+.nav-tabs-bordered .nav-link {
+    margin-bottom: -2px;
+    border: none;
+    color: #2c384e;
+}
+
+.nav-tabs-bordered .nav-link:hover,
+.nav-tabs-bordered .nav-link:focus {
+    color: #4154f1;
+}
+
+.nav-tabs-bordered .nav-link.active {
+    background-color: #fff;
+    color: #4154f1;
+    border-bottom: 2px solid #4154f1;
+}
+</style>
+
+<!-- Add this JavaScript for password validation -->
+<script>
+document.querySelector('#profile-change-password form').addEventListener('submit', function(e) {
+    const newPassword = this.querySelector('input[name="new_password"]').value;
+    const confirmPassword = this.querySelector('input[name="confirm_password"]').value;
+    
+    if (newPassword !== confirmPassword) {
+        e.preventDefault();
+        alert('New passwords do not match!');
+    }
+});
+</script>
+{% endblock %} 

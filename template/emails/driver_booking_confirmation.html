@@ -1,0 +1,23 @@
+{% extends 'emails/base.html' %}
+
+{% block content %}
+<h2>Driver Booking Confirmation</h2>
+<p>Dear {{ customer.get_full_name }},</p>
+
+<p>Your driver booking has been confirmed with the following details:</p>
+
+<div class="booking-details">
+    <p><strong>Driver Name:</strong> {{ driver.full_name }}</p>
+    <p><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
+    <p><strong>Amount:</strong> ₹{{ booking.amount }}</p>
+</div>
+
+<p>Your driver will contact you before the pickup time.</p>
+
+<p>If you need to contact your driver:</p>
+<ul>
+    <li>Phone: {{ driver.phone_number }}</li>
+</ul>
+
+<p>Thank you for using our service!</p>
+{% endblock %}

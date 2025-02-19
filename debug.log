@@ -197,3 +197,90 @@ ERROR 2025-02-02 22:59:43,068 views AI model error: name 'chatMessages' is not d
 ERROR 2025-02-02 23:16:28,787 views AI model error: Error code: 429 - {'error': {'code': 'RateLimitReached', 'message': 'Rate limit of 50 per 86400s exceeded for UserByModelByDay. Please wait 83416 seconds before retrying.', 'details': 'Rate limit of 50 per 86400s exceeded for UserByModelByDay. Please wait 83416 seconds before retrying.'}}
 ERROR 2025-02-03 08:58:57,590 views AI model error: Connection error.
 ERROR 2025-02-03 08:59:59,635 views AI model error: Error code: 429 - {'error': {'code': 'RateLimitReached', 'message': 'Rate limit of 50 per 86400s exceeded for UserByModelByDay. Please wait 48406 seconds before retrying.', 'details': 'Rate limit of 50 per 86400s exceeded for UserByModelByDay. Please wait 48406 seconds before retrying.'}}
+INFO 2025-02-13 15:57:30,142 views 22964 25816 Booking view called for vehicle id: 1
+INFO 2025-02-13 15:57:48,352 views 22964 25816 Booking view called for vehicle id: 1
+INFO 2025-02-13 15:57:48,353 views 22964 25816 POST request received
+INFO 2025-02-13 15:57:48,353 views 22964 25816 Start date: 2025-02-13, End date: 2025-02-14
+INFO 2025-02-13 15:57:48,354 views 22964 25816 Adjusted dates - Start: 2025-02-13 00:00:00+00:00, End: 2025-02-14 23:59:59.999999+00:00
+INFO 2025-02-13 15:57:48,354 models 22964 25816 Checking availability for vehicle 1 from 2025-02-13 00:00:00+00:00 to 2025-02-14 23:59:59.999999+00:00
+INFO 2025-02-13 15:57:48,355 models 22964 25816 Overlapping bookings found: 0
+INFO 2025-02-13 15:57:48,356 models 22964 25816 Is vehicle available: True
+INFO 2025-02-13 15:57:48,357 views 22964 25816 Vehicle is available for the selected dates.
+INFO 2025-02-13 15:57:48,361 views 22964 25816 Booking created successfully: 1
+INFO 2025-02-13 15:58:09,551 views 22964 25816 Confirmation email sent for booking 1
+INFO 2025-02-13 15:58:59,432 views 22964 25816 Confirmation email sent for booking 1
+INFO 2025-02-14 14:01:48,338 views 27540 21876 Booking view called for vehicle id: 1
+INFO 2025-02-14 14:02:46,026 views 27540 21876 Booking view called for vehicle id: 1
+INFO 2025-02-14 14:05:47,134 views 2520 12128 Booking view called for vehicle id: 1
+INFO 2025-02-14 14:05:59,662 views 2520 12128 Booking view called for vehicle id: 1
+INFO 2025-02-14 14:06:08,903 views 2520 12128 Booking view called for vehicle id: 1
+ERROR 2025-02-14 14:06:08,903 views 2520 12128 An error occurred: 'str' object has no attribute 'utcoffset'
+INFO 2025-02-14 14:08:00,283 views 27276 25428 Booking view called for vehicle id: 1
+ERROR 2025-02-14 14:08:00,283 views 27276 25428 An error occurred: 'datetime.date' object has no attribute 'utcoffset'
+INFO 2025-02-14 14:08:04,126 views 27276 25428 Booking view called for vehicle id: 1
+ERROR 2025-02-14 14:08:04,127 views 27276 25428 An error occurred: 'datetime.date' object has no attribute 'utcoffset'
+INFO 2025-02-14 14:08:06,803 views 27276 25428 Booking view called for vehicle id: 1
+INFO 2025-02-14 14:08:14,456 views 27276 25428 Booking view called for vehicle id: 1
+INFO 2025-02-14 14:12:42,224 views 27276 8356 Booking view called for vehicle id: 1
+INFO 2025-02-14 14:12:42,673 views 27276 8356 Booking view called for vehicle id: 1
+INFO 2025-02-18 09:18:12,220 views 19744 14964 Booking view called for vehicle id: 1
+INFO 2025-02-18 09:18:23,904 views 19744 14964 Booking view called for vehicle id: 1
+INFO 2025-02-18 09:18:23,906 views 19744 14964 POST request received
+INFO 2025-02-18 09:18:23,907 views 19744 14964 Start date: 2025-02-18, End date: 2025-02-19
+INFO 2025-02-18 09:18:23,927 views 19744 14964 Adjusted dates - Start: 2025-02-18 00:00:00+00:00, End: 2025-02-19 23:59:59.999999+00:00
+INFO 2025-02-18 09:18:23,927 models 19744 14964 Checking availability for vehicle 1 from 2025-02-18 00:00:00+00:00 to 2025-02-19 23:59:59.999999+00:00
+INFO 2025-02-18 09:18:23,927 models 19744 14964 Overlapping bookings found: 0
+INFO 2025-02-18 09:18:23,927 models 19744 14964 Is vehicle available: True
+INFO 2025-02-18 09:18:23,927 views 19744 14964 Vehicle is available for the selected dates.
+INFO 2025-02-18 09:18:23,934 views 19744 14964 Booking created successfully: 2
+INFO 2025-02-18 09:18:29,353 views 19744 4200 Booking view called for vehicle id: 1
+INFO 2025-02-18 09:18:29,354 views 19744 4200 POST request received
+INFO 2025-02-18 09:18:29,355 views 19744 4200 Start date: 2025-02-18, End date: 2025-02-19
+INFO 2025-02-18 09:18:29,355 views 19744 4200 Adjusted dates - Start: 2025-02-18 00:00:00+00:00, End: 2025-02-19 23:59:59.999999+00:00
+INFO 2025-02-18 09:18:29,355 models 19744 4200 Checking availability for vehicle 1 from 2025-02-18 00:00:00+00:00 to 2025-02-19 23:59:59.999999+00:00
+INFO 2025-02-18 09:18:29,357 models 19744 4200 Overlapping bookings found: 1
+INFO 2025-02-18 09:18:29,358 models 19744 4200 Is vehicle available: False
+WARNING 2025-02-18 09:18:29,358 views 19744 4200 Vehicle is not available for the selected dates.
+INFO 2025-02-18 09:18:57,095 views 19744 14964 Booking view called for vehicle id: 1
+INFO 2025-02-18 09:18:57,096 views 19744 14964 POST request received
+INFO 2025-02-18 09:18:57,097 views 19744 14964 Start date: 2025-02-18, End date: 2025-02-19
+INFO 2025-02-18 09:18:57,097 views 19744 14964 Adjusted dates - Start: 2025-02-18 00:00:00+00:00, End: 2025-02-19 23:59:59.999999+00:00
+INFO 2025-02-18 09:18:57,097 models 19744 14964 Checking availability for vehicle 1 from 2025-02-18 00:00:00+00:00 to 2025-02-19 23:59:59.999999+00:00
+INFO 2025-02-18 09:18:57,099 models 19744 14964 Overlapping bookings found: 1
+INFO 2025-02-18 09:18:57,100 models 19744 14964 Is vehicle available: False
+WARNING 2025-02-18 09:18:57,100 views 19744 14964 Vehicle is not available for the selected dates.
+INFO 2025-02-18 09:20:03,641 views 19744 14964 Booking view called for vehicle id: 1
+INFO 2025-02-18 09:20:03,642 views 19744 14964 POST request received
+INFO 2025-02-18 09:20:03,643 views 19744 14964 Start date: 2025-02-18, End date: 2025-02-19
+INFO 2025-02-18 09:20:03,643 views 19744 14964 Adjusted dates - Start: 2025-02-18 00:00:00+00:00, End: 2025-02-19 23:59:59.999999+00:00
+INFO 2025-02-18 09:20:03,643 models 19744 14964 Checking availability for vehicle 1 from 2025-02-18 00:00:00+00:00 to 2025-02-19 23:59:59.999999+00:00
+INFO 2025-02-18 09:20:03,645 models 19744 14964 Overlapping bookings found: 1
+INFO 2025-02-18 09:20:03,646 models 19744 14964 Is vehicle available: False
+WARNING 2025-02-18 09:20:03,646 views 19744 14964 Vehicle is not available for the selected dates.
+INFO 2025-02-18 09:20:23,736 views 19744 14964 Booking view called for vehicle id: 1
+INFO 2025-02-18 09:20:23,737 views 19744 14964 POST request received
+INFO 2025-02-18 09:20:23,737 views 19744 14964 Start date: 2025-03-01, End date: 2025-03-03
+INFO 2025-02-18 09:20:23,738 views 19744 14964 Adjusted dates - Start: 2025-03-01 00:00:00+00:00, End: 2025-03-03 23:59:59.999999+00:00
+INFO 2025-02-18 09:20:23,738 models 19744 14964 Checking availability for vehicle 1 from 2025-03-01 00:00:00+00:00 to 2025-03-03 23:59:59.999999+00:00
+INFO 2025-02-18 09:20:23,740 models 19744 14964 Overlapping bookings found: 0
+INFO 2025-02-18 09:20:23,740 models 19744 14964 Is vehicle available: True
+INFO 2025-02-18 09:20:23,740 views 19744 14964 Vehicle is available for the selected dates.
+INFO 2025-02-18 09:20:23,745 views 19744 14964 Booking created successfully: 3
+INFO 2025-02-18 09:21:13,978 views 19744 14964 Confirmation email sent for booking 3
+ERROR 2025-02-19 13:50:29,364 views 24868 32968 Error in user_booking_history: Cannot resolve keyword 'created_at' into field. Choices are: booking_id, driverbooking, drivertrip, end_date, feedback, pickup, refund_status, start_date, status, stripe_payment_intent_id, total_amount, user, user_id, vehicle, vehicle_id, vehicle_return
+ERROR 2025-02-19 13:50:41,948 views 33728 31760 Error in user_booking_history: Cannot resolve keyword 'created_at' into field. Choices are: booking_id, driverbooking, drivertrip, end_date, feedback, pickup, refund_status, start_date, status, stripe_payment_intent_id, total_amount, user, user_id, vehicle, vehicle_id, vehicle_return
+ERROR 2025-02-19 13:50:44,242 views 33728 31760 Error in user_booking_history: Cannot resolve keyword 'created_at' into field. Choices are: booking_id, driverbooking, drivertrip, end_date, feedback, pickup, refund_status, start_date, status, stripe_payment_intent_id, total_amount, user, user_id, vehicle, vehicle_id, vehicle_return
+ERROR 2025-02-19 13:53:37,689 views 31060 34452 Error in user_booking_history: Cannot resolve keyword 'created_at' into field. Choices are: booking_id, driverbooking, drivertrip, end_date, feedback, pickup, refund_status, start_date, status, stripe_payment_intent_id, total_amount, user, user_id, vehicle, vehicle_id, vehicle_return
+ERROR 2025-02-19 13:53:38,753 views 31060 34452 Error in user_booking_history: Cannot resolve keyword 'created_at' into field. Choices are: booking_id, driverbooking, drivertrip, end_date, feedback, pickup, refund_status, start_date, status, stripe_payment_intent_id, total_amount, user, user_id, vehicle, vehicle_id, vehicle_return
+ERROR 2025-02-19 13:55:04,527 views 33328 24496 Error in user_booking_history: Cannot resolve keyword 'created_at' into field. Choices are: booking_id, driverbooking, drivertrip, end_date, feedback, pickup, refund_status, start_date, status, stripe_payment_intent_id, total_amount, user, user_id, vehicle, vehicle_id, vehicle_return
+INFO 2025-02-19 15:21:07,888 views 29860 23328 Booking view called for vehicle id: 2
+INFO 2025-02-19 15:21:20,148 views 29860 23328 Booking view called for vehicle id: 2
+INFO 2025-02-19 15:21:20,149 views 29860 23328 POST request received
+INFO 2025-02-19 15:21:20,149 views 29860 23328 Start date: 2025-02-19, End date: 2025-02-21
+INFO 2025-02-19 15:21:20,152 views 29860 23328 Adjusted dates - Start: 2025-02-19 00:00:00+00:00, End: 2025-02-21 23:59:59.999999+00:00
+INFO 2025-02-19 15:21:20,153 models 29860 23328 Checking availability for vehicle 2 from 2025-02-19 00:00:00+00:00 to 2025-02-21 23:59:59.999999+00:00
+INFO 2025-02-19 15:21:20,155 models 29860 23328 Overlapping bookings found: 0
+INFO 2025-02-19 15:21:20,155 models 29860 23328 Is vehicle available: True
+INFO 2025-02-19 15:21:20,156 views 29860 23328 Vehicle is available for the selected dates.
+INFO 2025-02-19 15:21:20,160 views 29860 23328 Booking created successfully: 1
+INFO 2025-02-19 15:21:47,694 views 29860 34508 Confirmation email sent for booking 1

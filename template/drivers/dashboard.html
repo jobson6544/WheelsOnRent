@@ -1,0 +1,139 @@
+{% extends 'drivers/base.html' %}
+
+{% block title %} - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="pagetitle mb-4">
+        <h1>Dashboard</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section dashboard">
+        <div class="row g-3">
+            <!-- Status Card -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card info-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Status</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="w-100">
+                                <h6 class="mb-3">{{ driver.get_availability_status_display }}</h6>
+                                <form method="post" action="{% url 'drivers:update_status' %}">
+                                    {% csrf_token %}
+                                    <select name="status" class="form-select" onchange="this.form.submit()">
+                                        <option value="available" {% if driver.availability_status == 'available' %}selected{% endif %}>Available</option>
+                                        <option value="unavailable" {% if driver.availability_status == 'unavailable' %}selected{% endif %}>Unavailable</option>
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trips Card -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card info-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Trips</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="w-100">
+                                <h6 class="display-6 mb-0">{{ total_trips }}</h6>
+                                <span class="text-muted small pt-2">Completed Trips</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Bookings -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Recent Bookings</h5>
+                        <div class="table-responsive">
+                            {% if recent_bookings %}
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Booking ID</th>
+                                            <th>Customer</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for booking in recent_bookings %}
+                                        <tr>
+                                            <td>#{{ booking.booking.id }}</td>
+                                            <td>{{ booking.booking.customer.full_name }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ booking.status }}">
+                                                    {{ booking.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                                            <td>
+                                                <a href="{% url 'drivers:booking_detail' booking.id %}" 
+                                                   class="btn btn-sm btn-primary">
+                                                    <i class="bi bi-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="bi bi-calendar-x h1 text-muted"></i>
+                                    <p class="text-muted mt-2">No bookings found</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+/* Dashboard specific styles */
+.info-card {
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.info-card .card-title {
+    color: #012970;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
+
+.table {
+    font-size: 0.9rem;
+}
+
+.badge {
+    padding: 0.5em 0.8em;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .display-6 {
+        font-size: 1.5rem;
+    }
+    
+    .card-title {
+        font-size: 0.9rem;
+    }
+}
+</style>
+{% endblock %}

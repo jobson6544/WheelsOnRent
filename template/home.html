@@ -317,7 +317,7 @@
                             </div>
                             {% empty %}
                             <div class="col-12">
-                                <p>No vehicles available at the moment.</p>
+                                <p class="text-center">No vehicles available at the moment.</p>
                             </div>
                             {% endfor %}
                         </div>
@@ -325,7 +325,43 @@
             </div>
         </div>
 
-       
+        <div class="container mt-5">
+            <h2>Available Drivers</h2>
+            <div class="row">
+                {% for driver in drivers %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        {% if driver.profile_photo %}
+                        <img src="{{ driver.profile_photo.url }}" class="card-img-top" alt="{{ driver.full_name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ driver.full_name }}</h5>
+                            <p class="card-text">
+                                <strong>Experience:</strong> {{ driver.driving_experience }} years<br>
+                                <strong>Skills:</strong> {{ driver.get_driving_skill_display }}<br>
+                                <strong>Rating:</strong> 
+                                {% if driver.rating_avg %}
+                                    {{ driver.rating_avg|floatformat:1 }} / 5.0
+                                {% else %}
+                                    No ratings yet
+                                {% endif %}
+                            </p>
+                            <div class="d-grid">
+                                <a href="{% url 'drivers:book_driver' driver.id %}" 
+                                   class="btn btn-primary">Book Driver</a>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <p class="text-center">No drivers available at the moment.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
         <div class="site-section">
             <div class="container">
                 <div class="row">
@@ -496,6 +532,58 @@
       <script src="{%static 'indexall/js/aos.js' %}"></script>
       
       <script src="{%static 'indexall/js/main.js' %}"></script>
+      
+      <script>
+      document.querySelectorAll('.book-driver').forEach(button => {
+          button.addEventListener('click', async () => {
+              const driverId = button.dataset.driverId;
+              const bookingDate = prompt('Enter booking date (YYYY-MM-DD):');
+              
+              if (!bookingDate) return;
+              
+              try {
+                  const response = await fetch(`/book-driver/${driverId}/`, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRFToken': getCookie('csrftoken')
+                      },
+                      body: JSON.stringify({
+                          booking_date: bookingDate
+                      })
+                  });
+                  
+                  const data = await response.json();
+                  
+                  if (data.status === 'success') {
+                      const stripe = Stripe('your_publishable_key');
+                      stripe.redirectToCheckout({
+                          sessionId: data.session_id
+                      });
+                  } else {
+                      alert(data.message);
+                  }
+              } catch (error) {
+                  alert('An error occurred. Please try again.');
+              }
+          });
+      });
+
+      function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      </script>
       
       </body>
       

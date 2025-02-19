@@ -1,0 +1,227 @@
+{% if request.session.driver_id %}
+<aside id="sidebar" class="sidebar">
+    <div class="d-flex justify-content-end d-lg-none mb-3">
+        <button class="btn btn-link sidebar-close">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+    <ul class="sidebar-nav" id="sidebar-nav">
+        <!-- Dashboard -->
+        <li class="nav-item">
+            <a class="nav-link {% if active_page != 'dashboard' %}collapsed{% endif %}" href="{% url 'drivers:dashboard' %}">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <!-- Profile -->
+        <li class="nav-item">
+            <a class="nav-link {% if active_page != 'profile' %}collapsed{% endif %}" href="{% url 'drivers:profile' %}">
+                <i class="bi bi-person-badge"></i>
+                <span>Profile</span>
+            </a>
+        </li>
+
+        <!-- Trips -->
+        <li class="nav-item">
+            <a class="nav-link {% if active_page != 'trips' %}collapsed{% endif %}" data-bs-target="#trips-nav" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-geo-alt"></i>
+                <span>Trips</span>
+                <i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="trips-nav" class="nav-content collapse {% if 'trips' in active_page %}show{% endif %}">
+                <li>
+                    <a href="{% url 'drivers:active_trips' %}" class="{% if active_page == 'active_trips' %}active{% endif %}">
+                        <i class="bi bi-circle-fill"></i><span>Active Trips</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'drivers:completed_trips' %}" class="{% if active_page == 'completed_trips' %}active{% endif %}">
+                        <i class="bi bi-circle-fill"></i><span>Completed Trips</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Earnings -->
+        <li class="nav-item">
+            <a class="nav-link {% if active_page != 'earnings' %}collapsed{% endif %}" href="{% url 'drivers:earnings' %}">
+                <i class="bi bi-wallet2"></i>
+                <span>Earnings</span>
+            </a>
+        </li>
+
+        <!-- Documents -->
+        <li class="nav-item">
+            <a class="nav-link {% if active_page != 'documents' %}collapsed{% endif %}" href="{% url 'drivers:documents' %}">
+                <i class="bi bi-folder2-open"></i>
+                <span>Documents</span>
+            </a>
+        </li>
+
+        <!-- Settings -->
+        <li class="nav-item">
+            <a class="nav-link {% if active_page != 'settings' %}collapsed{% endif %}" href="{% url 'drivers:settings' %}">
+                <i class="bi bi-sliders"></i>
+                <span>Settings</span>
+            </a>
+        </li>
+
+        <!-- Support -->
+        <li class="nav-item">
+            <a class="nav-link {% if active_page != 'support' %}collapsed{% endif %}" href="{% url 'drivers:support' %}">
+                <i class="bi bi-headset"></i>
+                <span>Support</span>
+            </a>
+        </li>
+
+        <!-- Logout -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{% url 'drivers:driver_logout' %}">
+                <i class="bi bi-power"></i>
+                <span>Logout</span>
+            </a>
+        </li>
+    </ul>
+</aside>
+
+<style>
+.sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 996;
+    transition: all 0.3s ease-in-out;
+    padding: 20px;
+    overflow-y: auto;
+    background: linear-gradient(180deg, #037892 0%, #16c0d6 100%);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-nav {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.sidebar-nav li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.sidebar-nav .nav-item {
+    margin-bottom: 8px;
+}
+
+.sidebar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    background: #1a3b89;
+    padding: 12px 18px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-nav .nav-link i {
+    font-size: 18px;
+    margin-right: 12px;
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.sidebar-nav .nav-link.collapsed {
+    color: #1e40af;
+    background: transparent;
+}
+
+.sidebar-nav .nav-link:hover {
+    color: #ffffff;
+    background: #2563eb;
+    transform: translateX(5px);
+}
+
+.sidebar-nav .nav-link:hover i {
+    color: #ffffff;
+}
+
+.sidebar-nav .nav-link .bi-chevron-down {
+    margin-right: 0;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-nav .nav-link:not(.collapsed) .bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+.sidebar-nav .nav-content {
+    padding: 5px 0 0 0;
+    margin: 0;
+    list-style: none;
+}
+
+.sidebar-nav .nav-content a {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1e40af;
+    padding: 10px 0 10px 48px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-nav .nav-content a i {
+    font-size: 4px;
+    margin-right: 10px;
+    color: #2563eb;
+}
+
+.sidebar-nav .nav-content a:hover,
+.sidebar-nav .nav-content a.active {
+    color: #ffffff;
+    background: #2563eb;
+    border-radius: 0 20px 20px 0;
+}
+
+.sidebar-nav .nav-content a.active i {
+    color: #ffffff;
+}
+
+@media (max-width: 1199px) {
+    .sidebar {
+        left: -280px;
+        transition: all 0.5s ease;
+    }
+
+    .sidebar.show {
+        left: 0;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.sidebar');
+        const toggleBtn = document.querySelector('.toggle-sidebar-btn');
+        if (window.innerWidth < 1200 && 
+            !sidebar.contains(e.target) && 
+            !toggleBtn.contains(e.target)) {
+            sidebar.classList.remove('show');
+        }
+    });
+
+    // Close sidebar when clicking the close button
+    document.querySelector('.sidebar-close')?.addEventListener('click', function() {
+        document.querySelector('.sidebar').classList.remove('show');
+    });
+});
+</script>
+{% endif %}
