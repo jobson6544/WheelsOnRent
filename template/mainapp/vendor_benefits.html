@@ -1,0 +1,125 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center text-primary">Vendor Benefits</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="text-center text-success">Why Join Wheels on Rent?</h2>
+            <ul class="list-group">
+                {% for benefit in benefits %}
+                    <li class="list-group-item animated fadeInUp bg-light text-dark">{{ benefit }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="col-md-6">
+            <h2 class="text-center text-info">Profit Calculator</h2>
+            <form id="profit-calculator" class="mb-3">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="rental_price">Daily Rental Price (₹)</label>
+                    <input type="number" class="form-control" id="rental_price" name="rental_price" required>
+                </div>
+                <div class="form-group">
+                    <label for="rental_days">Number of Days: <span id="days-value" class="badge bg-primary">1</span></label>
+                    <input type="range" class="form-control-range" id="rental_days" name="rental_days" min="1" max="{{ max_days }}" value="1">
+                </div>
+            </form>
+            <div id="result" class="mt-3">
+                <h3 class="text-center">Total Price: ₹<span id="total-price" class="text-success">0</span></h3>
+                <h4 class="text-center">Wheels on Rent Fee (4%): ₹<span id="wor-fee" class="text-warning">0</span></h4>
+                <h4 class="text-center">Your Profit: ₹<span id="vendor-profit" class="text-info">0</span></h4>
+            </div>
+            <div id="profit-chart" style="height: 300px; width: 100%;"></div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <a href="{% url 'vendor:register_user' %}" class="btn btn-primary btn-lg animated pulse infinite">Sign Up to Be a Part of Wheels on Rent</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    const rentalDaysInput = document.getElementById('rental_days');
+    const rentalPriceInput = document.getElementById('rental_price');
+    const daysValueSpan = document.getElementById('days-value');
+    const totalPriceSpan = document.getElementById('total-price');
+    const worFeeSpan = document.getElementById('wor-fee');
+    const vendorProfitSpan = document.getElementById('vendor-profit');
+
+    function updateProfit() {
+        const rentalDays = parseInt(rentalDaysInput.value);
+        const rentalPrice = parseFloat(rentalPriceInput.value) || 0;
+        
+        daysValueSpan.textContent = rentalDays;
+
+        fetch('{% url "mainapp:vendor_benefits" %}', {
+            method: 'POST',
+            body: new FormData(document.getElementById('profit-calculator')),
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const totalPrices = data.total_prices;
+            const worFees = data.wheels_on_rent_fees;
+            const vendorProfits = data.vendor_profits;
+
+            totalPriceSpan.textContent = totalPrices[totalPrices.length - 1].toFixed(2);
+            worFeeSpan.textContent = worFees[worFees.length - 1].toFixed(2);
+            vendorProfitSpan.textContent = vendorProfits[vendorProfits.length - 1].toFixed(2);
+
+            // Create the chart
+            const trace1 = {
+                x: Array.from({length: totalPrices.length}, (_, i) => i + 1),
+                y: totalPrices,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Total Price',
+                line: {color: '#28a745'}
+            };
+
+            const trace2 = {
+                x: Array.from({length: worFees.length}, (_, i) => i + 1),
+                y: worFees,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Wheels on Rent Fee',
+                line: {color: '#ffc107'}
+            };
+
+            const trace3 = {
+                x: Array.from({length: vendorProfits.length}, (_, i) => i + 1),
+                y: vendorProfits,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Your Profit',
+                line: {color: '#17a2b8'}
+            };
+
+            const layout = {
+                title: 'Profit Breakdown Over Time',
+                xaxis: {title: 'Days'},
+                yaxis: {title: 'Amount (₹)'},
+                paper_bgcolor: '#f8f9fa',
+                plot_bgcolor: '#f8f9fa'
+            };
+
+            Plotly.newPlot('profit-chart', [trace1, trace2, trace3], layout);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    rentalDaysInput.addEventListener('input', updateProfit);
+    rentalPriceInput.addEventListener('input', updateProfit);
+
+    // Initial update
+    updateProfit();
+</script>
+{% endblock %}

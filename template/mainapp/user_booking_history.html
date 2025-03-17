@@ -1,0 +1,208 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'mainapp/nav.html' %}
+<div class="container" style="margin-top: 6rem;">
+    <!-- Page Title -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Your Booking History</h2>
+        <p class="text-muted">View and manage all your vehicle and driver bookings</p>
+    </div>
+
+    {% if messages %}
+        <div class="messages mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Booking Tabs -->
+    <ul class="nav nav-tabs mb-4" id="bookingTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="vehicles-tab" data-bs-toggle="tab" data-bs-target="#vehicles" type="button" role="tab">
+                <i class="bi bi-car-front"></i> Vehicle Bookings
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="drivers-tab" data-bs-toggle="tab" data-bs-target="#drivers" type="button" role="tab">
+                <i class="bi bi-person"></i> Driver Bookings
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="bookingTabsContent">
+        <!-- Vehicle Bookings Tab -->
+        <div class="tab-pane fade show active" id="vehicles" role="tabpanel">
+            {% if bookings %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Vehicle</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Cost per day</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                                <tr>
+                                    <td>
+                                        <span class="fw-bold">#{{ booking.booking_id }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if booking.vehicle.image %}
+                                                <img src="{{ booking.vehicle.image.url }}" alt="{{ booking.vehicle.model }}" class="me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                            {% endif %}
+                                            <div>
+                                                <div class="fw-bold">{{ booking.vehicle.model }}</div>
+                                                <small class="text-muted">{{ booking.vehicle.vendor.business_name }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ booking.start_date|date:"M d, Y" }}</td>
+                                    <td>{{ booking.end_date|date:"M d, Y" }}</td>
+                                    <td>₹{{ booking.vehicle.rental_rate }}</td>
+                                    <td>
+                                        <span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'pending' %}bg-warning{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                            {{ booking.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'mainapp:booking_detail' booking.booking_id %}" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+                                                <form method="post" action="{% url 'mainapp:cancel_booking' booking.booking_id %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                                        <i class="bi bi-x-circle"></i> Cancel
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-car-front display-1 text-muted mb-3"></i>
+                    <h4>No Vehicle Bookings</h4>
+                    <p class="text-muted">You haven't made any vehicle bookings yet.</p>
+                    <a href="{% url 'mainapp:home' %}" class="btn btn-primary">Browse Vehicles</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Driver Bookings Tab -->
+        <div class="tab-pane fade" id="drivers" role="tabpanel">
+            {% if driver_bookings %}
+                <div class="row">
+                    {% for booking in driver_bookings %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 booking-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h5 class="card-title mb-0">Booking #{{ booking.id }}</h5>
+                                        <span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}">
+                                            {{ booking.get_status_display }}
+                                        </span>
+                                    </div>
+
+                                    <div class="driver-info mb-3">
+                                        <div class="d-flex align-items-center">
+                                            {% if booking.driver.profile_photo %}
+                                                <img src="{{ booking.driver.profile_photo.url }}" alt="{{ booking.driver.full_name }}" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                                <img src="{% static 'img/default-driver.png' %}" alt="Default Profile" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-1">{{ booking.driver.full_name }}</h6>
+                                                <p class="text-muted mb-0">
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                    {{ booking.driver.rating_avg|default:"New Driver" }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="booking-details">
+                                        <div class="row g-3">
+                                            <div class="col-6">
+                                                <small class="text-muted d-block"><i class="bi bi-calendar3"></i> Start Date</small>
+                                                <span>{{ booking.start_date|date:"M d, Y" }}</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted d-block"><i class="bi bi-calendar3"></i> End Date</small>
+                                                <span>{{ booking.end_date|date:"M d, Y" }}</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted d-block"><i class="bi bi-clock"></i> Created On</small>
+                                                <span>{{ booking.created_at|date:"M d, Y" }}</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted d-block"><i class="bi bi-currency-rupee"></i> Amount</small>
+                                                <span>₹{{ booking.amount }}</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted d-block"><i class="bi bi-credit-card"></i> Payment</small>
+                                                <span class="badge bg-{% if booking.payment_status == 'paid' %}success{% else %}warning{% endif %}">
+                                                    {{ booking.payment_status|title }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% if booking.status == 'confirmed' and booking.payment_status == 'paid' %}
+                                        <div class="mt-3">
+                                            <button class="btn btn-outline-primary btn-sm w-100" onclick="contactDriver('{{ booking.driver.phone_number }}')">
+                                                <i class="bi bi-telephone"></i> Contact Driver
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-person display-1 text-muted mb-3"></i>
+                    <h4>No Driver Bookings</h4>
+                    <p class="text-muted">You haven't booked any drivers yet.</p>
+                    <a href="{% url 'mainapp:home' %}" class="btn btn-primary">Browse Drivers</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'mainapp:home' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Back to Home
+        </a>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+function contactDriver(phoneNumber) {
+    window.location.href = `tel:${phoneNumber}`;
+}
+</script>
+{% endblock %}
+
+{% endblock %}

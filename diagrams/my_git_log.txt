@@ -1,0 +1,6 @@
+* 0c319c0 - jobson6544, 4 hours ago : Design and correct the error in image retrival
+* bc029ea - jobson6544, 28 hours ago :  Booking completed, some style in index & base page is changed
+* 6329c01 - jobson6544, 31 hours ago : Vehicle added by vendor
+* e4bf4db - jobson6544, 2 days ago : corrected the error in usermodel
+* b5fdfd2 - jobson6544, 3 days ago : I have change the vendor function to vendor app
+* db49f4c - jobson6544, 4 days ago : login, register, sign with google completed

@@ -46,7 +46,7 @@ client = OpenAI(
 )
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'mainapp/index.html')
 
 def customer_register(request):
     if request.method == 'POST':
@@ -74,7 +74,7 @@ def customer_register(request):
             return redirect('login')  # Redirect to login page after registration
     else:
         form = UserRegistrationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'mainapp/register.html', {'form': form})
 
 def verify_email(request, token):
     try:
@@ -105,13 +105,13 @@ def login_view(request):
                 if hasattr(user, 'is_first_login') and user.is_first_login:
                     user.is_first_login = False
                     user.save()
-                    return redirect('complete_profile')
-                return redirect('home')
+                    return redirect('mainapp:complete_profile')
+                return redirect('mainapp:home')
             else:
                 messages.error(request, "Please verify your email before logging in.")
         else:
             messages.error(request, "Invalid email or password.")
-    return render(request, 'user_login.html')
+    return render(request, 'mainapp/user_login.html')
 
 @login_required(login_url='login')
 def complete_profile(request):
@@ -121,7 +121,7 @@ def complete_profile(request):
         # Check if profile is already complete
         if profile.is_complete and not request.user.is_first_login:
             messages.info(request, "Your profile is already complete.")
-            return redirect('home')
+            return redirect('mainapp:home')
 
         if request.method == 'POST':
             form = UserProfileForm(request.POST, request.FILES, instance=profile)
@@ -135,18 +135,18 @@ def complete_profile(request):
                 request.user.save()
 
                 messages.success(request, 'Profile completed successfully!')
-                return redirect('home')
+                return redirect('mainapp:home')
         else:
             form = UserProfileForm(instance=profile)
 
-        return render(request, 'complete_profile.html', {
+        return render(request, 'mainapp/complete_profile.html', {
             'form': form,
             'is_google_user': request.user.auth_method == 'google'
         })
     except Exception as e:
         logger.error(f"Error in complete_profile view: {str(e)}")
         messages.error(request, "An error occurred while loading your profile.")
-        return redirect('home')
+        return redirect('mainapp:home')
 
 def home(request):
     # Get available vehicles with related data
@@ -179,10 +179,10 @@ def home(request):
     for vehicle in vehicles:
         print(f"Vehicle: {vehicle.model}, Status: {vehicle.status}, Available: {vehicle.availability}")
     
-    return render(request, 'home.html', context)
+    return render(request, 'mainapp/home.html', context)
 
 def success(request):
-    return render(request, 'success.html')
+    return render(request, 'mainapp/success.html')
 
 def logout_view(request):
     logout(request)
@@ -211,7 +211,7 @@ def profile(request):
         'form': form,
         'userprofile': userprofile,
     }
-    return render(request, 'profile.html', context)
+    return render(request, 'mainapp/profile.html', context)
 
 def vendor_login(request):
     if request.method == 'POST':
@@ -306,7 +306,7 @@ def book_vehicle(request, id):
             # Return JSON response for successful booking
             return JsonResponse({
                 'success': True,
-                'redirect_url': reverse('payment') + f'?booking_id={booking.booking_id}'
+                'redirect_url': reverse('mainapp:payment') + f'?booking_id={booking.booking_id}'
             })
         
         except Exception as e:
@@ -316,7 +316,7 @@ def book_vehicle(request, id):
                 'message': 'An error occurred while processing your booking. Please try again later.'
             })
 
-    return render(request, 'book_vehicle.html', {'vehicle': vehicle})
+    return render(request, 'mainapp/book_vehicle.html', {'vehicle': vehicle})
 
 @login_required
 def user_booking_history(request):
@@ -355,11 +355,12 @@ def user_booking_history(request):
             'has_driver_bookings': driver_bookings_list.exists(),
             'active_tab': request.GET.get('tab', 'vehicles'),
         }
-        return render(request, 'user_booking_history.html', context)
+        
+        return render(request, 'mainapp/user_booking_history.html', context)
     except Exception as e:
         logger.error(f"Error in user_booking_history: {str(e)}")
         messages.error(request, 'An error occurred while retrieving your bookings. Please try again.')
-        return redirect('home')
+        return redirect('mainapp:home')
 
 @login_required
 def cancel_booking(request, booking_id):
@@ -389,7 +390,7 @@ def cancel_booking(request, booking_id):
         else:
             messages.error(request, 'This booking cannot be cancelled.')
     
-    return redirect('user_booking_history')
+    return redirect('mainapp:user_booking_history')
 
 def send_cancellation_email(booking):
     subject = 'Booking Cancellation Confirmation'
@@ -451,7 +452,7 @@ def handle_refund(request, booking):
 @login_required
 def profile_view(request):
     profile = request.user.profile
-    return render(request, 'profile_view.html', {'profile': profile})
+    return render(request, 'mainapp/profile_view.html', {'profile': profile})
 
 @login_required
 def edit_profile(request):
@@ -464,12 +465,12 @@ def edit_profile(request):
             profile.user = user
             profile.save()
             messages.success(request, 'Your profile was successfully updated!')
-            return redirect('profile_view')
+            return redirect('mainapp:profile_view')
     else:
         user_form = UserEditForm(instance=request.user)
         profile_form = UserProfileEditForm(instance=request.user.profile)
     
-    return render(request, 'edit_profile.html', {
+    return render(request, 'mainapp/edit_profile.html', {
         'user_form': user_form,
         'profile_form': profile_form
     })
@@ -493,7 +494,7 @@ def payment_view(request):
         payment_method_types=['card'],
         line_items=[{
             'price_data': {
-                'currency': 'usd',
+                'currency': 'inr',
                 'unit_amount': int(amount * 100),
                 'product_data': {
                     'name': f'Booking {booking.booking_id}',
@@ -502,15 +503,15 @@ def payment_view(request):
             'quantity': 1,
         }],
         mode='payment',
-        success_url=request.build_absolute_uri(reverse('payment_success')) + f'?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking_id}',
-        cancel_url=request.build_absolute_uri(reverse('payment_cancelled')) + f'?booking_id={booking_id}',
+        success_url=request.build_absolute_uri(reverse('mainapp:payment_success')) + f'?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking_id}',
+        cancel_url=request.build_absolute_uri(reverse('mainapp:payment_cancelled')) + f'?booking_id={booking_id}',
         client_reference_id=str(booking_id),
     )
     
     booking.stripe_payment_intent_id = session.payment_intent
     booking.save()
 
-    return render(request, 'payment.html', {
+    return render(request, 'mainapp/payment.html', {
         'session_id': session.id,
         'stripe_public_key': settings.STRIPE_PUBLIC_KEY,
         'booking': booking,
@@ -541,7 +542,7 @@ def payment_success(request):
     
     if not session_id or not booking_id:
         messages.error(request, "Invalid payment confirmation.")
-        return redirect('home')
+        return redirect('mainapp:home')
     booking = get_object_or_404(Booking, booking_id=booking_id)
     
     try:
@@ -564,7 +565,7 @@ def payment_success(request):
         booking.status = 'payment_failed'
         booking.save()
     
-    return render(request, 'payment_success.html', {'booking': booking})
+    return render(request, 'mainapp/payment_success.html', {'booking': booking})
 
 def send_booking_confirmation_email(booking):
     subject = 'Booking Confirmation'
@@ -598,10 +599,10 @@ def payment_cancelled(request):
         booking.status = 'cancelled'
         booking.save()
         messages.warning(request, "Your booking has been cancelled.")
-    return render(request, 'payment_cancelled.html')
+    return render(request, 'mainapp/payment_cancelled.html')
 
 def payment_error(request):
-    return render(request, 'payment_error.html')
+    return render(request, 'mainapp/payment_error.html')
 
 def vendor_benefits(request):
     benefits = [
@@ -632,7 +633,7 @@ def vendor_benefits(request):
             'vendor_profits': vendor_profits
         })
     
-    return render(request, 'vendor_benefits.html', context)
+    return render(request, 'mainapp/vendor_benefits.html', context)
 
 @require_http_methods(["GET", "POST"])
 def forgot_password(request):
@@ -642,7 +643,7 @@ def forgot_password(request):
             user = User.objects.get(email=email, is_active=True, role='user')
             if user.is_email_verified:
                 token = user.generate_password_reset_token()
-                reset_url = request.build_absolute_uri(reverse('password_reset_verify'))
+                reset_url = request.build_absolute_uri(reverse('mainapp:password_reset_verify'))
                 send_mail(
                     'Password Reset OTP',
                     f'Your OTP for password reset is: {token}\nUse this OTP at {reset_url}',
@@ -655,7 +656,7 @@ def forgot_password(request):
                 return JsonResponse({'status': 'error', 'message': 'Your email is not verified. Please verify your email first.'})
         except User.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'No active customer account found with this email address.'})
-    return render(request, 'forgot_password.html')
+    return render(request, 'mainapp/forgot_password.html')
 
 @require_http_methods(["GET", "POST"])
 def password_reset_verify(request):
@@ -675,7 +676,7 @@ def password_reset_verify(request):
                 return JsonResponse({'status': 'error', 'message': 'Invalid or expired OTP. Please try again.'})
         except User.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'No active customer account found with this email address.'})
-    return render(request, 'password_reset_verify.html')
+    return render(request, 'mainapp/password_reset_verify.html')
 
 @login_required
 def user_bookings(request):
@@ -695,7 +696,7 @@ def user_bookings(request):
     context = {
         'bookings': bookings,
     }
-    return render(request, 'user_bookings.html', context)
+    return render(request, 'mainapp/user_bookings.html', context)
 
 @login_required
 def booking_detail(request, booking_id):
@@ -709,7 +710,7 @@ def booking_detail(request, booking_id):
         'vendor_details': vendor_details,
         'can_submit_feedback': booking.can_submit_feedback(),
     }
-    return render(request, 'booking_detail.html', context)
+    return render(request, 'mainapp/booking_detail.html', context)
 
 @login_required
 @require_http_methods(["POST"])

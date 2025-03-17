@@ -284,3 +284,294 @@ INFO 2025-02-19 15:21:20,155 models 29860 23328 Is vehicle available: True
 INFO 2025-02-19 15:21:20,156 views 29860 23328 Vehicle is available for the selected dates.
 INFO 2025-02-19 15:21:20,160 views 29860 23328 Booking created successfully: 1
 INFO 2025-02-19 15:21:47,694 views 29860 34508 Confirmation email sent for booking 1
+ERROR 2025-03-15 09:51:42,398 views 15332 39024 Error in user_booking_history: user_booking_history.html
+ERROR 2025-03-15 11:55:21,157 views 30268 37716 Error in user_booking_history: user_booking_history.html
+ERROR 2025-03-15 11:55:25,197 views 30268 37716 Error in user_booking_history: user_booking_history.html
+ERROR 2025-03-15 11:55:29,546 views 30268 37716 Error in user_booking_history: user_booking_history.html
+ERROR 2025-03-15 11:55:41,968 views 30268 24452 Error in user_booking_history: user_booking_history.html
+ERROR 2025-03-15 11:56:13,070 views 30268 24452 Error in user_booking_history: user_booking_history.html
+INFO 2025-03-15 11:57:10,339 views 41036 29256 Booking view called for vehicle id: 2
+INFO 2025-03-15 11:57:27,036 views 41036 29256 Booking view called for vehicle id: 2
+INFO 2025-03-15 11:57:32,597 views 41036 29256 Booking view called for vehicle id: 2
+INFO 2025-03-15 11:57:36,523 views 41036 29256 Booking view called for vehicle id: 2
+INFO 2025-03-15 11:57:49,152 views 41036 29256 Booking view called for vehicle id: 2
+INFO 2025-03-15 11:57:51,033 views 41036 29256 Booking view called for vehicle id: 2
+ERROR 2025-03-15 11:58:02,653 views 41036 29256 Error in user_booking_history: user_booking_history.html
+ERROR 2025-03-15 11:59:19,596 views 41036 29256 Error in user_booking_history: user_booking_history.html
+ERROR 2025-03-15 11:59:51,139 views 41036 29256 Error in user_booking_history: user_booking_history.html
+ERROR 2025-03-15 12:00:08,173 views 41036 29256 Error in user_booking_history: user_booking_history.html
+ERROR 2025-03-15 12:00:44,502 views 31532 41956 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:00:46,990 views 31532 41956 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,180 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,193 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,206 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,221 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,235 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,249 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,265 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,279 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,295 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,310 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,325 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,339 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,353 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,367 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,382 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,397 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,412 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,426 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,439 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:48,452 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,519 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,549 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,580 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,600 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,619 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,642 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,664 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,681 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,699 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,718 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,739 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,756 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,777 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,791 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,807 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,821 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,836 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,852 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,871 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:49,885 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:54,923 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:54,945 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:54,962 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:54,980 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:54,992 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,008 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,023 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,035 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,051 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,065 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,082 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,096 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,112 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,125 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,133 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,152 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,167 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,180 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,195 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:01:55,209 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,246 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,262 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,278 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,292 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,306 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,320 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,334 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,347 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,360 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,375 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,387 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,403 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,416 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,424 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,445 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,459 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,473 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,491 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,505 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:02:25,515 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,553 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,569 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,582 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,600 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,611 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,626 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,641 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,653 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,667 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,680 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,692 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,705 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,718 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,734 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,749 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,763 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,777 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,788 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,801 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:03:25,811 views 9648 26780 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,651 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,665 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,679 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,689 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,710 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,725 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,742 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,756 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,778 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,797 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,815 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,829 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,849 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,864 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,878 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,898 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,912 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,928 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,948 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:18,965 views 31204 33864 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,021 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,035 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,049 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,063 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,076 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,089 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,102 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,116 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,129 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,142 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,155 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,162 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,175 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,192 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,205 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,217 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,230 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,244 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,257 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:38,269 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,323 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,342 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,363 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,379 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,398 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,415 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,433 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,448 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,465 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,484 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,500 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,547 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,562 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,582 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,600 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,623 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,644 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,660 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,676 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:39,695 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,738 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,767 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,788 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,808 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,821 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,835 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,850 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,867 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,880 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,894 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,904 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,919 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,938 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,951 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,963 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,974 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:44,989 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:45,007 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:45,021 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:05:45,034 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,071 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,086 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,106 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,119 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,131 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,145 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,159 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,172 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,187 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,199 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,211 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,227 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,240 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,254 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,269 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,282 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,295 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,311 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,324 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:06:15,338 views 31016 36588 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:07:10,024 views 17596 11472 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:07:12,384 views 17596 11472 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:07:13,161 views 17596 11472 Error in user_booking_history: Reverse for 'booking_detail' not found. 'booking_detail' is not a valid view function or pattern name.
+ERROR 2025-03-15 12:08:14,218 views 37984 23072 Error in user_booking_history: mainapp:user_booking_history.html
+ERROR 2025-03-15 12:12:19,739 views 37984 23072 Error in user_booking_history: mainapp:user_booking_history.html
+INFO 2025-03-15 12:26:21,935 views 32252 21404 Booking view called for vehicle id: 3
+INFO 2025-03-15 12:26:29,112 views 32252 21404 Booking view called for vehicle id: 3
+INFO 2025-03-15 12:26:29,113 views 32252 21404 POST request received
+INFO 2025-03-15 12:26:29,113 views 32252 21404 Start date: 2025-03-15, End date: 2025-03-15
+INFO 2025-03-15 12:26:29,114 views 32252 21404 Adjusted dates - Start: 2025-03-15 00:00:00+00:00, End: 2025-03-16 23:59:59.999999+00:00
+INFO 2025-03-15 12:26:29,114 models 32252 21404 Checking availability for vehicle 3 from 2025-03-15 00:00:00+00:00 to 2025-03-16 23:59:59.999999+00:00
+INFO 2025-03-15 12:26:29,115 models 32252 21404 Overlapping bookings found: 0
+INFO 2025-03-15 12:26:29,116 models 32252 21404 Is vehicle available: True
+INFO 2025-03-15 12:26:29,116 views 32252 21404 Vehicle is available for the selected dates.
+INFO 2025-03-15 12:26:29,121 views 32252 21404 Booking created successfully: 2
+ERROR 2025-03-15 12:26:34,911 views 32252 21404 An error occurred: Reverse for 'payment' not found. 'payment' is not a valid view function or pattern name.
+INFO 2025-03-15 12:27:01,848 views 32252 21404 Booking view called for vehicle id: 3
+INFO 2025-03-15 12:27:01,850 views 32252 21404 POST request received
+INFO 2025-03-15 12:27:01,850 views 32252 21404 Start date: 2025-03-15, End date: 2025-03-15
+INFO 2025-03-15 12:27:01,851 views 32252 21404 Adjusted dates - Start: 2025-03-15 00:00:00+00:00, End: 2025-03-16 23:59:59.999999+00:00
+INFO 2025-03-15 12:27:01,851 models 32252 21404 Checking availability for vehicle 3 from 2025-03-15 00:00:00+00:00 to 2025-03-16 23:59:59.999999+00:00
+INFO 2025-03-15 12:27:01,852 models 32252 21404 Overlapping bookings found: 1
+INFO 2025-03-15 12:27:01,852 models 32252 21404 Is vehicle available: False
+WARNING 2025-03-15 12:27:01,853 views 32252 21404 Vehicle is not available for the selected dates.
+INFO 2025-03-15 12:27:11,871 views 32252 21404 Booking view called for vehicle id: 3
+INFO 2025-03-15 12:27:11,873 views 32252 21404 POST request received
+INFO 2025-03-15 12:27:11,873 views 32252 21404 Start date: 2025-03-16, End date: 2025-03-17
+INFO 2025-03-15 12:27:11,873 views 32252 21404 Adjusted dates - Start: 2025-03-16 00:00:00+00:00, End: 2025-03-17 23:59:59.999999+00:00
+INFO 2025-03-15 12:27:11,874 models 32252 21404 Checking availability for vehicle 3 from 2025-03-16 00:00:00+00:00 to 2025-03-17 23:59:59.999999+00:00
+INFO 2025-03-15 12:27:11,875 models 32252 21404 Overlapping bookings found: 1
+INFO 2025-03-15 12:27:11,876 models 32252 21404 Is vehicle available: False
+WARNING 2025-03-15 12:27:11,876 views 32252 21404 Vehicle is not available for the selected dates.
+INFO 2025-03-15 14:18:52,996 views 19836 40244 Booking view called for vehicle id: 3
+INFO 2025-03-15 14:19:00,770 views 19836 40244 Booking view called for vehicle id: 3
+INFO 2025-03-15 14:19:00,771 views 19836 40244 POST request received
+INFO 2025-03-15 14:19:00,772 views 19836 40244 Start date: 2025-03-22, End date: 2025-03-23
+INFO 2025-03-15 14:19:00,772 views 19836 40244 Adjusted dates - Start: 2025-03-22 00:00:00+00:00, End: 2025-03-23 23:59:59.999999+00:00
+INFO 2025-03-15 14:19:00,773 models 19836 40244 Checking availability for vehicle 3 from 2025-03-22 00:00:00+00:00 to 2025-03-23 23:59:59.999999+00:00
+INFO 2025-03-15 14:19:00,774 models 19836 40244 Overlapping bookings found: 0
+INFO 2025-03-15 14:19:00,774 models 19836 40244 Is vehicle available: True
+INFO 2025-03-15 14:19:00,775 views 19836 40244 Vehicle is available for the selected dates.
+INFO 2025-03-15 14:19:00,780 views 19836 40244 Booking created successfully: 3
+INFO 2025-03-15 14:21:29,188 views 41736 22120 Confirmation email sent for booking 3
+INFO 2025-03-15 14:21:52,029 views 41736 22120 Confirmation email sent for booking 3
+INFO 2025-03-15 14:21:57,493 views 41736 22120 Confirmation email sent for booking 3
+INFO 2025-03-15 14:22:04,573 views 41736 22120 Confirmation email sent for booking 3
+INFO 2025-03-15 14:22:26,291 views 41736 22120 Confirmation email sent for booking 3
+INFO 2025-03-15 14:22:54,795 views 41736 40240 Sending cancellation email to affair-veal-ovary@duck.com
+ERROR 2025-03-17 12:11:56,028 views 26972 29988 Error in complete_profile view: complete_profile.html
+ERROR 2025-03-17 12:18:47,847 views 26972 31812 Error in complete_profile view: complete_profile.html
+ERROR 2025-03-17 12:25:54,192 views 30060 30124 Error in complete_profile view: Reverse for 'complete_profile' not found. 'complete_profile' is not a valid view function or pattern name.
+INFO 2025-03-17 13:45:35,658 views 2792 32248 Booking view called for vehicle id: 2
+INFO 2025-03-17 13:45:44,551 views 2792 32248 Booking view called for vehicle id: 2
+INFO 2025-03-17 13:45:44,552 views 2792 32248 POST request received
+INFO 2025-03-17 13:45:44,553 views 2792 32248 Start date: 2025-03-17, End date: 2025-03-18
+INFO 2025-03-17 13:45:44,554 views 2792 32248 Adjusted dates - Start: 2025-03-17 00:00:00+00:00, End: 2025-03-18 23:59:59.999999+00:00
+INFO 2025-03-17 13:45:44,554 models 2792 32248 Checking availability for vehicle 2 from 2025-03-17 00:00:00+00:00 to 2025-03-18 23:59:59.999999+00:00
+INFO 2025-03-17 13:45:44,556 models 2792 32248 Overlapping bookings found: 0
+INFO 2025-03-17 13:45:44,556 models 2792 32248 Is vehicle available: True
+INFO 2025-03-17 13:45:44,556 views 2792 32248 Vehicle is available for the selected dates.
+INFO 2025-03-17 13:45:44,561 views 2792 32248 Booking created successfully: 4
+INFO 2025-03-17 13:47:59,175 views 35056 19596 Confirmation email sent for booking 4
+INFO 2025-03-17 13:48:06,911 views 35056 19596 Booking view called for vehicle id: 3
+INFO 2025-03-17 13:48:14,577 views 35056 19596 Booking view called for vehicle id: 3
+INFO 2025-03-17 13:48:14,578 views 35056 19596 POST request received
+INFO 2025-03-17 13:48:14,579 views 35056 19596 Start date: 2025-03-17, End date: 2025-03-17
+INFO 2025-03-17 13:48:14,579 views 35056 19596 Adjusted dates - Start: 2025-03-17 00:00:00+00:00, End: 2025-03-18 23:59:59.999999+00:00
+INFO 2025-03-17 13:48:14,579 models 35056 19596 Checking availability for vehicle 3 from 2025-03-17 00:00:00+00:00 to 2025-03-18 23:59:59.999999+00:00
+INFO 2025-03-17 13:48:14,581 models 35056 19596 Overlapping bookings found: 0
+INFO 2025-03-17 13:48:14,581 models 35056 19596 Is vehicle available: True
+INFO 2025-03-17 13:48:14,581 views 35056 19596 Vehicle is available for the selected dates.
+INFO 2025-03-17 13:48:14,586 views 35056 19596 Booking created successfully: 5
+INFO 2025-03-17 13:48:48,394 views 35056 19596 Confirmation email sent for booking 5

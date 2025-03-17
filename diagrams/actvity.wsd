@@ -1,0 +1,104 @@
+@startuml Admin Management System
+
+|Admin|
+start
+
+:Login to Admin Panel;
+if (Valid Credentials?) then (yes)
+  if (First Login?) then (yes)
+    :Change Password;
+  endif
+  
+  fork
+    |Vehicle Management|
+    :Manage Vehicle Types;
+    fork
+      :Add Vehicle Type;
+    fork again
+      :Toggle Vehicle Type Status;
+    end fork
+    
+    :Manage Vehicle Companies;
+    fork
+      :Add Vehicle Company;
+    fork again
+      :Toggle Company Status;
+    end fork
+    
+    :Manage Models;
+    fork
+      :Add Model;
+    fork again
+      :Toggle Model Status;
+    end fork
+    
+    :Manage Features;
+    fork
+      :Add Features;
+    fork again
+      :Toggle Feature Status;
+    end fork
+  
+  fork again
+    |Vendor Management|
+    :View Vendor Applications;
+    if (New Application?) then (yes)
+      :Review Application;
+      if (Approve?) then (yes)
+        :Update Status to Approved;
+        :Send Approval Email;
+      else (no)
+        :Reject Application;
+        :Send Rejection Email;
+      endif
+    endif
+    
+    :Manage Active Vendors;
+    fork
+      :View All Vendors;
+    fork again
+      :Toggle Vendor Status;
+      if (Deactivate?) then (yes)
+        :Send Deactivation Email;
+      else (no)
+        :Send Reactivation Email;
+      endif
+    end fork
+  
+  fork again
+    |Customer Management|
+    :View Customer List;
+    fork
+      :View Active Customers;
+    fork again
+      :View All Customers;
+    fork again
+      :View Deactivated Customers;
+    end fork
+    
+    :Toggle Customer Status;
+    if (Deactivate?) then (yes)
+      :Send Deactivation Email;
+    else (no)
+      :Send Reactivation Email;
+    endif
+  
+  fork again
+    |Feedback Management|
+    :View All Feedback;
+    fork
+      :Filter by Vendor;
+    fork again
+      :Filter by Rating;
+    end fork
+    :Display Paginated Results;
+  end fork
+
+else (no)
+  :Show Error Message;
+  :Return to Login;
+endif
+
+stop
+
+@enduml

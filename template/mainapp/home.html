@@ -1,0 +1,590 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <title>WheelsOnRent</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'indexall/fonts/icomoon/style.css' %}">
+
+    <link rel="stylesheet" href="{% static 'indexall/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'indexall/css/bootstrap-datepicker.css '%}">
+    <link rel="stylesheet" href="{% static 'indexall/css/jquery.fancybox.min.css '%}">
+    <link rel="stylesheet" href="{% static 'indexall/css/owl.carousel.min.css '%}">
+    <link rel="stylesheet" href="{% static 'indexall/css/owl.theme.default.min.css '%}">
+    <link rel="stylesheet" href="{% static 'indexall/fonts/flaticon/font/flaticon.css '%}">
+    <link rel="stylesheet" href="{% static 'indexall/css/aos.css'%}">
+
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="{% static 'indexall/css/style.css '%}">
+
+    <style>
+        .account-options {
+            margin-bottom: 30px;
+        }
+        .vehicle-card {
+            margin-bottom: 30px;
+        }
+        .vehicle-card img {
+            height: 200px;
+            object-fit: cover;
+        }
+        .hero {
+            background-size: cover;
+            background-position: center;
+            padding: 100px 0;
+            color: white;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: bold;
+        }
+        .trip-form {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .site-section {
+            padding: 60px 0;
+        }
+        .section-heading {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .step {
+            text-align: center;
+        }
+        .step-inner {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        .step-inner h3 {
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+        .listing {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .listing-img img {
+            width: 100%;
+            height: auto;
+        }
+        .listing-contents {
+            padding: 20px;
+        }
+        .testimonial-2 {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .testimonial-2 blockquote {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        .v-card img {
+            border-radius: 50%;
+        }
+        .site-section.bg-primary {
+            background: #007bff;
+            color: white;
+        }
+        .site-section.bg-primary .btn-white {
+            background: white;
+            color: #007bff;
+        }
+        .custom-nav {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .custom-nav .nav-link {
+            color: white;
+        }
+
+        .custom-nav .nav-link:hover {
+            color: #ffcc00;
+        }
+
+        .custom-nav .navbar-brand {
+            color: white;
+        }
+
+        .custom-nav .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .message-icon-wrapper {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .message-icon {
+            width: 45px;
+            height: 45px;
+            background-color: #5cadd3;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .message-icon img {
+            width: 25px;
+            height: 25px;
+            filter: brightness(0) invert(1); /* Makes the icon white */
+        }
+
+        .message-icon:hover {
+            background-color: #4a9cc2;
+        }
+    </style>
+</head>
+{% block content %}
+{% include 'mainapp/nav.html' %}
+<body>
+     
+    <div class="site-wrap" id="home-section">
+
+        <div class="site-mobile-menu site-navb/ar-target">
+          <div class="site-mobile-menu-header">
+            <div class="site-mobile-menu-close mt-3">
+              <span class="icon-close2 js-menu-toggle"></span>
+            </div>
+          </div>
+          <div class="site-mobile-menu-body"></div>
+        </div>
+
+        <div class="hero" style="background-image: url('{% static "indexall/images/hero_1_a.jpg" %}');">
+            <div class="container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="row mb-5">
+                            <div class="col-lg-7 intro">
+                                <h1><strong>Rent a car</strong> is within your finger tips.</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section">
+            <div class="container">
+                <h2 class="section-heading"><strong>How it works?</strong></h2>
+                <p class="mb-5">Easy steps to get you started</p>    
+                <div class="row mb-5">
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <div class="step">
+                            <span>1</span>
+                            <div class="step-inner">
+                                <span class="number text-primary">01.</span>
+                                <h3>Select a car</h3>
+                                <p>Choose from our wide selection of vehicles to find the perfect car for your needs.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <div class="step">
+                            <span>2</span>
+                            <div class="step-inner">
+                                <span class="number text-primary">02.</span>
+                                <h3>Fill up form</h3>
+                                <p>Complete the booking form with your details and rental requirements.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <div class="step">
+                            <span>3</span>
+                            <div class="step-inner">
+                                <span class="number text-primary">03.</span>
+                                <h3>Payment</h3>
+                                <p>Securely pay for your rental and get ready to hit the road.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 mx-auto">
+                        <a href="#" class="d-flex align-items-center play-now mx-auto" data-bs-toggle="modal" data-bs-target="#howItWorksModal">
+                            <span class="icon">
+                                <span class="icon-play"></span>
+                            </span>
+                            <span class="caption">Rent a car Feel the adventure</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Video Modal -->
+                <div class="modal fade" id="howItWorksModal" tabindex="-1" aria-labelledby="howItWorksModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="howItWorksModalLabel">Adventure make the life beautiful</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="ratio ratio-16x9">
+                                    <iframe src="https://www.youtube.com/embed/AFtUpMTs4vI" title="Adventure make the life beautiful" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="site-section">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-7 text-center order-lg-2">
+                        <div class="img-wrap-1 mb-5">
+                            <img src="{% static 'indexall/images/feature_01.png' %}" alt="Image" class="img-fluid">
+                        </div>
+                    </div>
+                    <div class="col-lg-4 ml-auto order-lg-1">
+                        <h3 class="mb-4 section-heading"><strong>Take advantage of our special rental promotions.</strong></h3>
+                        <p class="mb-5">We offer great deals and discounts to help you save on your car rental. Check out our current promotions and special offers to make your journey even more affordable.</p>
+                        <p><a href="#" class="btn btn-primary">View Promotions</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <h2 class="section-heading"><strong>Vehicle Listings</strong></h2>
+                        <p class="mb-5">Browse our selection of available vehicles.</p>    
+                    </div>
+                </div>
+                    <div class="container mt-4">
+                        <div class="row">
+                            {% for vehicle in vehicles %}
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100">
+                                    {% if vehicle.image %}
+                                        <img src="{{ vehicle.image.url }}" class="card-img-top" alt="{{ vehicle.model }}" style="height: 200px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                            <span>No Image Available</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ vehicle.model }}</h5>
+                                        <p class="card-text">
+                                            <strong>Type:</strong> {{ vehicle.model.sub_category.category.category_name }}<br>
+                                            <strong>Company:</strong> {{ vehicle.model.sub_category.company_name }}<br>
+                                            <strong>Year:</strong> {{ vehicle.model.model_year }}<br>
+                                            <strong>Rental Rate:</strong> ₹{{ vehicle.rental_rate }} per day
+                                        </p>
+                                        <h6>Features:</h6>
+                                        <ul class="list-unstyled">
+                                            {% for feature in vehicle.features.all|slice:":3" %}
+                                                <li>{{ feature.feature_name }}</li>
+                                            {% empty %}
+                                                <li>No features listed</li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% if vehicle.features.count > 3 %}
+                                            <small>and {{ vehicle.features.count|add:"-3" }} more...</small>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-footer">
+                                        {% if vehicle.vendor %}
+                                            <h6>Vendor: {{ vehicle.vendor.business_name }}</h6>
+                                            <p class="small">
+                                                <strong>Phone:</strong> {{ vehicle.vendor.contact_number }}
+                                            </p>
+                                        {% else %}
+                                            <p>Vendor information not available</p>
+                                        {% endif %}
+                                        <a href="{% url 'mainapp:book_vehicle' vehicle.id %}" class="btn btn-primary btn-block">Book Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12">
+                                <p class="text-center">No vehicles available at the moment.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <div class="container mt-5">
+            <h2>Available Drivers</h2>
+            <div class="row">
+                {% for driver in drivers %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        {% if driver.profile_photo %}
+                        <img src="{{ driver.profile_photo.url }}" class="card-img-top" alt="{{ driver.full_name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ driver.full_name }}</h5>
+                            <p class="card-text">
+                                <strong>Experience:</strong> {{ driver.driving_experience }} years<br>
+                                <strong>Skills:</strong> {{ driver.get_driving_skill_display }}<br>
+                                <strong>Rating:</strong> 
+                                {% if driver.rating_avg %}
+                                    {{ driver.rating_avg|floatformat:1 }} / 5.0
+                                {% else %}
+                                    No ratings yet
+                                {% endif %}
+                            </p>
+                            <div class="d-grid">
+                                <a href="{% url 'drivers:book_driver' driver.id %}" 
+                                   class="btn btn-primary">Book Driver</a>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <p class="text-center">No drivers available at the moment.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="site-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <h2 class="section-heading"><strong>Features</strong></h2>
+                        <p class="mb-5">Discover what makes our service special.</p>    
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 mb-5">
+                        <div class="service-1 dark">
+                            <span class="service-1-icon">
+                                <span class="icon-home"></span>
+                            </span>
+                            <div class="service-1-contents">
+                                <h3>Door-to-Door Service</h3>
+                                <p>We offer convenient pickup and drop-off services right at your doorstep.</p>
+                                <p class="mb-0"><a href="#">Learn more</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-5">
+                        <div class="service-1 dark">
+                            <span class="service-1-icon">
+                                <span class="icon-gear"></span>
+                            </span>
+                            <div class="service-1-contents">
+                                <h3>Well-Maintained Vehicles</h3>
+                                <p>All our vehicles undergo regular maintenance checks for your safety.</p>
+                                <p class="mb-0"><a href="#">Learn more</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-5">
+                        <div class="service-1 dark">
+                            <span class="service-1-icon">
+                                <span class="icon-watch_later"></span>
+                            </span>
+                            <div class="service-1-contents">
+                                <h3>24/7 Support</h3>
+                                <p>Our customer support team is available round the clock to assist you.</p>
+                                <p class="mb-0"><a href="#">Learn more</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-5">
+                        <div class="service-1 dark">
+                            <span class="service-1-icon">
+                                <span class="icon-verified_user"></span>
+                            </span>
+                            <div class="service-1-contents">
+                                <h3>Insurance Coverage</h3>
+                                <p>Comprehensive insurance coverage for peace of mind during your rental.</p>
+                                <p class="mb-0"><a href="#">Learn more</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-5">
+                        <div class="service-1 dark">
+                            <span class="service-1-icon">
+                                <span class="icon-video_library"></span>
+                            </span>
+                            <div class="service-1-contents">
+                                <h3>Digital Documentation</h3>
+                                <p>Easy and paperless documentation process for quick rentals.</p>
+                                <p class="mb-0"><a href="#">Learn more</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-5">
+                        <div class="service-1 dark">
+                            <span class="service-1-icon">
+                                <span class="icon-vpn_key"></span>
+                            </span>
+                            <div class="service-1-contents">
+                                <h3>Flexible Rental Options</h3>
+                                <p>Choose from various rental durations to suit your needs.</p>
+                                <p class="mb-0"><a href="#">Learn more</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <h2 class="section-heading"><strong>Testimonials</strong></h2>
+                        <p class="mb-5">What our customers say about us.</p>    
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <div class="testimonial-2">
+                            <blockquote class="mb-4">
+                                <p>"Excellent service and well-maintained vehicles. The booking process was smooth and hassle-free."</p>
+                            </blockquote>
+                            <div class="d-flex v-card align-items-center">
+                                <img src="{% static 'indexall/images/person_1.jpg' %}" alt="Image" class="img-fluid mr-3">
+                                <div class="author-name">
+                                    <span class="d-block">Mike Fisher</span>
+                                    <span>Business Traveler</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <div class="testimonial-2">
+                            <blockquote class="mb-4">
+                                <p>"Great prices and fantastic customer service. I highly recommend their rental services."</p>
+                            </blockquote>
+                            <div class="d-flex v-card align-items-center">
+                                <img src="{% static 'indexall/images/person_2.jpg' %}" alt="Image" class="img-fluid mr-3">
+                                <div class="author-name">
+                                    <span class="d-block">Jean Stanley</span>
+                                    <span>Tourist</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <div class="testimonial-2">
+                            <blockquote class="mb-4">
+                                <p>"Professional and reliable service. The car was in perfect condition and exactly as advertised."</p>
+                            </blockquote>
+                            <div class="d-flex v-card align-items-center">
+                                <img src="{% static 'indexall/images/person_3.jpg' %}" alt="Image" class="img-fluid mr-3">
+                                <div class="author-name">
+                                    <span class="d-block">Katie Rose</span>
+                                    <span>Regular Customer</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-section bg-primary py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-7 mb-4 mb-md-0">
+                        <h2 class="mb-0 text-white">Ready to start your journey?</h2>
+                        <p class="mb-0 opa-7">Book your perfect rental car today and hit the road with confidence.</p>
+                    </div>
+                    <div class="col-lg-5 text-md-right">
+                        <a href="#" class="btn btn-primary btn-white">Rent a car now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+      {% endblock %}
+      <script src="{%static 'indexall/js/jquery-3.3.1.min.js' %}"></script>
+      <script src="{%static 'indexall/js/popper.min.js' %}"></script>
+      <script src="{%static 'indexall/js/bootstrap.min.js' %}"></script>
+      <script src="{%static 'indexall/js/owl.carousel.min.js' %}"></script>
+      <script src="{%static 'indexall/js/jquery.sticky.js' %}"></script>
+      <script src="{%static 'indexall/js/jquery.waypoints.min.js' %}"></script>
+      <script src="{%static 'indexall/js/jquery.animateNumber.min.js' %}"></script>
+      <script src="{%static 'indexall/js/jquery.fancybox.min.js' %}"></script>
+      <script src="{%static 'indexall/js/jquery.easing.1.3.js' %}"></script>
+      <script src="{%static 'indexall/js/bootstrap-datepicker.min.js' %}"></script>
+      <script src="{%static 'indexall/js/aos.js' %}"></script>
+      
+      <script src="{%static 'indexall/js/main.js' %}"></script>
+      
+      <script>
+      document.querySelectorAll('.book-driver').forEach(button => {
+          button.addEventListener('click', async () => {
+              const driverId = button.dataset.driverId;
+              const bookingDate = prompt('Enter booking date (YYYY-MM-DD):');
+              
+              if (!bookingDate) return;
+              
+              try {
+                  const response = await fetch(`/book-driver/${driverId}/`, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRFToken': getCookie('csrftoken')
+                      },
+                      body: JSON.stringify({
+                          booking_date: bookingDate
+                      })
+                  });
+                  
+                  const data = await response.json();
+                  
+                  if (data.status === 'success') {
+                      const stripe = Stripe('your_publishable_key');
+                      stripe.redirectToCheckout({
+                          sessionId: data.session_id
+                      });
+                  } else {
+                      alert(data.message);
+                  }
+              } catch (error) {
+                  alert('An error occurred. Please try again.');
+              }
+          });
+      });
+
+      function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      </script>
+      
+      </body>
+      
+      </html>

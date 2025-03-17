@@ -705,7 +705,7 @@ def driver_booking_list(request):
             'active_page': 'bookings',
             'has_bookings': bookings.exists()  # Add this to check if there are any bookings
         }
-        return render(request, 'booking_list.html', context)
+        return render(request, 'mainapp/booking_list.html', context)
     except Exception as e:
         messages.error(request, 'Error retrieving your bookings')
         return redirect('home')

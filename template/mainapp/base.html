@@ -1,0 +1,414 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>WheelsOnRent</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{% static 'indexall/fonts/icomoon/style.css' %}">
+    <link rel="stylesheet" href="{% static 'indexall/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'indexall/css/bootstrap-datepicker.css '%}">
+    <link rel="stylesheet" href="{% static 'indexall/css/jquery.fancybox.min.css '%}">
+    <link rel="stylesheet" href="{% static 'indexall/css/owl.carousel.min.css '%}">
+    <link rel="stylesheet" href="{% static 'indexall/css/owl.theme.default.min.css '%}">
+    <link rel="stylesheet" href="{% static 'indexall/fonts/flaticon/font/flaticon.css '%}">
+    <link rel="stylesheet" href="{% static 'indexall/css/aos.css'%}">
+
+    <!-- Additional CSS -->
+    <link rel="stylesheet" href="{% static 'indexall/css/style.css '%}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .site-footer {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            padding: 40px 0 20px;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .footer-heading {
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .footer-heading:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 30px;
+            height: 2px;
+            background: #4CAF50;
+        }
+
+        .site-footer p {
+            line-height: 1.6;
+        }
+
+        .site-footer a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .site-footer a:hover {
+            color: #4CAF50;
+            padding-left: 5px;
+        }
+
+        .social {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .social a:hover {
+            background: #4CAF50;
+            transform: translateY(-3px);
+        }
+
+        .border-top {
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+
+        .list-unstyled li {
+            margin-bottom: 8px;
+        }
+
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            background-color: #1e3c72;  /* Match WheelsOnRent theme */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .chat-button i {
+            color: white;
+            font-size: 24px;
+        }
+
+        .chat-popup {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);  /* WheelsOnRent gradient */
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .close-chat {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .chat-messages {
+            height: 350px;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+        }
+
+        .message-content {
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+            display: inline-block;
+        }
+
+        .bot-message .message-content {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .user-message {
+            text-align: right;
+        }
+
+        .user-message .message-content {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .chat-input {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #eee;
+            border-radius: 0 0 10px 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .chat-input button {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background: #2a5298;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="site-wrap" id="home-section">
+        <div class="site-mobile-menu site-navbar-target">
+            <div class="site-mobile-menu-header">
+                <div class="site-mobile-menu-close mt-3">
+                    <span class="icon-close2 js-menu-toggle"></span>
+                </div>
+            </div>
+            <div class="site-mobile-menu-body"></div>
+        </div>
+
+        {% block extra_css %}
+        {% endblock %}
+
+        {% block content %}
+        {% endblock %}
+
+        <footer class="site-footer bg-dark text-light py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <h2 class="footer-heading text-primary border-bottom pb-2">About WheelsOnRent</h2>
+                        <p class="text-light opacity-75">Your trusted partner for hassle-free car rentals. Quality vehicles and exceptional service for memorable journeys.</p>
+                        <ul class="list-unstyled social d-flex gap-3">
+                            <li><a href="#" class="btn btn-outline-light rounded-circle"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a href="#" class="btn btn-outline-light rounded-circle"><i class="fab fa-instagram"></i></a></li>
+                            <li><a href="#" class="btn btn-outline-light rounded-circle"><i class="fab fa-twitter"></i></a></li>
+                            <li><a href="#" class="btn btn-outline-light rounded-circle"><i class="fab fa-linkedin-in"></i></a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6">
+                                <h2 class="footer-heading text-primary border-bottom pb-2">Quick Links</h2>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><a href="{% url 'mainapp:home' %}" class="text-light text-decoration-none hover-effect"><i class="fas fa-chevron-right me-2 text-primary"></i>Home</a></li>
+                                </ul>
+                            </div>
+                           
+                            <div class="col-lg-4 col-md-6">
+                                <h2 class="footer-heading text-primary border-bottom pb-2">Contact Info</h2>
+                                <ul class="list-unstyled">
+                                    <li class="mb-3"><a href="https://goo.gl/maps/xyz" class="text-light text-decoration-none hover-effect"><i class="fas fa-map-marker-alt me-2 text-primary"></i>123 MG Road, Kochi, Kerala 682011</a></li>
+                                    <li class="mb-3"><a href="tel:+914842396000" class="text-light text-decoration-none hover-effect"><i class="fas fa-phone me-2 text-primary"></i>+91 (484) 239-6000</a></li>
+                                    <li class="mb-3"><a href="mailto:contact@wheelsonrent.com" class="text-light text-decoration-none hover-effect"><i class="fas fa-envelope me-2 text-primary"></i>contact@wheelsonrent.com</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-4 mt-4 text-center">
+                    <div class="col-md-12">
+                        <div class="border-top border-secondary pt-4">
+                            <p class="mb-0 text-light opacity-75">
+                                Copyright &copy;<script>document.write(new Date().getFullYear());</script> 
+                                All rights reserved | Made with <i class="fas fa-heart text-danger animate-pulse"></i> by 
+                                <a href="#" target="_blank" class="text-primary text-decoration-none">PixelNex</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{% static 'indexall/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'indexall/js/popper.min.js' %}"></script>
+    <script src="{% static 'indexall/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'indexall/js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'indexall/js/jquery.sticky.js' %}"></script>
+    <script src="{% static 'indexall/js/jquery.waypoints.min.js' %}"></script>
+    <script src="{% static 'indexall/js/jquery.animateNumber.min.js' %}"></script>
+    <script src="{% static 'indexall/js/jquery.fancybox.min.js' %}"></script>
+    <script src="{% static 'indexall/js/jquery.easing.1.3.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'indexall/js/bootstrap-datepicker.min.js' %}"></script>
+    <script src="{% static 'indexall/js/aos.js' %}"></script>
+    <script src="{% static 'indexall/js/main.js' %}"></script>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <!-- Floating Chat Button -->
+        <div class="chat-button" id="chatButton">
+            <i class="fas fa-comments"></i>
+        </div>
+        
+        <!-- Chat Popup -->
+        <div class="chat-popup" id="chatPopup">
+            <div class="chat-header">
+                WheelsOnRent Assistant
+                <span class="close-chat" id="closeChat">&times;</span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        Hello! Welcome to WheelsOnRent. I can help you with:
+                        • Finding available vehicles
+                        • Rental rates and pricing
+                        • Booking process
+                        • General inquiries
+                        How may I assist you today?
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Type your message...">
+                <button id="sendMessage">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatButton = document.getElementById('chatButton');
+        const chatPopup = document.getElementById('chatPopup');
+        const closeChat = document.getElementById('closeChat');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessage = document.getElementById('sendMessage');
+        const chatMessages = document.getElementById('chatMessages');
+
+        // Toggle chat popup
+        chatButton.addEventListener('click', function() {
+            chatPopup.style.display = chatPopup.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Close chat popup
+        closeChat.addEventListener('click', function() {
+            chatPopup.style.display = 'none';
+        });
+
+        function addMessage(message, isUser = false, paymentUrl = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            
+            let messageContent = message;
+            if (paymentUrl) {
+                messageContent += `<br><a href="${paymentUrl}" class="btn btn-primary mt-2">Proceed to Payment</a>`;
+            }
+            
+            messageDiv.innerHTML = `<div class="message-content">${messageContent}</div>`;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendChatMessage(message) {
+            try {
+                const response = await fetch('/chatbot/message/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.status === 'success') {
+                    addMessage(data.message, false, data.payment_url);
+                } else {
+                    console.error('Error:', data);
+                    addMessage('Sorry, I encountered an error. Please try again.', false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Sorry, I encountered an error. Please try again.', false);
+            }
+        }
+
+        // Handle send button click
+        sendMessage.addEventListener('click', async function() {
+            const message = messageInput.value.trim();
+            if (message) {
+                addMessage(message, true);
+                messageInput.value = '';
+                await sendChatMessage(message);
+            }
+        });
+
+        // Handle enter key
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage.click();
+            }
+        });
+    });
+    </script>
+</body>
+</html>

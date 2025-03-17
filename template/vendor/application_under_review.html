@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'mainapp/base.html' %}
 
 
 
@@ -67,14 +67,13 @@
 </style>
 {% endblock %}
 {% block content %}
-{% include 'nav.html' %}
 <div class="application-review-container">
     <div class="application-review-content">
         <h2>Application Under Review</h2>
         <p>Your vendor application is currently under review. We'll notify you once a decision has been made.</p>
         <div class="button-container">
-            <a href="{% url 'index' %}" class="btn btn-primary">Go Back to Home</a>
-            <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+            <a href="{% url 'mainapp:index' %}" class="btn btn-primary">Go Back to Home</a>
+            <a href="{% url 'mainapp:logout' %}" class="btn btn-secondary">Logout</a>
         </div>
     </div>
 </div>

@@ -1,0 +1,79 @@
+@startuml Vehicle Rental System
+
+actor User
+participant "User Profile" as Profile
+participant "Vehicle" as Vehicle
+participant "Booking" as Booking
+participant "Vendor" as Vendor
+participant "Insurance" as Insurance
+participant "Pickup" as Pickup
+participant "Return" as Return
+participant "Feedback" as Feedback
+participant "Email Service" as Email
+
+== User Registration & Profile Setup ==
+User -> Profile: Create Account
+activate Profile
+Profile --> User: Account Created
+User -> Profile: Complete Profile Details
+Profile -> Profile: Upload License Documents
+Profile --> User: Profile Completed
+deactivate Profile
+
+== Vehicle Booking Process ==
+User -> Vehicle: Search Available Vehicles
+activate Vehicle
+Vehicle -> Vehicle: Check Availability
+Vehicle -> Insurance: Verify Insurance Status
+Insurance --> Vehicle: Insurance Valid
+Vehicle --> User: Show Available Vehicles
+deactivate Vehicle
+
+User -> Booking: Create Booking Request
+activate Booking
+Booking -> Vehicle: Check Vehicle Availability
+Vehicle --> Booking: Vehicle Available
+Booking -> Booking: Calculate Total Amount
+Booking -> User: Request Payment
+User -> Booking: Process Payment
+Booking -> Vendor: Notify Vendor
+Booking -> Email: Send Booking Confirmation
+Booking --> User: Booking Confirmed
+deactivate Booking
+
+== Vehicle Pickup Process ==
+User -> Pickup: Arrive for Pickup
+activate Pickup
+Pickup -> Booking: Verify Booking
+Pickup -> Pickup: Generate QR & OTP
+Pickup -> Email: Send Pickup QR & OTP
+Pickup -> User: Show QR & OTP
+User -> Vendor: Show QR/OTP
+Vendor -> Pickup: Verify QR/OTP
+Pickup -> Vehicle: Update Vehicle Status
+Pickup --> User: Vehicle Handed Over
+deactivate Pickup
+
+== Vehicle Return Process ==
+User -> Return: Initiate Return
+activate Return
+Return -> Booking: Verify Booking
+Return -> Return: Generate QR & OTP
+Return -> Email: Send Return QR & OTP
+Return -> User: Show QR & OTP
+User -> Vendor: Show QR/OTP
+Vendor -> Return: Verify QR/OTP
+Return -> Vehicle: Update Vehicle Status
+Return -> Booking: Update Booking Status
+Return --> User: Return Completed
+deactivate Return
+
+== Feedback Process ==
+User -> Feedback: Submit Feedback
+activate Feedback
+Feedback -> Booking: Verify Booking Status
+Feedback -> Vendor: Update Vendor Rating
+Feedback --> User: Feedback Recorded
+deactivate Feedback
+
+@enduml

@@ -1,0 +1,45 @@
+<header class="site-navbar site-navbar-target" role="banner">
+
+    <div class="container">
+      <div class="row align-items-center position-relative">
+
+        <div class="col-3">
+          <div class="site-logo">
+            <a href="{% url 'mainapp:home' %}" class="font-weight-bold"><strong>WheelsOnRent</strong></a>
+          </div>
+        </div>
+
+        <div class="col-9  text-right">
+          
+          <span class="d-inline-block d-lg-none"><a href="#" class=" site-menu-toggle js-menu-toggle py-5 "><span class="icon-menu h3 text-black"></span></a></span>
+
+          <nav class="site-navigation text-right ml-auto d-none d-lg-block" role="navigation">
+            <ul class="site-menu main-menu js-clone-nav ml-auto ">
+              <li class="active"><a href="{% url 'mainapp:home' %}" class="nav-link font-weight-bold">Home</a></li>
+              {% if user.is_authenticated %}
+                <li><a href="{% url 'mainapp:logout' %}" class="nav-link font-weight-bold">Logout</a></li>
+                <li>{{user.full_name}}</li>
+              {% else %}
+              <li><a href="{% url 'mainapp:user_login' %}" class="nav-link font-weight-bold">login</a></li>
+
+              <li><a href="{% url 'vendor:vendor_login' %}" class="nav-link font-weight-bold">Join With Us</a></li>
+              {% endif %}
+              <li><a href="#" class="nav-link font-weight-bold">Contact</a></li>
+              <li><a href="{% url 'drivers:driver_login' %}" class="nav-link font-weight-bold">Driver Register</a></li>
+              {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link font-weight-bold" href="{% url 'mainapp:user_booking_history' %}">My Bookings</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link font-weight-bold" href="{% url 'mainapp:profile_view' %}">My Profile</a>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+
+        
+      </div>
+    </div>
+
+  </header>
