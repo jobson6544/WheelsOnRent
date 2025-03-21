@@ -259,3 +259,487 @@ let us know at support@stripe.com.
 
 (Network error: ConnectionError: HTTPSConnectionPool(host='api.stripe.com', port=443): Max retries exceeded with url: /v1/checkout/sessions (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000205E8FFE870>: Failed to resolve 'api.stripe.com' ([Errno 11001] getaddrinfo failed)")))
 ERROR 2025-02-19 23:14:15,697 views 12364 21404 Error in driver booking: Request req_ypuS0f1X2qP87h: Invalid non-negative integer
+DEBUG 2025-03-19 02:00:53,709 views 23596 14908 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['MspeySUjQ773rSDEGKbyrEwvbm67dWxo3mRyvNa1qG6OCX1koE5dtP88IKL8pLAN'], 'booking_type': ['point_to_point'], 'booking_date': [''], 'start_time': [''], 'end_time': [''], 'pickup_location': ['', 'Kottayam, Kerala, India', ''], 'drop_location': ['', 'Manimala, Kerala, India'], 'service_date': ['2025-03-20'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4948608'], 'drop_lng': ['76.7466378'], 'vehicle_id': [''], 'start_date': [''], 'end_date': [''], 'distance': ['35.7 km']}>
+DEBUG 2025-03-19 02:00:53,710 views 23596 14908 Point to point data: pickup=, drop=Manimala, Kerala, India, date=2025-03-20
+DEBUG 2025-03-19 02:00:53,710 views 23596 14908 Coordinates: pickup(9.591566799999999, 76.5221531), drop(9.4948608, 76.7466378)
+ERROR 2025-03-19 02:00:53,710 views 23596 14908 Missing required point-to-point fields
+DEBUG 2025-03-19 02:03:05,022 views 14948 1908 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['RUrxV2SihmkO9oRdxieNd1Hu77MxMoOt8OTRSX80RVjzktfTfc8sfcj7EvryYdRS'], 'booking_type': ['point_to_point'], 'service_date': ['2025-03-20'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4948608'], 'drop_lng': ['76.7466378'], 'distance': ['35.7 km']}>
+DEBUG 2025-03-19 02:03:05,022 views 14948 1908 Point to point data: pickup=Kottayam, Kerala, India, drop=Manimala, Kerala, India, date=2025-03-20
+DEBUG 2025-03-19 02:03:05,023 views 14948 1908 Coordinates: pickup(9.591566799999999, 76.5221531), drop(9.4948608, 76.7466378)
+ERROR 2025-03-19 02:03:05,025 views 14948 1908 Error in driver booking: DriverBooking() got unexpected keyword arguments: 'pickup_latitude', 'pickup_longitude', 'drop_latitude', 'drop_longitude'
+DEBUG 2025-03-19 02:04:01,327 views 13324 7540 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['BODR7Gf12tnofXde6LRbpVxZOQXntNs2SI5b4BvJC2m9q2BUOFLQr69CleCoFCvr'], 'booking_type': ['point_to_point'], 'service_date': ['2025-03-20'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4948608'], 'drop_lng': ['76.7466378'], 'distance': ['35.7 km']}>
+DEBUG 2025-03-19 02:04:01,328 views 13324 7540 Point to point data: pickup=Kottayam, Kerala, India, drop=Manimala, Kerala, India, date=2025-03-20
+DEBUG 2025-03-19 02:04:01,328 views 13324 7540 Coordinates: pickup(9.591566799999999, 76.5221531), drop(9.4948608, 76.7466378)
+DEBUG 2025-03-19 02:04:01,329 views 13324 7540 Distance: 35.7 km
+ERROR 2025-03-19 02:04:01,330 views 13324 7540 Error in driver booking: DriverBooking() got unexpected keyword arguments: 'pickup_latitude', 'pickup_longitude', 'drop_latitude', 'drop_longitude'
+DEBUG 2025-03-19 02:07:12,633 views 5508 22396 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['3VbbIYoZbSVa9ea2s2DYpl8ZxtCLfXctkPDvFTEHLrUVkjyIaWxDrwKC4RhMrMfS'], 'booking_type': ['point_to_point'], 'service_date': ['2025-03-20'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4948608'], 'drop_lng': ['76.7466378'], 'distance': ['35.7 km']}>
+DEBUG 2025-03-19 02:07:12,633 views 5508 22396 Point to point data: pickup=Kottayam, Kerala, India, drop=Manimala, Kerala, India, date=2025-03-20
+DEBUG 2025-03-19 02:07:12,634 views 5508 22396 Coordinates: pickup(0.0, 0.0), drop(0.0, 0.0)
+ERROR 2025-03-19 02:07:12,634 views 5508 22396 Missing coordinates
+DEBUG 2025-03-19 02:07:22,223 views 5508 22396 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['3VbbIYoZbSVa9ea2s2DYpl8ZxtCLfXctkPDvFTEHLrUVkjyIaWxDrwKC4RhMrMfS'], 'booking_type': ['point_to_point'], 'service_date': ['2025-03-20'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4948608'], 'drop_lng': ['76.7466378'], 'distance': ['35.7 km']}>
+DEBUG 2025-03-19 02:07:22,223 views 5508 22396 Point to point data: pickup=Kottayam, Kerala, India, drop=Manimala, Kerala, India, date=2025-03-20
+DEBUG 2025-03-19 02:07:22,224 views 5508 22396 Coordinates: pickup(0.0, 0.0), drop(0.0, 0.0)
+ERROR 2025-03-19 02:07:22,224 views 5508 22396 Missing coordinates
+DEBUG 2025-03-19 02:09:19,865 views 26172 7664 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['KHSzxYudsybHg1mlWGy08xBQs74Gy36z1BkTuTKV27asr6K1EAsFaIdtZvJHKS9Y'], 'booking_type': ['point_to_point'], 'service_date': ['2025-03-20'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4948608'], 'drop_lng': ['76.7466378'], 'distance': ['35.7 km']}>
+DEBUG 2025-03-19 02:09:19,865 views 26172 7664 Point to point data: pickup=Kottayam, Kerala, India, drop=Manimala, Kerala, India, date=2025-03-20
+DEBUG 2025-03-19 02:09:19,866 views 26172 7664 Coordinates: pickup(9.591566799999999, 76.5221531), drop(9.4948608, 76.7466378)
+DEBUG 2025-03-19 09:17:36,784 views 15060 14768 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['7n7hshIerEAgdU1K02SDqsq56YB5VxGkohzBpcYW1dz1oZpqIWMisD2IDmg67mJJ'], 'booking_type': ['point_to_point'], 'service_date': ['2025-03-24'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4948608'], 'drop_lng': ['76.7466378'], 'distance': ['35.7 km']}>
+DEBUG 2025-03-19 09:17:36,785 views 15060 14768 Point to point data: pickup=Kottayam, Kerala, India, drop=Manimala, Kerala, India, date=2025-03-24
+DEBUG 2025-03-19 09:17:36,786 views 15060 14768 Coordinates: pickup(9.591566799999999, 76.5221531), drop(9.4948608, 76.7466378)
+DEBUG 2025-03-19 09:46:25,873 views 13088 1488 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['SZP35uIqEjdX5LrbduaLN0mLX3yLFVZn9Thn2pY8eScIgQPRVo4qPbYourdMRK2M'], 'booking_type': ['point_to_point'], 'service_date': ['0202-05-23'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Erumeli, Kerala, India'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4810562'], 'drop_lng': ['76.84505209999999'], 'distance': ['50.7 km']}>
+DEBUG 2025-03-19 09:46:25,873 views 13088 1488 Point to point data: pickup=Kottayam, Kerala, India, drop=Erumeli, Kerala, India, date=0202-05-23
+DEBUG 2025-03-19 09:46:25,874 views 13088 1488 Coordinates: pickup(9.591566799999999, 76.5221531), drop(9.4810562, 76.84505209999999)
+DEBUG 2025-03-19 09:54:48,438 views 28516 27188 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['YyqU3AnO5fL7qAiHk42VT9A3PMFFsPqifsSe0vDwFOKSBFGn2YWAVkcGmakGEEtH'], 'booking_type': ['specific_date'], 'booking_date': ['2025-03-31'], 'start_time': ['12:00'], 'end_time': ['16:00'], 'pickup_location': ['Kottayam, Kerala, India', '', ''], 'drop_location': ['Manimala, Kerala, India', ''], 'service_date': [''], 'pickup_lat': [''], 'pickup_lng': [''], 'drop_lat': [''], 'drop_lng': [''], 'vehicle_id': [''], 'start_date': [''], 'end_date': ['']}>
+DEBUG 2025-03-19 09:54:48,439 views 28516 27188 Specific date booking data: date=2025-03-31, start=12:00, end=16:00
+DEBUG 2025-03-19 10:04:36,034 views 28516 21804 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['PRnOe95gBVmXPOP48GJy18YoGxNHWdOO6LP8b4lYbulI0TdKQADd3jA1dVsI82Rd'], 'booking_type': ['with_vehicle'], 'booking_date': [''], 'start_time': [''], 'end_time': [''], 'pickup_location': ['', '', 'Kottayam, Kerala, India'], 'drop_location': ['', ''], 'service_date': [''], 'pickup_lat': [''], 'pickup_lng': [''], 'drop_lat': [''], 'drop_lng': [''], 'vehicle_id': ['2'], 'start_date': ['2025-04-01T10:03'], 'end_date': ['2025-04-02T10:04']}>
+DEBUG 2025-03-19 10:04:36,035 views 28516 21804 With vehicle booking data: start=2025-04-01T10:03, end=2025-04-02T10:04, vehicle=2
+ERROR 2025-03-19 10:04:36,036 views 28516 21804 Vehicle/date error: unconverted data remains: T10:03
+DEBUG 2025-03-19 10:11:30,223 views 27568 12156 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['P928eF6ylfgf5aPgcIWMPpcpQ2d6ok4z63usbAmgVOf0gfdWUCQrRAO2nqS7A97Y'], 'booking_type': ['specific_date'], 'booking_date': ['2025-03-20'], 'start_time': ['08:00'], 'end_time': ['14:00'], 'pickup_location': ['Kottayam, Kerala, India', '', ''], 'drop_location': ['Manimala, Kerala, India', ''], 'service_date': [''], 'pickup_lat': [''], 'pickup_lng': [''], 'drop_lat': [''], 'drop_lng': [''], 'vehicle_id': [''], 'start_date': [''], 'end_date': ['']}>
+DEBUG 2025-03-19 10:11:30,224 views 27568 12156 Specific date booking data: date=2025-03-20, start=08:00, end=14:00
+DEBUG 2025-03-19 10:12:20,581 views 27568 27444 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['ZVquQ6ycTmcM5XvNJsV28ZMDZpe8BlmWgPSON1OUtVbxg2TtrmPHaaogwNT9Napl'], 'booking_type': ['point_to_point'], 'booking_date': [''], 'start_time': [''], 'end_time': [''], 'pickup_location': ['', 'Kottayam, Kerala, India', ''], 'drop_location': ['', 'Manimala, Kerala, India'], 'service_date': ['2025-04-01'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4948608'], 'drop_lng': ['76.7466378'], 'vehicle_id': [''], 'start_date': [''], 'end_date': [''], 'distance': ['35.7 km']}>
+DEBUG 2025-03-19 10:12:20,581 views 27568 27444 Received coordinates: pickup(9.591566799999999, 76.5221531), drop(9.4948608, 76.7466378)
+DEBUG 2025-03-19 10:12:20,582 views 27568 27444 Point to point data: pickup=, drop=Manimala, Kerala, India, date=2025-04-01
+ERROR 2025-03-19 10:12:20,582 views 27568 27444 Missing required point-to-point fields
+DEBUG 2025-03-19 10:13:11,108 views 27568 27444 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['ZVquQ6ycTmcM5XvNJsV28ZMDZpe8BlmWgPSON1OUtVbxg2TtrmPHaaogwNT9Napl'], 'booking_type': ['with_vehicle'], 'booking_date': [''], 'start_time': [''], 'end_time': [''], 'pickup_location': ['', 'Kottayam, Kerala, India', 'Kottayam, Kerala, India'], 'drop_location': ['', 'Manimala, Kerala, India'], 'service_date': ['2025-04-01'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4948608'], 'drop_lng': ['76.7466378'], 'vehicle_id': ['2'], 'start_date': ['2025-04-01T10:12'], 'end_date': ['2025-04-02T10:13'], 'distance': ['35.7 km']}>
+DEBUG 2025-03-19 10:13:11,108 views 27568 27444 With vehicle booking data: start=2025-04-01T10:12, end=2025-04-02T10:13, vehicle=2
+ERROR 2025-03-19 10:13:11,109 views 27568 27444 Vehicle/date error: unconverted data remains: T10:12
+DEBUG 2025-03-19 10:17:06,411 views 27568 22328 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['mr7c6jBUxvePbjYb7Oh7FM4VxNfEyCaPDlzw3eRC74dAmomRPIbMHXGy4bUFKrde'], 'booking_type': ['point_to_point'], 'service_date': ['2025-04-01'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4948608'], 'drop_lng': ['76.7466378'], 'distance': ['35.7 km']}>
+DEBUG 2025-03-19 10:17:06,412 views 27568 22328 Received coordinates: pickup(9.591566799999999, 76.5221531), drop(9.4948608, 76.7466378)
+DEBUG 2025-03-19 10:17:06,412 views 27568 22328 Point to point data: pickup=Kottayam, Kerala, India, drop=Manimala, Kerala, India, date=2025-04-01
+DEBUG 2025-03-19 10:17:44,645 views 27568 22860 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['53s1OffeOt87mHblyNb2VtWI6P6L8LDwmXUlLavWo27SxMz1gH5HXEylDdLMkAGV'], 'booking_type': ['with_vehicle'], 'start_date': ['2025-04-01T04:47:00.000Z'], 'end_date': ['2025-04-02T04:47:00.000Z'], 'vehicle_id': ['2'], 'pickup_location': ['Kottayam, Kerala, India']}>
+DEBUG 2025-03-19 10:17:44,645 views 27568 22860 With vehicle booking data: start=2025-04-01T04:47:00.000Z, end=2025-04-02T04:47:00.000Z, vehicle=2
+ERROR 2025-03-19 10:17:44,647 views 27568 22860 Vehicle/date error: unconverted data remains: T04:47:00.000Z
+DEBUG 2025-03-19 10:18:31,784 views 27568 22860 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['53s1OffeOt87mHblyNb2VtWI6P6L8LDwmXUlLavWo27SxMz1gH5HXEylDdLMkAGV'], 'booking_type': ['specific_date'], 'booking_date': ['2025-04-01'], 'start_time': ['08:00'], 'end_time': ['14:00'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India']}>
+DEBUG 2025-03-19 10:18:31,784 views 27568 22860 Specific date booking data: date=2025-04-01, start=08:00, end=14:00
+DEBUG 2025-03-19 10:20:32,939 views 27568 26272 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['odZ2PUaUsr0Jd0zcRGYYXbLdcIXuDdY5F7rmMPqC20Zuo5XSzASDZmnQJ6CvP21u'], 'booking_type': ['with_vehicle'], 'start_date': ['2025-04-01 04:50:00'], 'end_date': ['2025-04-02 04:50:00'], 'vehicle_id': ['2'], 'pickup_location': ['Kottayam, Kerala, India']}>
+DEBUG 2025-03-19 10:20:32,939 views 27568 26272 With vehicle booking data: start=2025-04-01 04:50:00, end=2025-04-02 04:50:00, vehicle=2
+ERROR 2025-03-19 10:20:32,941 views 27568 26272 Vehicle/date error: unconverted data remains:  04:50:00
+DEBUG 2025-03-19 10:24:07,277 views 27568 24852 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['mdVrYHKUpNjvABw7bNdBWdGm62qZLN6ED7nLVC0CZmigLGUNTH7gYoiZDq50XC93'], 'booking_type': ['with_vehicle'], 'start_date': ['2025-04-02 10:23'], 'end_date': ['2025-04-03 10:23'], 'vehicle_id': ['2']}>
+DEBUG 2025-03-19 10:24:07,278 views 27568 24852 With vehicle booking data: start=2025-04-02 10:23, end=2025-04-03 10:23, vehicle=2
+ERROR 2025-03-19 10:24:07,279 views 27568 24852 Vehicle/date error: unconverted data remains:  10:23
+DEBUG 2025-03-19 11:58:08,404 views 11952 27048 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['VQzwmej5dHgk1fh5kwftqd2agsKyXzmrcK1Qj9zNNgf5ckFL2q98soENNQpz9opQ'], 'booking_type': ['with_vehicle'], 'start_date': ['2025-04-01 11:57'], 'end_date': ['2025-04-02 11:57'], 'vehicle_id': ['2'], 'pickup_location': ['Kottayam, Kerala, India']}>
+DEBUG 2025-03-19 11:58:08,404 views 11952 27048 With vehicle booking data: start=2025-04-01 11:57, end=2025-04-02 11:57, vehicle=2
+ERROR 2025-03-19 11:58:08,411 views 11952 27048 Error in driver booking: 'end_date'
+DEBUG 2025-03-19 12:01:34,510 views 28104 22864 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['EsO9lqbkuoZsYQVdRARp328zKqs3QVcNVmgtilr24XYd9VjTzuL45dKchO742Kfc'], 'booking_type': ['with_vehicle'], 'start_date': ['2025-04-01 12:01'], 'end_date': ['2025-04-02 12:01'], 'vehicle_id': ['2'], 'pickup_location': ['Kottayam, Kerala, India']}>
+DEBUG 2025-03-19 12:01:34,510 views 28104 22864 With vehicle booking data: start=2025-04-01 12:01, end=2025-04-02 12:01, vehicle=2
+ERROR 2025-03-19 12:01:34,517 views 28104 22864 Error processing vehicle booking: unsupported operand type(s) for +: 'float' and 'decimal.Decimal'
+DEBUG 2025-03-19 12:09:13,408 views 23824 11952 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['qq1DcW4HyaEElTH6J6Y6JOyrx5lqp0U8HktX9Rkp8JDpwY5Mr0SLLZa44t0rBPXx'], 'booking_type': ['with_vehicle'], 'start_date': ['2025-04-01 12:08'], 'end_date': ['2025-04-02 12:09'], 'vehicle_id': ['2'], 'pickup_location': ['Kottayam, Kerala, India']}>
+DEBUG 2025-03-19 12:09:13,408 views 23824 11952 With vehicle booking data: start=2025-04-01 12:08, end=2025-04-02 12:09, vehicle=2
+DEBUG 2025-03-19 12:31:38,675 views 26988 27928 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['sl9LiJ9tmquDHZQrTTIINrNFdGUz25QA6oTzxcX7CTpBT4ixHnIfWceGMYZUhOuv'], 'booking_type': ['specific_date'], 'booking_date': ['2025-03-19'], 'start_time': ['12:00'], 'end_time': ['20:00'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India']}>
+DEBUG 2025-03-19 12:31:38,676 views 26988 27928 Specific date booking data: date=2025-03-19, start=12:00, end=20:00
+ERROR 2025-03-19 14:02:39,056 views 23252 1232 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:02:47,187 views 23252 26120 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:02:52,374 views 23252 25816 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:06:59,055 views 18776 26832 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:07:04,671 views 18776 28312 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:10:49,927 views 12108 9032 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,243 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,248 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,272 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,280 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,283 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,283 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,306 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,315 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,320 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,320 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,342 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,351 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,352 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,369 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,377 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,380 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,395 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,405 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,415 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:25,420 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,478 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,486 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,490 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,504 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,512 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,521 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,529 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,532 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,548 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,554 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,563 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,569 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,577 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,590 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,595 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,603 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,615 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,625 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,631 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:26,639 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,671 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,686 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,697 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,711 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,725 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,735 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,748 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,761 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,772 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,786 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,798 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,811 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,823 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,833 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,841 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,849 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,859 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,869 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,874 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:13:31,884 views 23724 12220 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 14:14:13,813 views 4964 25320 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+INFO 2025-03-19 14:17:16,643 views 24592 6900 Starting trip for booking ID: 25
+INFO 2025-03-19 14:17:16,644 views 24592 6900 Driver ID: 3, Booking driver ID: 3
+INFO 2025-03-19 14:17:16,644 views 24592 6900 Generated OTP for booking 25
+INFO 2025-03-19 14:17:19,700 views 24592 28320 Starting trip for booking ID: 25
+INFO 2025-03-19 14:17:19,700 views 24592 28320 Driver ID: 3, Booking driver ID: 3
+INFO 2025-03-19 14:17:19,705 views 24592 28320 Generated OTP for booking 25
+INFO 2025-03-19 14:17:20,797 views 24592 6900 OTP email sent successfully for booking 25
+INFO 2025-03-19 14:17:24,242 views 24592 28320 OTP email sent successfully for booking 25
+INFO 2025-03-19 14:17:46,799 views 24592 28320 Verifying OTP for booking ID: 25
+INFO 2025-03-19 14:17:46,799 views 24592 28320 Received OTP for booking 25
+WARNING 2025-03-19 14:17:46,799 views 24592 28320 Invalid OTP attempt for booking 25
+INFO 2025-03-19 14:18:15,742 views 24592 28320 Verifying OTP for booking ID: 25
+INFO 2025-03-19 14:18:15,742 views 24592 28320 Received OTP for booking 25
+ERROR 2025-03-19 14:18:15,742 views 24592 28320 Error in verify_trip_otp for booking 25: Cannot query "Booking 25 - Varsha by jobson": Must be "Booking" instance.
+ERROR 2025-03-19 14:18:15,788 views 24592 28320 Traceback: Traceback (most recent call last):
+  File "D:\S9\wheelsonrent\drivers\views.py", line 504, in verify_trip_otp
+    trip, created = DriverTrip.objects.get_or_create(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 948, in get_or_create
+    return self.get(**kwargs), False
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 635, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1613, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1645, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1532, in build_filter
+    self.check_related_objects(join_info.final_field, value, join_info.opts)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1346, in check_related_objects
+    self.check_query_object_type(value, opts, field)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1323, in check_query_object_type
+    raise ValueError(
+ValueError: Cannot query "Booking 25 - Varsha by jobson": Must be "Booking" instance.
+
+INFO 2025-03-19 14:18:20,652 views 24592 28320 Starting trip for booking ID: 25
+INFO 2025-03-19 14:18:20,652 views 24592 28320 Driver ID: 3, Booking driver ID: 3
+INFO 2025-03-19 14:18:20,652 views 24592 28320 Generated OTP for booking 25
+INFO 2025-03-19 14:18:25,548 views 24592 28320 OTP email sent successfully for booking 25
+INFO 2025-03-19 14:18:44,989 views 24592 28320 Verifying OTP for booking ID: 25
+INFO 2025-03-19 14:18:44,989 views 24592 28320 Received OTP for booking 25
+ERROR 2025-03-19 14:18:44,989 views 24592 28320 Error in verify_trip_otp for booking 25: Cannot query "Booking 25 - Varsha by jobson": Must be "Booking" instance.
+ERROR 2025-03-19 14:18:44,989 views 24592 28320 Traceback: Traceback (most recent call last):
+  File "D:\S9\wheelsonrent\drivers\views.py", line 504, in verify_trip_otp
+    trip, created = DriverTrip.objects.get_or_create(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 948, in get_or_create
+    return self.get(**kwargs), False
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 635, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1613, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1645, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1532, in build_filter
+    self.check_related_objects(join_info.final_field, value, join_info.opts)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1346, in check_related_objects
+    self.check_query_object_type(value, opts, field)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1323, in check_query_object_type
+    raise ValueError(
+ValueError: Cannot query "Booking 25 - Varsha by jobson": Must be "Booking" instance.
+
+INFO 2025-03-19 14:25:02,808 views 21592 24560 Starting trip for booking ID: 25
+INFO 2025-03-19 14:25:02,810 views 21592 24560 Driver ID: 3, Booking driver ID: 3
+INFO 2025-03-19 14:25:02,810 views 21592 24560 Generated OTP for booking 25
+INFO 2025-03-19 14:25:08,569 views 21592 24560 OTP email sent successfully for booking 25
+INFO 2025-03-19 14:25:32,061 views 21592 24560 Verifying OTP for booking ID: 25
+INFO 2025-03-19 14:25:32,062 views 21592 24560 Request method: POST
+INFO 2025-03-19 14:25:32,063 views 21592 24560 Request body: b'otp=607022'
+INFO 2025-03-19 14:25:32,063 views 21592 24560 Got OTP from POST data
+INFO 2025-03-19 14:25:32,064 views 21592 24560 Received OTP: 607022
+INFO 2025-03-19 14:25:32,064 views 21592 24560 Stored OTP data: {'otp': '607022', 'timestamp': 1742374502.811295, 'attempts': 0}
+ERROR 2025-03-19 14:25:32,064 views 21592 24560 Error in verify_trip_otp for booking 25: Cannot query "Booking 25 - Varsha by jobson": Must be "Booking" instance.
+ERROR 2025-03-19 14:25:32,071 views 21592 24560 Traceback: Traceback (most recent call last):
+  File "D:\S9\wheelsonrent\drivers\views.py", line 522, in verify_trip_otp
+    trip, created = DriverTrip.objects.get_or_create(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 948, in get_or_create
+    return self.get(**kwargs), False
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 635, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1613, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1645, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1532, in build_filter
+    self.check_related_objects(join_info.final_field, value, join_info.opts)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1346, in check_related_objects
+    self.check_query_object_type(value, opts, field)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1323, in check_query_object_type
+    raise ValueError(
+ValueError: Cannot query "Booking 25 - Varsha by jobson": Must be "Booking" instance.
+
+INFO 2025-03-19 14:28:59,054 views 18336 13268 Starting trip for booking ID: 25
+INFO 2025-03-19 14:28:59,056 views 18336 13268 Driver ID: 3, Booking driver ID: 3
+INFO 2025-03-19 14:28:59,056 views 18336 13268 Generated OTP for booking 25
+INFO 2025-03-19 14:29:03,579 views 18336 13268 OTP email sent successfully for booking 25
+INFO 2025-03-19 14:29:26,473 views 18336 13268 Verifying OTP for booking ID: 25
+INFO 2025-03-19 14:29:26,473 views 18336 13268 Request method: POST
+INFO 2025-03-19 14:29:26,473 views 18336 13268 Request body: b'{"otp":"464083"}'
+INFO 2025-03-19 14:29:26,474 views 18336 13268 Received OTP from JSON data: 464083
+INFO 2025-03-19 14:29:26,475 views 18336 13268 Stored OTP data: {'otp': '464083', 'timestamp': 1742374739.056632, 'attempts': 0}
+ERROR 2025-03-19 14:29:26,478 views 18336 13268 Error in verify_trip_otp for booking 25: Cannot query "Booking 25 - Varsha by jobson": Must be "Booking" instance.
+ERROR 2025-03-19 14:29:26,482 views 18336 13268 Traceback: Traceback (most recent call last):
+  File "D:\S9\wheelsonrent\drivers\views.py", line 520, in verify_trip_otp
+    trip, created = DriverTrip.objects.get_or_create(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 948, in get_or_create
+    return self.get(**kwargs), False
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 635, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1613, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1645, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1532, in build_filter
+    self.check_related_objects(join_info.final_field, value, join_info.opts)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1346, in check_related_objects
+    self.check_query_object_type(value, opts, field)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\sql\query.py", line 1323, in check_query_object_type
+    raise ValueError(
+ValueError: Cannot query "Booking 25 - Varsha by jobson": Must be "Booking" instance.
+
+INFO 2025-03-19 14:29:55,570 views 18336 13268 Starting trip for booking ID: 25
+INFO 2025-03-19 14:29:55,573 views 18336 13268 Driver ID: 3, Booking driver ID: 3
+INFO 2025-03-19 14:29:55,574 views 18336 13268 Generated OTP for booking 25
+INFO 2025-03-19 14:29:59,879 views 18336 13268 OTP email sent successfully for booking 25
+INFO 2025-03-19 14:33:00,672 views 17660 15060 Starting trip for booking ID: 25
+INFO 2025-03-19 14:33:00,674 views 17660 15060 Driver ID: 3, Booking driver ID: 3
+INFO 2025-03-19 14:33:00,674 views 17660 15060 Generated OTP for booking 25
+INFO 2025-03-19 14:33:05,173 views 17660 15060 OTP email sent successfully for booking 25
+INFO 2025-03-19 14:33:26,075 views 17660 15060 Verifying OTP for booking ID: 25
+INFO 2025-03-19 14:33:26,075 views 17660 15060 Request method: POST
+INFO 2025-03-19 14:33:26,075 views 17660 15060 Request body: b'{"otp":"045359"}'
+INFO 2025-03-19 14:33:26,075 views 17660 15060 Received OTP from JSON data: 045359
+INFO 2025-03-19 14:33:26,075 views 17660 15060 Stored OTP data: {'otp': '045359', 'timestamp': 1742374980.674626, 'attempts': 0}
+ERROR 2025-03-19 14:33:26,075 views 17660 15060 Error in verify_trip_otp for booking 25: Cannot assign "<DriverBooking: Booking 25 - Varsha by jobson>": "DriverTrip.booking" must be a "Booking" instance.
+ERROR 2025-03-19 14:33:26,113 views 17660 15060 Traceback: Traceback (most recent call last):
+  File "D:\S9\wheelsonrent\drivers\views.py", line 521, in verify_trip_otp
+    trip = DriverTrip.objects.create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 677, in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 543, in __init__
+    _setattr(self, field.name, rel_obj)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\fields\related_descriptors.py", line 284, in __set__
+    raise ValueError(
+ValueError: Cannot assign "<DriverBooking: Booking 25 - Varsha by jobson>": "DriverTrip.booking" must be a "Booking" instance.
+
+INFO 2025-03-19 14:38:25,389 views 11984 28020 Starting trip for booking ID: 25
+INFO 2025-03-19 14:38:25,392 views 11984 28020 Driver ID: 3, Booking driver ID: 3
+INFO 2025-03-19 14:38:25,392 views 11984 28020 Generated OTP for booking 25
+INFO 2025-03-19 14:38:29,616 views 11984 28020 OTP email sent successfully for booking 25
+INFO 2025-03-19 14:38:49,913 views 11984 28020 Verifying OTP for booking ID: 25
+INFO 2025-03-19 14:38:49,913 views 11984 28020 Request method: POST
+INFO 2025-03-19 14:38:49,914 views 11984 28020 Request body: b'{"otp":"548315"}'
+INFO 2025-03-19 14:38:49,914 views 11984 28020 Received OTP from JSON data: 548315
+INFO 2025-03-19 14:38:49,915 views 11984 28020 Stored OTP data: {'otp': '548315', 'timestamp': 1742375305.392857, 'attempts': 0}
+ERROR 2025-03-19 14:38:49,921 views 11984 28020 Error in verify_trip_otp for booking 25: Cannot assign "<DriverBooking: Booking 25 - Varsha by jobson>": "DriverTrip.booking" must be a "Booking" instance.
+ERROR 2025-03-19 14:38:49,926 views 11984 28020 Traceback: Traceback (most recent call last):
+  File "D:\S9\wheelsonrent\drivers\views.py", line 521, in verify_trip_otp
+    trip = DriverTrip.objects.create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 677, in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 543, in __init__
+    _setattr(self, field.name, rel_obj)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\fields\related_descriptors.py", line 284, in __set__
+    raise ValueError(
+ValueError: Cannot assign "<DriverBooking: Booking 25 - Varsha by jobson>": "DriverTrip.booking" must be a "Booking" instance.
+
+INFO 2025-03-19 14:39:14,902 views 11984 25540 Starting trip for booking ID: 28
+INFO 2025-03-19 14:39:14,903 views 11984 25540 Driver ID: 3, Booking driver ID: 3
+INFO 2025-03-19 14:39:14,903 views 11984 25540 Generated OTP for booking 28
+INFO 2025-03-19 14:39:19,022 views 11984 25540 OTP email sent successfully for booking 28
+INFO 2025-03-19 14:39:34,470 views 11984 25540 Verifying OTP for booking ID: 28
+INFO 2025-03-19 14:39:34,470 views 11984 25540 Request method: POST
+INFO 2025-03-19 14:39:34,471 views 11984 25540 Request body: b'{"otp":"855222"}'
+INFO 2025-03-19 14:39:34,471 views 11984 25540 Received OTP from JSON data: 855222
+INFO 2025-03-19 14:39:34,471 views 11984 25540 Stored OTP data: {'otp': '855222', 'timestamp': 1742375354.90303, 'attempts': 0}
+ERROR 2025-03-19 14:39:34,471 views 11984 25540 Error in verify_trip_otp for booking 28: Cannot assign "<DriverBooking: Booking 28 - Varsha by jobson>": "DriverTrip.booking" must be a "Booking" instance.
+ERROR 2025-03-19 14:39:34,471 views 11984 25540 Traceback: Traceback (most recent call last):
+  File "D:\S9\wheelsonrent\drivers\views.py", line 521, in verify_trip_otp
+    trip = DriverTrip.objects.create(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\query.py", line 677, in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\base.py", line 543, in __init__
+    _setattr(self, field.name, rel_obj)
+  File "C:\Users\ROG\Envs\project\Lib\site-packages\django\db\models\fields\related_descriptors.py", line 284, in __set__
+    raise ValueError(
+ValueError: Cannot assign "<DriverBooking: Booking 28 - Varsha by jobson>": "DriverTrip.booking" must be a "Booking" instance.
+
+ERROR 2025-03-19 15:00:23,879 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,896 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,913 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,921 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,929 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,929 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,946 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,955 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,963 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,965 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,971 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,988 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:23,996 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:24,004 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:24,008 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:24,021 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:24,029 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:24,037 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:24,046 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:24,054 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,105 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,126 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,136 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,153 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,161 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,177 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,194 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,202 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,221 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,226 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,243 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,259 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,267 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,283 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,300 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,308 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,324 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,334 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,349 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:25,357 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,395 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,419 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,428 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,444 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,458 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,469 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,477 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,485 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,493 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,510 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,526 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,543 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,561 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,575 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,594 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,609 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,637 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,650 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,673 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:00:30,692 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,740 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,756 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,773 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,789 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,809 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,822 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,831 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,849 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,864 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,872 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,889 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,908 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,914 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,930 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,947 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,957 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,972 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,985 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:00,995 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+ERROR 2025-03-19 15:01:01,011 views 24764 23620 Error in active_trips view: combine() argument 1 must be datetime.date, not None
+DEBUG 2025-03-19 15:02:22,238 views 26844 27968 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['TubHz2kBivaQr4kbFNebDe7UqfXJGS5opCsVMH9EW7vrFt21Xaw5RjvgvFwLl3ql'], 'booking_type': ['specific_date'], 'booking_date': ['2025-04-03'], 'start_time': ['08:00'], 'end_time': ['20:00'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India']}>
+DEBUG 2025-03-19 15:02:22,238 views 26844 27968 Specific date booking data: date=2025-04-03, start=08:00, end=20:00
+DEBUG 2025-03-19 15:07:47,392 views 26844 2704 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['b4Pw8MZ7hFfck0c0Lc9rU53Pu30NlXULHc6KlrOaVhANypUQ3zrl8arbztzP08fI'], 'booking_type': ['specific_date'], 'booking_date': ['2025-04-05'], 'start_time': ['08:00'], 'end_time': ['16:00'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India']}>
+DEBUG 2025-03-19 15:07:47,392 views 26844 2704 Specific date booking data: date=2025-04-05, start=08:00, end=16:00
+DEBUG 2025-03-19 15:08:57,832 views 26844 27704 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['XioXAGKbDCBUjJr9ShMcINTpfD9iyy8htqFbNlzeheWvx89ZaE46WShLk3IkdJte'], 'booking_type': ['point_to_point'], 'service_date': ['2025-04-05'], 'pickup_location': ['Kottayam, Kerala, India'], 'drop_location': ['Manimala, Kerala, India'], 'pickup_lat': ['9.591566799999999'], 'pickup_lng': ['76.5221531'], 'drop_lat': ['9.4948608'], 'drop_lng': ['76.7466378'], 'distance': ['35.7 km']}>
+DEBUG 2025-03-19 15:08:57,832 views 26844 27704 Received coordinates: pickup(9.591566799999999, 76.5221531), drop(9.4948608, 76.7466378)
+DEBUG 2025-03-19 15:08:57,832 views 26844 27704 Point to point data: pickup=Kottayam, Kerala, India, drop=Manimala, Kerala, India, date=2025-04-05
+DEBUG 2025-03-21 09:55:32,534 views 3692 27880 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['l4SAz5BK9GnKDquUm7dxggci5JTEFDsVgeXLRTnN3BRo2tPoN5CyPlmB91EET6ce'], 'booking_type': ['specific_date'], 'booking_date': ['2025-04-05'], 'start_time': ['08:00'], 'end_time': ['16:00'], 'pickup_location': ['Manimala, Kerala, India'], 'drop_location': ['Kottayam, Kerala, India']}>
+DEBUG 2025-03-21 09:55:32,534 views 3692 27880 Specific date booking data: date=2025-04-05, start=08:00, end=16:00

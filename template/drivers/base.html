@@ -1,318 +1,194 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WheelsOnRent - Driver Portal {% block title %}{% endblock %}</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Animate.css -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --accent-color: #3b82f6;
-            --text-color: #1f2937;
-            --light-bg: #f3f4f6;
-        }
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--light-bg);
-            color: var(--text-color);
-        }
+  <title>Driver Dashboard {% block title %}{% endblock %}</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
 
-        /* Navbar Styles */
-        .navbar {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            padding: 1rem 2rem;
-            color: rgb(11, 11, 11) !important;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-        }
+  <!-- Favicons -->
+  <link href="{%static 'adminapp/assets/img/favicon.png'%}" rel="icon">
+  <link href="{%static 'adminapp/assets/img/apple-touch-icon.png'%}" rel="apple-touch-icon">
 
-        .navbar-brand {
-            color: rgb(11, 11, 11) !important;
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
-        .nav-link {
-            color: rgba(17, 16, 16, 0.9) !important;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-        }
+  <!-- Vendor CSS Files -->
+  <link href="{%static 'adminapp/assets/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+  <link href="{%static 'adminapp/assets/vendor/bootstrap-icons/bootstrap-icons.css'%}" rel="stylesheet">
+  <link href="{%static 'adminapp/assets/vendor/boxicons/css/boxicons.min.css'%}" rel="stylesheet">
+  <link href="{%static 'adminapp/assets/vendor/quill/quill.snow.css'%}" rel="stylesheet">
+  <link href="{%static 'adminapp/assets/vendor/quill/quill.bubble.css'%}" rel="stylesheet">
+  <link href="{%static 'adminapp/assets/vendor/remixicon/remixicon.css'%}" rel="stylesheet">
+  <link href="{%static 'adminapp/assets/vendor/simple-datatables/style.css'%}" rel="stylesheet">
 
-        .nav-link:hover {
-            color: rgb(174, 14, 14) !important;
-            background-color: rgba(69, 186, 26, 0.1);
-            transform: translateY(-2px);
-        }
-
-        /* Card Styles */
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: rgb(100, 37, 246);
-            border-radius: 15px 15px 0 0 !important;
-            padding: 1.5rem;
-        }
-
-        /* Button Styles */
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-        }
-
-        /* Alert Styles */
-        .alert {
-            border-radius: 10px;
-            border: none;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            animation: fadeIn 0.5s ease;
-        }
-
-        /* Footer Styles */
-        .footer {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 2rem 0;
-            margin-top: 3rem;
-        }
-
-        /* Loading Animation */
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Updated Sidebar and Main Content Styles */
-        .sidebar {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            bottom: 0;
-            width: 250px; /* Reduced width */
-            z-index: 996;
-            transition: all 0.3s ease-in-out;
-            padding: 20px;
-            overflow-y: auto;
-            background-color: #fff;
-            box-shadow: 0 0 20px rgba(1, 41, 112, 0.1);
-        }
-
-        .sidebar-nav {
-            padding: 0;
-            margin: 0;
-            list-style: none;
-        }
-
-        .sidebar-nav li {
-            padding: 0;
-            margin: 0;
-            list-style: none;
-        }
-
-        .sidebar-nav .nav-item {
-            margin-bottom: 5px;
-        }
-
-        .sidebar-nav .nav-link {
-            display: flex;
-            align-items: center;
-            font-size: 15px;
-            font-weight: 600;
-            color: #012970;
-            transition: 0.3s;
-            background: #f6f9ff;
-            padding: 10px 15px;
-            border-radius: 4px;
-        }
-
-        .sidebar-nav .nav-link i {
-            font-size: 16px;
-            margin-right: 10px;
-            color: #4154f1;
-        }
-
-        .sidebar-nav .nav-link.collapsed {
-            color: #012970;
-            background: #fff;
-        }
-
-        .sidebar-nav .nav-link:hover {
-            color: #4154f1;
-            background: #f6f9ff;
-        }
-
-        .sidebar-nav .nav-link.active {
-            color: #4154f1;
-            background: #f6f9ff;
-        }
-
-        /* Main Content Styles */
-        .main {
-            margin-left: 250px; /* Match sidebar width */
-            padding: 20px;
-            min-height: calc(100vh - 60px);
-            transition: all 0.3s ease-in-out;
-            background: #f6f9ff;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1199px) {
-            .sidebar {
-                left: -250px;
-            }
-
-            .sidebar.show {
-                left: 0;
-            }
-
-            .main {
-                margin-left: 0;
-                padding: 20px;
-            }
-            
-            .toggle-sidebar-btn {
-                display: block;
-            }
-        }
-
-        @media (min-width: 1200px) {
-            .toggle-sidebar-btn {
-                display: none;
-            }
-        }
-
-        /* Container padding adjustments */
-        @media (max-width: 768px) {
-            .container-fluid {
-                padding-left: 10px;
-                padding-right: 10px;
-            }
-        }
-    </style>
-    {% block extra_css %}{% endblock %}
+  <!-- Template Main CSS File -->
+  <link href="{%static 'adminapp/assets/css/style.css'%}" rel="stylesheet">
 </head>
+
 <body>
-    <!-- Include the header -->
-    {% include 'drivers/includes/header.html' %}
-    
-    <!-- Include the sidebar -->
-    {% include 'drivers/includes/sidebar.html' %}
-    
-    <!-- Main content -->
-    <main id="main" class="main">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-        
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5>WheelsOnRent Driver Portal</h5>
-                    <p>Join our network of professional drivers and start earning today.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <h5>Contact Us</h5>
-                    <p>
-                        <i class="fas fa-envelope me-2"></i>support@wheelsonrent.com<br>
-                        <i class="fas fa-phone me-2"></i>+1 234 567 890
-                    </p>
-                </div>
-            </div>
-            <hr class="mt-4 mb-4" style="border-color: rgba(255,255,255,0.1);">
-            <div class="text-center">
-                <p class="mb-0">&copy; {% now "Y" %} WheelsOnRent. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Loading Spinner -->
-    <div class="loading" style="display: none;">
-        <div class="spinner"></div>
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="{% url 'drivers:dashboard' %}" class="logo d-flex align-items-center">
+        <img src="{%static 'adminapp/assets/img/logo.png'%}" alt="">
+        <span class="d-none d-lg-block">Driver Portal</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <!-- Template Main JS File -->
-    <script>
-        // Toggle sidebar
-        document.querySelector('.toggle-sidebar-btn').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('show');
-        });
+    <div class="search-bar">
+      <form class="search-form d-flex align-items-center" method="POST" action="#">
+        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
+        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+      </form>
+    </div>
 
-        // Hide alerts after 5 seconds
-        setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(alert) {
-                new bootstrap.Alert(alert).close();
-            });
-        }, 5000);
-    </script>
-    {% block extra_js %}{% endblock %}
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+        <li class="nav-item d-block d-lg-none">
+          <a class="nav-link nav-icon search-bar-toggle" href="#">
+            <i class="bi bi-search"></i>
+          </a>
+        </li>
+
+        <li class="nav-item dropdown pe-3">
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            {% if driver.profile_photo %}
+              <img src="{{ driver.profile_photo.url }}" alt="Profile" class="rounded-circle">
+            {% else %}
+              <img src="{%static 'adminapp/assets/img/profile-img.jpg'%}" alt="Profile" class="rounded-circle">
+            {% endif %}
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{ driver.full_name }}</span>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>{{ driver.full_name }}</h6>
+              <span>Driver</span>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'drivers:profile' %}">
+                <i class="bi bi-person"></i>
+                <span>My Profile</span>
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'drivers:settings' %}">
+                <i class="bi bi-gear"></i>
+                <span>Settings</span>
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'mainapp:logout' %}">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}{% else %}collapsed{% endif %}" href="{% url 'drivers:dashboard' %}">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if 'trips' in request.path %}{% else %}collapsed{% endif %}" data-bs-target="#trips-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-car-front"></i><span>My Trips</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="trips-nav" class="nav-content collapse {% if 'trips' in request.path %}show{% endif %}" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="{% url 'drivers:active_trips' %}" class="{% if request.resolver_match.url_name == 'active_trips' %}active{% endif %}">
+              <i class="bi bi-circle"></i><span>Active Trips</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'drivers:trips' %}" class="{% if request.resolver_match.url_name == 'trips' %}active{% endif %}">
+              <i class="bi bi-circle"></i><span>All Trips</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'earnings' %}{% else %}collapsed{% endif %}" href="{% url 'drivers:earnings' %}">
+          <i class="bi bi-wallet2"></i>
+          <span>Earnings</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'documents' %}{% else %}collapsed{% endif %}" href="{% url 'drivers:documents' %}">
+          <i class="bi bi-file-earmark-text"></i>
+          <span>Documents</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}{% else %}collapsed{% endif %}" href="{% url 'drivers:profile' %}">
+          <i class="bi bi-person"></i>
+          <span>Profile</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'settings' %}{% else %}collapsed{% endif %}" href="{% url 'drivers:settings' %}">
+          <i class="bi bi-gear"></i>
+          <span>Settings</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'support' %}{% else %}collapsed{% endif %}" href="{% url 'drivers:support' %}">
+          <i class="bi bi-question-circle"></i>
+          <span>Support</span>
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  {% block content %}
+  {% endblock %}
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>WheelsOnRent</span></strong>. All Rights Reserved
+    </div>
+  </footer>
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{%static 'adminapp/assets/vendor/apexcharts/apexcharts.min.js'%}"></script>
+  <script src="{%static 'adminapp/assets/vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+  <script src="{%static 'adminapp/assets/vendor/chart.js/chart.umd.js'%}"></script>
+  <script src="{%static 'adminapp/assets/vendor/echarts/echarts.min.js'%}"></script>
+  <script src="{%static 'adminapp/assets/vendor/quill/quill.min.js'%}"></script>
+  <script src="{%static 'adminapp/assets/vendor/simple-datatables/simple-datatables.js'%}"></script>
+  <script src="{%static 'adminapp/assets/vendor/tinymce/tinymce.min.js'%}"></script>
+  <script src="{%static 'adminapp/assets/vendor/php-email-form/validate.js'%}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{%static 'adminapp/assets/js/main.js'%}"></script>
+
+  {% block extra_js %}{% endblock %}
 </body>
 </html> 

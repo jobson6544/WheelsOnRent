@@ -3,8 +3,8 @@
 {% block title %} - Dashboard{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="pagetitle mb-4">
+<main id="main" class="main">
+    <div class="pagetitle">
         <h1>Dashboard</h1>
         <nav>
             <ol class="breadcrumb">
@@ -14,16 +14,19 @@
     </div>
 
     <section class="section dashboard">
-        <div class="row g-3">
+        <div class="row">
             <!-- Status Card -->
-            <div class="col-xl-3 col-md-6">
-                <div class="card info-card h-100">
+            <div class="col-xxl-4 col-md-6">
+                <div class="card info-card sales-card">
                     <div class="card-body">
                         <h5 class="card-title">Status</h5>
                         <div class="d-flex align-items-center">
-                            <div class="w-100">
-                                <h6 class="mb-3">{{ driver.get_availability_status_display }}</h6>
-                                <form method="post" action="{% url 'drivers:update_status' %}">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-person-check"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>{{ driver.get_availability_status_display }}</h6>
+                                <form method="post" action="{% url 'drivers:update_status' %}" class="mt-2">
                                     {% csrf_token %}
                                     <select name="status" class="form-select" onchange="this.form.submit()">
                                         <option value="available" {% if driver.availability_status == 'available' %}selected{% endif %}>Available</option>
@@ -37,13 +40,16 @@
             </div>
 
             <!-- Trips Card -->
-            <div class="col-xl-3 col-md-6">
-                <div class="card info-card h-100">
+            <div class="col-xxl-4 col-md-6">
+                <div class="card info-card revenue-card">
                     <div class="card-body">
                         <h5 class="card-title">Total Trips</h5>
                         <div class="d-flex align-items-center">
-                            <div class="w-100">
-                                <h6 class="display-6 mb-0">{{ total_trips }}</h6>
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-car-front"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>{{ total_trips|default:"0" }}</h6>
                                 <span class="text-muted small pt-2">Completed Trips</span>
                             </div>
                         </div>
@@ -53,87 +59,71 @@
 
             <!-- Recent Bookings -->
             <div class="col-12">
-                <div class="card">
+                <div class="card recent-sales overflow-auto">
                     <div class="card-body">
-                        <h5 class="card-title">Recent Bookings</h5>
-                        <div class="table-responsive">
-                            {% if recent_bookings %}
-                                <table class="table table-hover align-middle">
-                                    <thead>
-                                        <tr>
-                                            <th>Booking ID</th>
-                                            <th>Customer</th>
-                                            <th>Status</th>
-                                            <th>Date</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for booking in recent_bookings %}
-                                        <tr>
-                                            <td>#{{ booking.booking.id }}</td>
-                                            <td>{{ booking.booking.customer.full_name }}</td>
-                                            <td>
-                                                <span class="badge bg-{{ booking.status }}">
-                                                    {{ booking.get_status_display }}
-                                                </span>
-                                            </td>
-                                            <td>{{ booking.created_at|date:"M d, Y" }}</td>
-                                            <td>
-                                                <a href="{% url 'drivers:booking_detail' booking.id %}" 
-                                                   class="btn btn-sm btn-primary">
-                                                    <i class="bi bi-eye"></i> View
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            {% else %}
-                                <div class="text-center py-4">
-                                    <i class="bi bi-calendar-x h1 text-muted"></i>
-                                    <p class="text-muted mt-2">No bookings found</p>
-                                </div>
-                            {% endif %}
-                        </div>
+                        <h5 class="card-title">Recent Driver Bookings <span>| Today</span></h5>
+                        {% if driver_bookings %}
+                            <table class="table table-borderless datatable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Customer</th>
+                                        <th scope="col">Start Date</th>
+                                        <th scope="col">End Date</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Payment</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in driver_bookings %}
+                                    <tr>
+                                        <th scope="row"><a href="#">#{{ booking.id }}</a></th>
+                                        <td>{{ booking.user.get_full_name|default:booking.user.username }}</td>
+                                        <td>{{ booking.start_date|date:"M d, Y H:i" }}</td>
+                                        <td>{{ booking.end_date|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            <span class="badge {% if booking.status == 'pending' %}bg-warning{% elif booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-primary{% endif %}">
+                                                {{ booking.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge {% if booking.payment_status == 'paid' %}bg-success{% elif booking.payment_status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                                {{ booking.get_payment_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if booking.status == 'confirmed' and booking.payment_status == 'paid' %}
+                                                {% if not booking.trip %}
+                                                    <a href="{% url 'drivers:start_trip' booking.id %}" 
+                                                       class="btn btn-success btn-sm">
+                                                        <i class="bi bi-play-fill"></i> Start Trip
+                                                    </a>
+                                                {% elif booking.trip.status == 'started' %}
+                                                    <a href="{% url 'drivers:end_trip' booking.id %}"
+                                                       class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-stop-fill"></i> End Trip
+                                                    </a>
+                                                {% endif %}
+                                            {% endif %}
+                                            <a href="#" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-calendar-x h1 text-muted"></i>
+                                <p class="text-muted mt-2">No driver bookings found</p>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </section>
-</div>
-
-<style>
-/* Dashboard specific styles */
-.info-card {
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-}
-
-.info-card .card-title {
-    color: #012970;
-    font-size: 1rem;
-    font-weight: 500;
-    margin-bottom: 1.5rem;
-}
-
-.table {
-    font-size: 0.9rem;
-}
-
-.badge {
-    padding: 0.5em 0.8em;
-    font-weight: 500;
-}
-
-@media (max-width: 768px) {
-    .display-6 {
-        font-size: 1.5rem;
-    }
-    
-    .card-title {
-        font-size: 0.9rem;
-    }
-}
-</style>
+</main>
 {% endblock %}

@@ -160,6 +160,12 @@ class DriverApplicationLog(models.Model):
         ordering = ['-timestamp']
 
 class DriverBooking(models.Model):
+    BOOKING_TYPE_CHOICES = [
+        ('specific_date', 'Single Day Booking'),
+        ('point_to_point', 'Point to Point Service'),
+        ('with_vehicle', 'Booking with Driver Vehicle')
+    ]
+
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
@@ -176,11 +182,34 @@ class DriverBooking(models.Model):
 
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='driver_bookings')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    booking_type = models.CharField(max_length=20, choices=BOOKING_TYPE_CHOICES, default='specific_date')
+    
+    # Fields for specific date booking (single day)
+    booking_date = models.DateField(null=True, blank=True)
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    
+    # Fields for multi-day bookings (with vehicle only)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
+    
+    # Fields for point to point service
+    pickup_location = models.CharField(max_length=255, null=True, blank=True)
+    drop_location = models.CharField(max_length=255, null=True, blank=True)
+    service_date = models.DateField(null=True, blank=True)
+    pickup_latitude = models.FloatField(null=True, blank=True)
+    pickup_longitude = models.FloatField(null=True, blank=True)
+    drop_latitude = models.FloatField(null=True, blank=True)
+    drop_longitude = models.FloatField(null=True, blank=True)
+    
+    # Fields for booking with driver vehicle
+    vehicle = models.ForeignKey('vendor.Vehicle', on_delete=models.SET_NULL, null=True, blank=True)
+    
+    # Common fields
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=500.00)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
+    notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -209,27 +238,65 @@ class DriverBooking(models.Model):
                 fail_silently=True
             )
         except Exception as e:
-            # Log the error but don't raise it
             print(f"Error sending confirmation email: {str(e)}")
 
     def can_start_trip(self):
         now = timezone.now()
-        return (
-            self.status == 'confirmed' and 
-            self.payment_status == 'paid' and 
-            now >= self.start_date and 
-            now <= self.end_date and
-            not hasattr(self, 'trip')
-        )
+        current_date = now.date()
+        current_time = now.time()
+        
+        if self.booking_type == 'specific_date':
+            return (
+                self.status == 'confirmed' and 
+                self.payment_status == 'paid' and 
+                current_date == self.booking_date and
+                current_time >= self.start_time and
+                current_time <= self.end_time and
+                not hasattr(self, 'trip')
+            )
+        elif self.booking_type == 'point_to_point':
+            return (
+                self.status == 'confirmed' and 
+                self.payment_status == 'paid' and 
+                current_date == self.service_date and
+                not hasattr(self, 'trip')
+            )
+        else:  # with_vehicle
+            return (
+                self.status == 'confirmed' and 
+                self.payment_status == 'paid' and 
+                now >= self.start_date and 
+                now <= self.end_date and
+                not hasattr(self, 'trip') and
+                self.vehicle is not None
+            )
 
     def can_end_trip(self):
         if not hasattr(self, 'trip'):
             return False
         now = timezone.now()
-        return (
-            self.trip.status == 'started' and 
-            now >= self.start_date
-        )
+        return self.trip.status == 'started'
+
+    def get_booking_details(self):
+        if self.booking_type == 'specific_date':
+            return {
+                'type': 'Single Day Booking',
+                'date': self.booking_date,
+                'time': f"{self.start_time} to {self.end_time}"
+            }
+        elif self.booking_type == 'point_to_point':
+            return {
+                'type': 'Point to Point Service',
+                'from': self.pickup_location,
+                'to': self.drop_location,
+                'date': self.service_date
+            }
+        else:
+            return {
+                'type': 'Booking with Driver Vehicle',
+                'vehicle': self.vehicle.model if self.vehicle else 'Not assigned',
+                'duration': f"{self.start_date} to {self.end_date}"
+            }
 
     def trip(self):
         return DriverTrip.objects.filter(booking=self).first()

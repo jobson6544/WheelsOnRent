@@ -1,0 +1,232 @@
+{% extends "drivers/base.html" %}
+
+{% block title %}Edit Profile - WheelsOnRent{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-profile-container {
+        max-width: 800px;
+        margin: 30px auto;
+    }
+    
+    .edit-profile-card {
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .edit-profile-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .edit-profile-body {
+        padding: 30px;
+    }
+    
+    .form-control {
+        padding: 12px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+    
+    .section-title {
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #eee;
+    }
+    
+    .profile-preview {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto 20px;
+        position: relative;
+        border: 5px solid white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .profile-preview .preview-icon {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        background-color: #f0f0f0;
+    }
+    
+    .change-photo-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: rgba(52, 152, 219, 0.8);
+        color: white;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .change-photo-btn:hover {
+        background: rgba(52, 152, 219, 1);
+    }
+    
+    .btn-update {
+        padding: 12px 24px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-profile-container">
+    <div class="card edit-profile-card">
+        <div class="edit-profile-header">
+            <h2 class="mb-0"><i class="fas fa-user-edit me-2"></i> Edit Profile</h2>
+            <p class="text-white-50 mb-0">Update your personal information</p>
+        </div>
+        <div class="edit-profile-body">
+            <form method="post" action="{% url 'drivers:edit_profile' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="text-center mb-4">
+                    <div class="profile-preview">
+                        {% if driver.profile_photo %}
+                        <img id="profile-image-preview" src="{{ driver.profile_photo.url }}" alt="{{ driver.full_name }}">
+                        {% else %}
+                        <div id="profile-icon-preview" class="preview-icon">
+                            <i class="fas fa-user fa-3x text-muted"></i>
+                        </div>
+                        <img id="profile-image-preview" style="display: none;" src="#" alt="Profile Preview">
+                        {% endif %}
+                        <label for="{{ form.profile_photo.id_for_label }}" class="change-photo-btn">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                    </div>
+                    {{ form.profile_photo }}
+                    <style>
+                        #{{ form.profile_photo.id_for_label }} {
+                            display: none;
+                        }
+                    </style>
+                    {% if form.profile_photo.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.profile_photo.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <small class="text-muted">Click on the camera icon to change your profile photo</small>
+                </div>
+                
+                <h4 class="section-title">Personal Information</h4>
+                
+                <div class="mb-3">
+                    <label for="{{ form.full_name.id_for_label }}" class="form-label">Full Name <span class="text-danger">*</span></label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.full_name.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.phone_number.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.address.id_for_label }}" class="form-label">Address <span class="text-danger">*</span></label>
+                    {{ form.address }}
+                    {% if form.address.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.address.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    <label for="{{ form.city.id_for_label }}" class="form-label">City <span class="text-danger">*</span></label>
+                    {{ form.city }}
+                    {% if form.city.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.city.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{% url 'drivers:profile' %}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-times me-2"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-update">
+                        <i class="fas fa-save me-2"></i> Update Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Preview profile photo before upload
+    document.getElementById('{{ form.profile_photo.id_for_label }}').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imagePreview = document.getElementById('profile-image-preview');
+                const iconPreview = document.getElementById('profile-icon-preview');
+                
+                imagePreview.style.display = 'block';
+                imagePreview.src = event.target.result;
+                
+                if (iconPreview) {
+                    iconPreview.style.display = 'none';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %} 

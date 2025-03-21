@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block content %}
+<main id="main" class="main">
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-8 offset-md-2">
@@ -10,7 +11,7 @@
                     <h3>Book Driver</h3>
                 </div>
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row mb-4">
                         <div class="col-md-4">
                             {% if driver.profile_photo %}
                                 <img src="{{ driver.profile_photo.url }}" alt="{{ driver.full_name }}" class="img-fluid rounded">
@@ -22,44 +23,423 @@
                             <h4>{{ driver.full_name }}</h4>
                             <p><strong>Experience:</strong> {{ driver.driving_experience }} years</p>
                             <p><strong>Skills:</strong> {{ driver.get_driving_skill_display }}</p>
-                            <p><strong>Rate:</strong> ₹500 per day</p>
-                            
-                            <form id="bookingForm" method="POST">
-                                {% csrf_token %}
-                                <div class="form-group mb-3">
-                                    <label for="start_date">Start Date and Time:</label>
-                                    <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label for="end_date">End Date and Time:</label>
-                                    <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary" id="bookButton">
-                                    Book Now
-                                </button>
-                            </form>
+                            <div class="rates">
+                                <p><strong>Rates:</strong></p>
+                                <ul>
+                                    <li>Single Day Booking: ₹100 per hour</li>
+                                    <li>Point to Point Service: ₹1000 fixed rate</li>
+                                    <li>With Vehicle: ₹500 per day + vehicle rate</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
+
+                    <form id="bookingForm" method="POST">
+                        {% csrf_token %}
+                        
+                        <!-- Booking Type Selection -->
+                        <div class="form-group mb-4">
+                            <label for="booking_type" class="form-label">Select Booking Type:</label>
+                            <select class="form-select" id="booking_type" name="booking_type" required>
+                                <option value="">Choose a booking type</option>
+                                {% for type_value, type_label in booking_types %}
+                                    <option value="{{ type_value }}">{{ type_label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Single Day Booking Fields -->
+                        <div id="specific_date_fields" class="booking-fields" style="display: none;">
+                            <div class="form-group mb-3">
+                                <label for="booking_date">Date:</label>
+                                <input type="date" class="form-control" id="booking_date" name="booking_date" min="{{ today|date:'Y-m-d' }}">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="start_time">Start Time:</label>
+                                        <select class="form-control" id="start_time" name="start_time">
+                                            <option value="">Select start time</option>
+                                            <option value="08:00">08:00 AM</option>
+                                            <option value="10:00">10:00 AM</option>
+                                            <option value="12:00">12:00 PM</option>
+                                            <option value="14:00">02:00 PM</option>
+                                            <option value="16:00">04:00 PM</option>
+                                            <option value="18:00">06:00 PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="end_time">End Time:</label>
+                                        <select class="form-control" id="end_time" name="end_time">
+                                            <option value="">Select end time</option>
+                                            <option value="10:00">10:00 AM</option>
+                                            <option value="12:00">12:00 PM</option>
+                                            <option value="14:00">02:00 PM</option>
+                                            <option value="16:00">04:00 PM</option>
+                                            <option value="18:00">06:00 PM</option>
+                                            <option value="20:00">08:00 PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="specific_pickup">Pickup Location:</label>
+                                <input type="text" class="form-control location-input" id="specific_pickup" name="pickup_location" placeholder="Enter pickup location">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="specific_drop">Drop Location:</label>
+                                <input type="text" class="form-control location-input" id="specific_drop" name="drop_location" placeholder="Enter drop location">
+                            </div>
+                        </div>
+
+                        <!-- Point to Point Service Fields -->
+                        <div id="point_to_point_fields" class="booking-fields" style="display: none;">
+                            <div class="form-group mb-3">
+                                <label for="service_date">Service Date:</label>
+                                <input type="date" class="form-control" id="service_date" name="service_date" min="{{ today|date:'Y-m-d' }}">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="pickup_location">Pickup Location:</label>
+                                <input type="text" class="form-control location-input" id="pickup_location" name="pickup_location" placeholder="Enter pickup location">
+                                <input type="hidden" id="pickup_lat" name="pickup_lat">
+                                <input type="hidden" id="pickup_lng" name="pickup_lng">
+                                <div id="pickup_map" class="map-preview mt-2" style="height: 200px; display: none;"></div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="drop_location">Drop Location:</label>
+                                <input type="text" class="form-control location-input" id="drop_location" name="drop_location" placeholder="Enter drop location">
+                                <input type="hidden" id="drop_lat" name="drop_lat">
+                                <input type="hidden" id="drop_lng" name="drop_lng">
+                                <div id="drop_map" class="map-preview mt-2" style="height: 200px; display: none;"></div>
+                            </div>
+                            <div id="distance_info" class="alert alert-info mt-3" style="display: none;">
+                                Estimated Distance: <span id="distance"></span><br>
+                                Estimated Duration: <span id="duration"></span>
+                            </div>
+                        </div>
+
+                        <!-- With Vehicle Booking Fields -->
+                        <div id="with_vehicle_fields" class="booking-fields" style="display: none;">
+                            <div class="form-group mb-3">
+                                <label for="vehicle_id">Select Vehicle:</label>
+                                <select class="form-control" id="vehicle_id" name="vehicle_id">
+                                    <option value="">Choose a vehicle</option>
+                                    {% for vehicle in available_vehicles %}
+                                        <option value="{{ vehicle.id }}" data-rate="{{ vehicle.rental_rate }}">
+                                            {{ vehicle.model }} (₹{{ vehicle.rental_rate }} per day)
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="start_date">Start Date:</label>
+                                        <input type="datetime-local" class="form-control" id="start_date" name="start_date" min="{{ today|date:'Y-m-d\TH:i' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="end_date">End Date:</label>
+                                        <input type="datetime-local" class="form-control" id="end_date" name="end_date" min="{{ today|date:'Y-m-d\TH:i' }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="vehicle_pickup">Pickup Location:</label>
+                                <input type="text" class="form-control location-input" id="vehicle_pickup" name="pickup_location" placeholder="Enter pickup location">
+                                <small class="form-text text-muted">Optional: Enter the location where you want to pick up the vehicle</small>
+                            </div>
+                        </div>
+
+                        <!-- Price Estimate -->
+                        <div id="price_estimate" class="alert alert-info mt-3" style="display: none;">
+                            Estimated Price: <span id="estimated_price">₹0</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mt-3" id="bookButton">
+                            Book Now
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</main>
 
 {% block extra_js %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 const stripe = Stripe('{{ stripe_publishable_key }}');
 const form = document.getElementById('bookingForm');
 const bookButton = document.getElementById('bookButton');
+const bookingTypeSelect = document.getElementById('booking_type');
+const allBookingFields = document.querySelectorAll('.booking-fields');
+const priceEstimate = document.getElementById('price_estimate');
+const estimatedPrice = document.getElementById('estimated_price');
 
+// Show/hide relevant fields based on booking type
+bookingTypeSelect.addEventListener('change', function() {
+    allBookingFields.forEach(field => field.style.display = 'none');
+    const selectedType = this.value;
+    if (selectedType) {
+        const fieldsDiv = document.getElementById(`${selectedType}_fields`);
+        fieldsDiv.style.display = 'block';
+        
+        // Initialize autocomplete for the visible location inputs
+        const visibleInputs = fieldsDiv.querySelectorAll('.location-input');
+        visibleInputs.forEach(input => {
+            input.disabled = false; // Ensure the input is enabled
+        });
+    }
+    updatePriceEstimate();
+    validateForm();
+});
+
+// Calculate and update price estimate
+function updatePriceEstimate() {
+    const bookingType = bookingTypeSelect.value;
+    let price = 0;
+
+    if (bookingType === 'specific_date') {
+        const startTime = document.getElementById('start_time').value;
+        const endTime = document.getElementById('end_time').value;
+        if (startTime && endTime) {
+            const start = new Date(`2000-01-01T${startTime}`);
+            const end = new Date(`2000-01-01T${endTime}`);
+            const hours = (end - start) / (1000 * 60 * 60);
+            price = hours * 100;
+        }
+    } else if (bookingType === 'point_to_point') {
+        price = 1000;
+    } else if (bookingType === 'with_vehicle') {
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+        const vehicleSelect = document.getElementById('vehicle_id');
+        const selectedOption = vehicleSelect.options[vehicleSelect.selectedIndex];
+        
+        if (startDate && endDate && selectedOption && selectedOption.value) {
+            try {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                
+                // Ensure valid dates
+                if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+                    console.error('Invalid date values:', { startDate, endDate });
+                    return;
+                }
+                
+                // Calculate days (minimum 1 day)
+                const days = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+                
+                // Parse rates with 2 decimal places
+                const vehicleRate = parseFloat(selectedOption.dataset.rate || '0').toFixed(2);
+                const driverRate = parseFloat('500.00').toFixed(2);
+                
+                // Calculate total rate per day
+                const ratePerDay = (parseFloat(driverRate) + parseFloat(vehicleRate)).toFixed(2);
+                
+                // Calculate final price
+                price = (days * parseFloat(ratePerDay)).toFixed(2);
+                price = parseFloat(price); // Convert back to number
+            } catch (error) {
+                console.error('Price calculation error:', error);
+                return;
+            }
+        }
+    }
+
+    if (price > 0) {
+        estimatedPrice.textContent = `₹${price.toFixed(2)}`;
+        priceEstimate.style.display = 'block';
+    } else {
+        priceEstimate.style.display = 'none';
+    }
+}
+
+// Add event listeners for price estimate updates
+document.getElementById('start_time')?.addEventListener('change', updatePriceEstimate);
+document.getElementById('end_time')?.addEventListener('change', updatePriceEstimate);
+document.getElementById('start_date')?.addEventListener('change', updatePriceEstimate);
+document.getElementById('end_date')?.addEventListener('change', updatePriceEstimate);
+document.getElementById('vehicle_id')?.addEventListener('change', updatePriceEstimate);
+
+// Add these variables at the top
+let currentDistance = '';
+let currentDuration = '';
+
+// Update the calculateDistanceAndDuration function
+function calculateDistanceAndDuration() {
+    const pickup = document.getElementById('pickup_location').value;
+    const drop = document.getElementById('drop_location').value;
+
+    if (pickup && drop) {
+        const request = {
+            origin: pickup,
+            destination: drop,
+            travelMode: 'DRIVING'
+        };
+
+        directionsService.route(request, function(result, status) {
+            if (status === 'OK') {
+                currentDistance = result.routes[0].legs[0].distance.text;
+                currentDuration = result.routes[0].legs[0].duration.text;
+                
+                document.getElementById('distance').textContent = currentDistance;
+                document.getElementById('duration').textContent = currentDuration;
+                document.getElementById('distance_info').style.display = 'block';
+
+                // Add hidden input for distance
+                let distanceInput = document.getElementById('distance_input');
+                if (!distanceInput) {
+                    distanceInput = document.createElement('input');
+                    distanceInput.type = 'hidden';
+                    distanceInput.id = 'distance_input';
+                    distanceInput.name = 'distance';
+                    form.appendChild(distanceInput);
+                }
+                distanceInput.value = currentDistance;
+
+                // Update price for point-to-point service based on distance
+                if (bookingTypeSelect.value === 'point_to_point') {
+                    const distanceInKm = parseFloat(currentDistance.replace(' km', ''));
+                    const basePrice = 1000;
+                    const pricePerKm = 15;
+                    const totalPrice = basePrice + (distanceInKm * pricePerKm);
+                    estimatedPrice.textContent = `₹${totalPrice.toFixed(2)}`;
+                    priceEstimate.style.display = 'block';
+                }
+            }
+        });
+    }
+}
+
+// Update the form submission handler
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    
+    const bookingType = bookingTypeSelect.value;
+    if (!bookingType) {
+        alert('Please select a booking type');
+        return;
+    }
+
+    // Create a new FormData instance
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    formData.append('booking_type', bookingType);
+
+    // Validate required fields based on booking type
+    if (bookingType === 'specific_date') {
+        const bookingDate = document.getElementById('booking_date').value;
+        const startTime = document.getElementById('start_time').value;
+        const endTime = document.getElementById('end_time').value;
+        
+        if (!bookingDate || !startTime || !endTime) {
+            alert('Please fill in all required fields for single day booking');
+            return;
+        }
+
+        formData.append('booking_date', bookingDate);
+        formData.append('start_time', startTime);
+        formData.append('end_time', endTime);
+
+        // Add pickup and drop locations if provided
+        const pickup = document.getElementById('specific_pickup').value;
+        const drop = document.getElementById('specific_drop').value;
+        if (pickup) formData.append('pickup_location', pickup);
+        if (drop) formData.append('drop_location', drop);
+
+    } else if (bookingType === 'point_to_point') {
+        const serviceDate = document.getElementById('service_date').value;
+        const pickup = document.getElementById('pickup_location').value;
+        const drop = document.getElementById('drop_location').value;
+        const pickupLat = document.getElementById('pickup_lat').value;
+        const pickupLng = document.getElementById('pickup_lng').value;
+        const dropLat = document.getElementById('drop_lat').value;
+        const dropLng = document.getElementById('drop_lng').value;
+        
+        if (!serviceDate || !pickup || !drop) {
+            alert('Please fill in all required fields for point-to-point service');
+            return;
+        }
+
+        if (!pickupLat || !pickupLng || !dropLat || !dropLng) {
+            alert('Please select locations from the Google Maps suggestions');
+            return;
+        }
+
+        formData.append('service_date', serviceDate);
+        formData.append('pickup_location', pickup);
+        formData.append('drop_location', drop);
+        formData.append('pickup_lat', pickupLat);
+        formData.append('pickup_lng', pickupLng);
+        formData.append('drop_lat', dropLat);
+        formData.append('drop_lng', dropLng);
+        if (currentDistance) formData.append('distance', currentDistance);
+
+    } else if (bookingType === 'with_vehicle') {
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+        const vehicleId = document.getElementById('vehicle_id').value;
+        const vehiclePickup = document.getElementById('vehicle_pickup').value;
+        
+        if (!startDate || !endDate || !vehicleId) {
+            alert('Please fill in all required fields for vehicle booking');
+            return;
+        }
+
+        // Format dates to match Django's expected format (YYYY-MM-DD HH:mm)
+        const formatDate = (dateStr) => {
+            try {
+                const date = new Date(dateStr);
+                if (isNaN(date.getTime())) {
+                    throw new Error('Invalid date');
+                }
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${year}-${month}-${day} ${hours}:${minutes}`;
+            } catch (error) {
+                console.error('Date formatting error:', error);
+                throw new Error('Invalid date format');
+            }
+        };
+
+        try {
+            const formattedStartDate = formatDate(startDate);
+            const formattedEndDate = formatDate(endDate);
+            console.log('Formatted dates:', { formattedStartDate, formattedEndDate });
+
+            // Validate dates
+            const start = new Date(formattedStartDate);
+            const end = new Date(formattedEndDate);
+            if (end <= start) {
+                alert('End date must be after start date');
+                return;
+            }
+
+            formData.append('start_date', formattedStartDate);
+            formData.append('end_date', formattedEndDate);
+            formData.append('vehicle_id', vehicleId);
+            if (vehiclePickup) formData.append('pickup_location', vehiclePickup);
+        } catch (error) {
+            console.error('Date formatting error:', error);
+            alert('Invalid date format. Please select valid dates.');
+            return;
+        }
+    }
+    
     bookButton.disabled = true;
     bookButton.textContent = 'Processing...';
-
+    
     try {
-        const formData = new FormData(form);
         const response = await fetch(window.location.href, {
             method: 'POST',
             body: formData,
@@ -69,6 +449,7 @@ form.addEventListener('submit', async (e) => {
         });
 
         const data = await response.json();
+        console.log('Server response:', data);
 
         if (data.status === 'success') {
             const { error } = await stripe.redirectToCheckout({
@@ -89,5 +470,168 @@ form.addEventListener('submit', async (e) => {
         bookButton.textContent = 'Book Now';
     }
 });
+
+// Update the form validation
+function validateForm() {
+    const bookingType = bookingTypeSelect.value;
+    let isValid = false;
+
+    if (bookingType === 'specific_date') {
+        const bookingDate = document.getElementById('booking_date').value;
+        const startTime = document.getElementById('start_time').value;
+        const endTime = document.getElementById('end_time').value;
+        isValid = bookingDate && startTime && endTime;
+    } else if (bookingType === 'point_to_point') {
+        const serviceDate = document.getElementById('service_date').value;
+        const pickup = document.getElementById('pickup_location').value;
+        const drop = document.getElementById('drop_location').value;
+        const pickupLat = document.getElementById('pickup_lat').value;
+        const dropLat = document.getElementById('drop_lat').value;
+        isValid = serviceDate && pickup && drop && pickupLat && dropLat;
+    } else if (bookingType === 'with_vehicle') {
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+        const vehicleId = document.getElementById('vehicle_id').value;
+        // Make pickup location optional for vehicle booking
+        isValid = startDate && endDate && vehicleId;
+    }
+
+    bookButton.disabled = !isValid;
+}
+
+// Add event listeners for form validation
+form.addEventListener('change', validateForm);
+form.addEventListener('input', validateForm);
+
+// Add validation for date ranges
+document.getElementById('end_date')?.addEventListener('change', function() {
+    const startDate = new Date(document.getElementById('start_date').value);
+    const endDate = new Date(this.value);
+    
+    if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime()) && endDate < startDate) {
+        alert('End date must be after start date');
+        this.value = '';
+        validateForm();
+    }
+    updatePriceEstimate();
+});
+
+document.getElementById('start_date')?.addEventListener('change', function() {
+    const endDateInput = document.getElementById('end_date');
+    if (endDateInput.value) {
+        const startDate = new Date(this.value);
+        const endDate = new Date(endDateInput.value);
+        
+        if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime()) && endDate < startDate) {
+            alert('Start date must be before end date');
+            endDateInput.value = '';
+            validateForm();
+        }
+    }
+    updatePriceEstimate();
+});
+
+// Initialize Google Maps autocomplete for all location inputs
+function initializeAutocomplete() {
+    const locationInputs = document.querySelectorAll('.location-input');
+    locationInputs.forEach(input => {
+        const autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            if (place.geometry) {
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+                
+                // Handle location selection based on input ID
+                if (input.id === 'pickup_location' || input.id === 'specific_pickup') {
+                    if (bookingTypeSelect.value === 'point_to_point') {
+                        document.getElementById('pickup_lat').value = lat;
+                        document.getElementById('pickup_lng').value = lng;
+                        console.log('Set pickup coordinates:', lat, lng);
+                        updateLocationMap(place, 'pickup_location');
+                    }
+                } else if (input.id === 'drop_location' || input.id === 'specific_drop') {
+                    if (bookingTypeSelect.value === 'point_to_point') {
+                        document.getElementById('drop_lat').value = lat;
+                        document.getElementById('drop_lng').value = lng;
+                        console.log('Set drop coordinates:', lat, lng);
+                        updateLocationMap(place, 'drop_location');
+                    }
+                } else if (input.id === 'vehicle_pickup') {
+                    // For vehicle booking, just store the formatted address
+                    input.value = place.formatted_address;
+                }
+                
+                // Calculate distance if both locations are set for point-to-point service
+                if (bookingTypeSelect.value === 'point_to_point' &&
+                    document.getElementById('pickup_lat').value &&
+                    document.getElementById('drop_lat').value) {
+                    calculateDistanceAndDuration();
+                }
+                
+                validateForm();
+            }
+        });
+    });
+}
+
+// Initialize maps for pickup and drop locations
+let pickupMap, dropMap, directionsService, directionsRenderer;
+
+function initializeMaps() {
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer();
+
+    const defaultLocation = { lat: 20.5937, lng: 78.9629 }; // Center of India
+
+    pickupMap = new google.maps.Map(document.getElementById('pickup_map'), {
+        zoom: 13,
+        center: defaultLocation,
+        mapTypeControl: true,
+        streetViewControl: true
+    });
+
+    dropMap = new google.maps.Map(document.getElementById('drop_map'), {
+        zoom: 13,
+        center: defaultLocation,
+        mapTypeControl: true,
+        streetViewControl: true
+    });
+}
+
+function updateLocationMap(place, inputId) {
+    const location = place.geometry.location;
+    const mapId = inputId === 'pickup_location' ? 'pickup_map' : 'drop_map';
+    const map = inputId === 'pickup_location' ? pickupMap : dropMap;
+    const latInput = inputId === 'pickup_location' ? 'pickup_lat' : 'drop_lat';
+    const lngInput = inputId === 'pickup_location' ? 'pickup_lng' : 'drop_lng';
+
+    document.getElementById(mapId).style.display = 'block';
+    document.getElementById(latInput).value = location.lat();
+    document.getElementById(lngInput).value = location.lng();
+
+    map.setCenter(location);
+    
+    // Clear existing markers
+    if (map.markers) {
+        map.markers.forEach(marker => marker.setMap(null));
+    }
+    map.markers = [];
+    
+    // Add new marker
+    const marker = new google.maps.Marker({
+        map: map,
+        position: location,
+        animation: google.maps.Animation.DROP
+    });
+    map.markers = [marker];
+}
+
+// Initialize maps and autocomplete when the page loads
+google.maps.event.addDomListener(window, 'load', function() {
+    initializeAutocomplete();
+    initializeMaps();
+});
 </script>
-{% endblock %}{% endblock %} 
+{% endblock %}
+{% endblock %} 

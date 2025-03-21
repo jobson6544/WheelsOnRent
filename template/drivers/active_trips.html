@@ -1,89 +1,218 @@
-{% extends 'base.html' %}
+{% extends 'drivers/base.html' %}
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-car-front"></i> My Active Bookings</h2>
-        <span class="badge bg-primary">Driver: {{ driver.full_name }}</span>
-    </div>
-    
-    {% if messages %}
-        <div class="messages mb-4">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-    
-    {% if active_bookings %}
-        <div class="row">
-            {% for booking in active_bookings %}
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 {% if booking.can_start_trip %}border-success{% endif %}">
-                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Booking #{{ booking.id }}</h5>
-                            <span class="badge bg-light text-dark">
-                                {{ booking.status|title }}
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="booking-details">
-                                <p>
-                                    <i class="bi bi-person-circle"></i>
-                                    <strong>Customer:</strong> 
-                                    {{ booking.user.get_full_name }}
-                                </p>
-                                <p>
-                                    <i class="bi bi-calendar-check"></i>
-                                    <strong>Start:</strong> 
-                                    {{ booking.start_date|date:"M d, Y H:i" }}
-                                </p>
-                                <p>
-                                    <i class="bi bi-calendar-x"></i>
-                                    <strong>End:</strong> 
-                                    {{ booking.end_date|date:"M d, Y H:i" }}
-                                </p>
-                                <p>
-                                    <i class="bi bi-currency-rupee"></i>
-                                    <strong>Amount:</strong> 
-                                    ₹{{ booking.amount }}
-                                </p>
-                                <p>
-                                    <i class="bi bi-credit-card"></i>
-                                    <strong>Payment:</strong>
-                                    <span class="badge bg-{% if booking.payment_status == 'paid' %}success{% else %}warning{% endif %}">
-                                        {{ booking.payment_status|title }}
-                                    </span>
-                                </p>
+<main id="main" class="main">
+    <div class="container mt-4">
+        <h2>Active Trips</h2>
+        
+        {% if not bookings_data %}
+            <div class="alert alert-info">
+                No active bookings found.
+            </div>
+        {% else %}
+            <div class="row">
+                {% for data in bookings_data %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    {{ data.booking.get_booking_type_display }}
+                                    <span class="badge bg-{{ data.booking.status|lower }}">{{ data.booking.get_status_display }}</span>
+                                </h5>
                             </div>
-                            
-                            <div class="mt-3 text-center">
-                                {% if booking.can_start_trip %}
-                                    <form method="POST" action="{% url 'drivers:start_trip' booking.id %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-success">
-                                            <i class="bi bi-play-circle"></i> Start Trip
+                            <div class="card-body">
+                                <div class="customer-info mb-3">
+                                    <h6>Customer Details:</h6>
+                                    <p class="mb-1">
+                                        <i class="bi bi-person"></i> {{ data.booking.user.get_full_name }}
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="bi bi-envelope"></i> {{ data.booking.user.email }}
+                                    </p>
+                                </div>
+
+                                <div class="booking-details">
+                                    {% if data.booking.booking_type == 'specific_date' %}
+                                        <p><strong>Date:</strong> {{ data.booking.booking_date }}</p>
+                                        <p><strong>Time:</strong> {{ data.booking.start_time }} - {{ data.booking.end_time }}</p>
+                                    {% elif data.booking.booking_type == 'point_to_point' %}
+                                        <p><strong>Service Date:</strong> {{ data.booking.service_date }}</p>
+                                    {% else %}
+                                        <p><strong>Period:</strong> {{ data.booking.start_date|date:"d M Y H:i" }} - {{ data.booking.end_date|date:"d M Y H:i" }}</p>
+                                        {% if data.booking.vehicle %}
+                                            <p><strong>Vehicle:</strong> {{ data.booking.vehicle.model }}</p>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {% if data.has_pickup %}
+                                        <div class="location-info mt-3">
+                                            <h6>Pickup Location:</h6>
+                                            <p>{{ data.booking.pickup_location }}</p>
+                                            <button class="btn btn-sm btn-outline-primary navigate-btn" 
+                                                    data-location="{{ data.booking.pickup_location }}"
+                                                    onclick="tripManager.navigateToLocation(this)">
+                                                <i class="bi bi-geo-alt"></i> Navigate
+                                            </button>
+                                        </div>
+                                    {% endif %}
+
+                                    {% if data.booking.booking_type == 'point_to_point' %}
+                                        <div class="location-info mt-3">
+                                            <h6>Drop Location:</h6>
+                                            <p>{{ data.booking.drop_location }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="trip-actions mt-3">
+                                    {% if data.can_start %}
+                                        <button class="btn btn-success start-trip-btn" 
+                                                data-booking-id="{{ data.booking.id }}"
+                                                onclick="tripManager.startTrip(this)">
+                                            Start Trip
                                         </button>
-                                    </form>
-                                {% elif booking.trip and booking.trip.status == 'started' %}
-                                    <form method="POST" action="{% url 'drivers:end_trip' booking.id %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger" {% if not booking.can_end_trip %}disabled{% endif %}>
-                                            <i class="bi bi-stop-circle"></i> End Trip
+                                    {% else %}
+                                        <button class="btn btn-secondary" disabled>
+                                            {% if data.start_time %}
+                                                Starts at {{ data.start_time }}
+                                            {% else %}
+                                                Not Ready to Start
+                                            {% endif %}
                                         </button>
-                                    </form>
-                                {% endif %}
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
+                {% endfor %}
+            </div>
+
+            <!-- OTP Verification Modal -->
+            <div class="modal fade" id="otpModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Enter OTP</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Please enter the OTP sent to the customer's email:</p>
+                            <input type="text" class="form-control" id="otpInput" maxlength="6" placeholder="Enter 6-digit OTP">
+                            <div id="otpError" class="text-danger mt-2" style="display: none;"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="tripManager.verifyOTP()">Verify & Start Trip</button>
+                        </div>
+                    </div>
                 </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> No active bookings found at the moment.
-        </div>
-    {% endif %}
-</div>
+            </div>
+        {% endif %}
+    </div>
+</main>
+
+{% block extra_js %}
+<script>
+// Initialize the trip manager as a module to avoid global variables
+const tripManager = {
+    currentBookingId: null,
+    otpModal: null,
+
+    init: function() {
+        // Initialize Bootstrap modal
+        this.otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+        
+        // Add modal event listener
+        document.getElementById('otpModal').addEventListener('hidden.bs.modal', () => {
+            document.getElementById('otpInput').value = '';
+            document.getElementById('otpError').style.display = 'none';
+        });
+    },
+
+    startTrip: async function(button) {
+        try {
+            const bookingId = button.dataset.bookingId;
+            this.currentBookingId = bookingId;
+            
+            const response = await fetch(`/drivers/start-trip/${bookingId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                this.otpModal.show();
+            } else {
+                alert(data.message || 'Error starting trip');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error starting trip. Please try again.');
+        }
+    },
+
+    verifyOTP: async function() {
+        try {
+            const otp = document.getElementById('otpInput').value;
+            const errorDiv = document.getElementById('otpError');
+            
+            if (!otp || otp.length !== 6) {
+                errorDiv.textContent = 'Please enter a valid 6-digit OTP';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            const response = await fetch(`/drivers/verify-trip-otp/${this.currentBookingId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `otp=${otp}`
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                window.location.href = data.redirect_url;
+            } else {
+                errorDiv.textContent = data.message;
+                errorDiv.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            const errorDiv = document.getElementById('otpError');
+            errorDiv.textContent = 'Error verifying OTP. Please try again.';
+            errorDiv.style.display = 'block';
+        }
+    },
+
+    navigateToLocation: function(button) {
+        const location = button.dataset.location;
+        if (location) {
+            const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location)}`;
+            window.open(mapsUrl, '_blank');
+        }
+    }
+};
+
+// Initialize the trip manager when the document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    tripManager.init();
+});
+</script>
+{% endblock %}
 {% endblock %} 

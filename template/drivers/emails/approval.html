@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Driver Application Approved</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>WheelsOnRent</h1>
+    </div>
+    <div class="content">
+        <h2>Congratulations, {{ driver.full_name }}!</h2>
+        
+        <p>We are pleased to inform you that your application to become a driver with WheelsOnRent has been <strong>APPROVED</strong>.</p>
+        
+        <p>You can now log in to your driver dashboard and start accepting bookings. Here's a summary of your approved driver profile:</p>
+        
+        <ul>
+            <li><strong>Name:</strong> {{ driver.full_name }}</li>
+            <li><strong>License Number:</strong> {{ driver.license_number }}</li>
+            <li><strong>Driving Experience:</strong> {{ driver.driving_experience }} years</li>
+            <li><strong>Driving Skill:</strong> {{ driver.get_driving_skill_display }}</li>
+        </ul>
+        
+        <p>Your account is now active, and you can start receiving booking requests from customers looking for drivers in your area.</p>
+        
+        <a href="{{ login_url }}" class="button">Log in to your account</a>
+        
+        <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+        
+        <p>We're excited to have you as part of the WheelsOnRent family!</p>
+        
+        <p>Best regards,<br>
+        The WheelsOnRent Team</p>
+    </div>
+    <div class="footer">
+        <p>© {% now "Y" %} WheelsOnRent. All rights reserved.</p>
+        <p>This email was sent to {{ driver.auth.email }}. Please do not reply to this email.</p>
+    </div>
+</body>
+</html> 

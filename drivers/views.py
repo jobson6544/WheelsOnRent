@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import DriverRegistrationForm, DriverLoginForm
-from .models import Driver, DriverDocument, DriverApplicationLog, DriverAuth, DriverTrip, DriverBooking
+from .models import Driver, DriverDocument, DriverApplicationLog, DriverAuth, DriverTrip, DriverBooking, Vehicle
 from django.utils import timezone
 from django.contrib.auth import login, logout
 from functools import wraps
@@ -13,6 +13,14 @@ import stripe
 from django.conf import settings
 import traceback
 from django.db import transaction
+from django.db import models
+import decimal
+import random
+import string
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from datetime import datetime
 
 # Create a logger for the drivers app
 logger = logging.getLogger(__name__)
@@ -79,11 +87,24 @@ def driver_dashboard(request):
         if driver.status != 'approved':
             messages.error(request, 'Your account is not approved yet')
             return redirect('drivers:approval_status')
+        
+        # Get total completed trips
+        total_trips = DriverTrip.objects.filter(
+            driver=driver,
+            status='completed'
+        ).count()
+        
+        # Get recent driver bookings
+        recent_bookings = DriverBooking.objects.filter(
+            driver=driver
+        ).order_by('-created_at')[:5]  # Get last 5 bookings
             
         context = {
             'driver': driver,
             'status': driver.get_status_display(),
             'is_approved': driver.status == 'approved',
+            'total_trips': total_trips,
+            'driver_bookings': recent_bookings,
         }
         return render(request, 'drivers/dashboard.html', context)
     except Driver.DoesNotExist:
@@ -265,55 +286,209 @@ def driver_support(request):
         messages.error(request, 'Driver profile not found')
         return redirect('drivers:driver_register')
 
-@driver_login_required
+@login_required
 def active_trips(request):
     try:
-        driver = Driver.objects.get(id=request.session['driver_id'])
+        driver = get_object_or_404(Driver, user=request.user)
+        
+        # Get all confirmed and in_progress bookings for the driver
+        bookings = DriverBooking.objects.filter(
+            driver=driver,
+            status__in=['confirmed', 'in_progress']
+        ).order_by('service_date', 'start_date', 'booking_date')
+        
+        bookings_data = []
         current_time = timezone.now()
         
-        # Get active bookings for the driver with more lenient time constraints
-        active_bookings = DriverBooking.objects.filter(
-            driver=driver,
-            status='confirmed',
-            payment_status='paid',
-            end_date__gte=current_time  # Only check if booking hasn't ended
-        ).select_related('user').order_by('start_date')
-
-        context = {
-            'active_bookings': active_bookings,
-            'current_time': current_time,
-            'driver': driver
-        }
-        return render(request, 'drivers/active_trips.html', context)
-    except Driver.DoesNotExist:
-        messages.error(request, 'Driver profile not found')
-        return redirect('drivers:driver_login')
-
-@driver_login_required
-def start_trip(request, booking_id):
-    booking = get_object_or_404(DriverBooking, id=booking_id)
-    
-    if not booking.can_start_trip():
-        messages.error(request, 'Cannot start this trip at this time')
-        return redirect('drivers:active_trips')
-    
-    try:
-        with transaction.atomic():
-            trip = DriverTrip.objects.create(
-                driver=booking.driver,
-                booking=booking,
-                status='started',
-                start_time=timezone.now(),
-                start_location=request.POST.get('start_location', '')
-            )
-            booking.driver.availability_status = 'unavailable'
-            booking.driver.save()
+        for booking in bookings:
+            can_start = False
+            start_time = None
+            has_pickup = bool(booking.pickup_location)
             
-        messages.success(request, 'Trip started successfully')
+            # Check if the trip can be started based on booking type
+            if booking.booking_type == 'specific_date':
+                booking_datetime = datetime.combine(
+                    booking.booking_date,
+                    booking.start_time
+                ).replace(tzinfo=timezone.get_current_timezone())
+                can_start = current_time >= booking_datetime
+                if not can_start:
+                    start_time = booking_datetime.strftime('%I:%M %p, %b %d')
+                    
+            elif booking.booking_type == 'point_to_point':
+                service_datetime = booking.service_date
+                if service_datetime:
+                    can_start = current_time.date() >= service_datetime.date()
+                    if not can_start:
+                        start_time = service_datetime.strftime('%b %d, %Y')
+                        
+            else:  # with_vehicle
+                start_datetime = booking.start_date
+                if start_datetime:
+                    can_start = current_time >= start_datetime
+                    if not can_start:
+                        start_time = start_datetime.strftime('%I:%M %p, %b %d')
+            
+            # Only allow starting if booking is confirmed
+            can_start = can_start and booking.status == 'confirmed'
+            
+            bookings_data.append({
+                'booking': booking,
+                'can_start': can_start,
+                'start_time': start_time,
+                'has_pickup': has_pickup
+            })
+        
+        context = {
+            'bookings_data': bookings_data,
+            'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
+        }
+        
+        return render(request, 'drivers/active_trips.html', context)
+        
     except Exception as e:
-        messages.error(request, f'Error starting trip: {str(e)}')
-    
-    return redirect('drivers:active_trips')
+        logger.error(f"Error in active_trips view: {str(e)}")
+        messages.error(request, 'An error occurred while loading active trips.')
+        return redirect('drivers:dashboard')
+
+@login_required
+def start_trip(request, booking_id):
+    try:
+        # Get the booking and verify it belongs to the logged-in driver
+        booking = get_object_or_404(DriverBooking, id=booking_id)
+        driver = get_object_or_404(Driver, user=request.user)
+        
+        if booking.driver.id != driver.id:
+            return JsonResponse({'status': 'error', 'message': 'Unauthorized access'}, status=403)
+        
+        # Check if the trip can be started
+        if booking.status != 'confirmed':
+            return JsonResponse({'status': 'error', 'message': 'Booking is not in confirmed status'})
+            
+        # Generate OTP
+        otp = ''.join(random.choices(string.digits, k=6))
+        
+        # Store OTP in session with timestamp
+        request.session[f'trip_otp_{booking_id}'] = {
+            'otp': otp,
+            'timestamp': timezone.now().timestamp(),
+            'attempts': 0
+        }
+        
+        # Prepare email content
+        context = {
+            'user_name': booking.user.get_full_name(),
+            'otp': otp,
+            'booking': booking,
+            'driver_name': driver.user.get_full_name()
+        }
+        
+        html_message = render_to_string('drivers/email/trip_start_otp.html', context)
+        plain_message = strip_tags(html_message)
+        
+        # Send OTP email
+        try:
+            send_mail(
+                'Trip Start Verification OTP',
+                plain_message,
+                settings.DEFAULT_FROM_EMAIL,
+                [booking.user.email],
+                html_message=html_message,
+                fail_silently=False
+            )
+        except Exception as e:
+            logger.error(f"Failed to send OTP email: {str(e)}")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Failed to send OTP email. Please try again.'
+            })
+        
+        return JsonResponse({'status': 'success', 'message': 'OTP sent successfully'})
+        
+    except Exception as e:
+        logger.error(f"Error in start_trip: {str(e)}")
+        return JsonResponse({
+            'status': 'error',
+            'message': 'An error occurred while starting the trip'
+        })
+
+@login_required
+def verify_trip_otp(request, booking_id):
+    try:
+        if request.method != 'POST':
+            return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+            
+        otp = request.POST.get('otp')
+        if not otp:
+            return JsonResponse({'status': 'error', 'message': 'OTP is required'})
+            
+        # Get stored OTP data
+        stored_otp_data = request.session.get(f'trip_otp_{booking_id}')
+        if not stored_otp_data:
+            return JsonResponse({'status': 'error', 'message': 'OTP has expired. Please request a new one.'})
+            
+        # Check OTP expiration (10 minutes)
+        current_time = timezone.now().timestamp()
+        if current_time - stored_otp_data['timestamp'] > 600:  # 10 minutes
+            del request.session[f'trip_otp_{booking_id}']
+            return JsonResponse({'status': 'error', 'message': 'OTP has expired. Please request a new one.'})
+            
+        # Check attempts
+        if stored_otp_data['attempts'] >= 3:
+            del request.session[f'trip_otp_{booking_id}']
+            return JsonResponse({'status': 'error', 'message': 'Too many attempts. Please request a new OTP.'})
+            
+        # Increment attempts
+        stored_otp_data['attempts'] += 1
+        request.session[f'trip_otp_{booking_id}'] = stored_otp_data
+        
+        # Verify OTP
+        if otp != stored_otp_data['otp']:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Invalid OTP. {3 - stored_otp_data["attempts"]} attempts remaining.'
+            })
+            
+        # Get booking and start trip
+        booking = get_object_or_404(DriverBooking, id=booking_id)
+        driver = get_object_or_404(Driver, user=request.user)
+        
+        if booking.driver.id != driver.id:
+            return JsonResponse({'status': 'error', 'message': 'Unauthorized access'}, status=403)
+            
+        # Create or update trip
+        trip, created = DriverTrip.objects.get_or_create(
+            booking=booking,
+            defaults={
+                'start_time': timezone.now(),
+                'status': 'started'
+            }
+        )
+        
+        if not created:
+            trip.start_time = timezone.now()
+            trip.status = 'started'
+            trip.save()
+            
+        # Update booking status
+        booking.status = 'in_progress'
+        booking.save()
+        
+        # Clear OTP from session
+        del request.session[f'trip_otp_{booking_id}']
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Trip started successfully',
+            'redirect_url': reverse('drivers:active_trips')
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in verify_trip_otp: {str(e)}")
+        return JsonResponse({
+            'status': 'error',
+            'message': 'An error occurred while verifying OTP'
+        })
 
 @driver_login_required
 def end_trip(request, booking_id):
@@ -502,53 +677,254 @@ def book_driver(request, driver_id):
     
     if request.method == 'POST':
         try:
-            start_date = request.POST.get('start_date')
-            end_date = request.POST.get('end_date')
+            # Log the POST data for debugging
+            logger.debug(f"POST data received: {request.POST}")
             
-            if not start_date or not end_date:
+            booking_type = request.POST.get('booking_type')
+            if not booking_type:
+                logger.error("No booking type provided")
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Please provide both start and end dates'
+                    'message': 'Please select a booking type'
                 })
 
-            # Convert string dates to datetime objects
-            start_datetime = timezone.datetime.strptime(start_date, '%Y-%m-%dT%H:%M')
-            end_datetime = timezone.datetime.strptime(end_date, '%Y-%m-%dT%H:%M')
-            
-            # Make them timezone aware
-            start_datetime = timezone.make_aware(start_datetime)
-            end_datetime = timezone.make_aware(end_datetime)
+            # Initialize booking data
+            booking_data = {
+                'driver': driver,
+                'user': request.user,
+                'booking_type': booking_type,
+                'status': 'pending',
+                'payment_status': 'pending'
+            }
+
+            # Handle different booking types
+            if booking_type == 'specific_date':
+                booking_date = request.POST.get('booking_date')
+                start_time = request.POST.get('start_time')
+                end_time = request.POST.get('end_time')
+                
+                logger.debug(f"Specific date booking data: date={booking_date}, start={start_time}, end={end_time}")
+                
+                if not all([booking_date, start_time, end_time]):
+                    logger.error("Missing required specific date fields")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Please provide booking date, start time and end time'
+                    })
+
+                try:
+                    # Convert strings to date and time objects
+                    booking_date = timezone.datetime.strptime(booking_date, '%Y-%m-%d').date()
+                    start_time = timezone.datetime.strptime(start_time, '%H:%M').time()
+                    end_time = timezone.datetime.strptime(end_time, '%H:%M').time()
+                except ValueError as e:
+                    logger.error(f"Date/time parsing error: {str(e)}")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Invalid date or time format'
+                    })
+                
+                # Validate times
+                if start_time >= end_time:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'End time must be after start time'
+                    })
+                
+                booking_data.update({
+                    'booking_date': booking_date,
+                    'start_time': start_time,
+                    'end_time': end_time
+                })
+                
+                # Calculate hours and amount
+                hours = ((end_time.hour * 60 + end_time.minute) - 
+                        (start_time.hour * 60 + start_time.minute)) / 60
+                total_amount = hours * 100.00  # Rate of 100 per hour
+
+            elif booking_type == 'point_to_point':
+                # Get form data
+                pickup_location = request.POST.get('pickup_location', '').strip()
+                drop_location = request.POST.get('drop_location', '').strip()
+                service_date = request.POST.get('service_date', '').strip()
+                
+                # Get coordinates
+                try:
+                    pickup_latitude = float(request.POST.get('pickup_lat', 0))
+                    pickup_longitude = float(request.POST.get('pickup_lng', 0))
+                    drop_latitude = float(request.POST.get('drop_lat', 0))
+                    drop_longitude = float(request.POST.get('drop_lng', 0))
+                    
+                    logger.debug(f"Received coordinates: pickup({pickup_latitude}, {pickup_longitude}), drop({drop_latitude}, {drop_longitude})")
+                    
+                    if not all([pickup_latitude, pickup_longitude, drop_latitude, drop_longitude]):
+                        logger.error("Missing or zero coordinates")
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': 'Please select locations from the Google Maps suggestions'
+                        })
+                except (ValueError, TypeError) as e:
+                    logger.error(f"Invalid coordinate values: {str(e)}")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Invalid location coordinates'
+                    })
+                
+                logger.debug(f"Point to point data: pickup={pickup_location}, drop={drop_location}, date={service_date}")
+                
+                # Validate required fields
+                if not all([pickup_location, drop_location, service_date]):
+                    logger.error("Missing required point-to-point fields")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Please provide pickup location, drop location, and service date'
+                    })
+
+                try:
+                    service_date = timezone.datetime.strptime(service_date, '%Y-%m-%d').date()
+                except ValueError:
+                    logger.error(f"Invalid service date format: {service_date}")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Invalid service date format'
+                    })
+                
+                booking_data.update({
+                    'pickup_location': pickup_location,
+                    'drop_location': drop_location,
+                    'service_date': service_date,
+                    'pickup_latitude': pickup_latitude,
+                    'pickup_longitude': pickup_longitude,
+                    'drop_latitude': drop_latitude,
+                    'drop_longitude': drop_longitude
+                })
+                
+                # Calculate total amount based on distance
+                try:
+                    distance = request.POST.get('distance', '').strip()
+                    if distance:
+                        distance_km = float(distance.replace(' km', ''))
+                        base_price = 1000.00
+                        price_per_km = 15.00
+                        total_amount = base_price + (distance_km * price_per_km)
+                    else:
+                        total_amount = 1000.00  # Default fixed rate
+                except (ValueError, TypeError):
+                    logger.error(f"Invalid distance format: {distance}")
+                    total_amount = 1000.00  # Default to fixed rate if distance parsing fails
+
+            elif booking_type == 'with_vehicle':
+                start_date = request.POST.get('start_date')
+                end_date = request.POST.get('end_date')
+                vehicle_id = request.POST.get('vehicle_id')
+                
+                logger.debug(f"With vehicle booking data: start={start_date}, end={end_date}, vehicle={vehicle_id}")
+                
+                if not all([start_date, end_date, vehicle_id]):
+                    logger.error("Missing required vehicle booking fields")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Please provide start date, end date, and select a vehicle'
+                    })
+
+                try:
+                    # Get the vehicle first
+                    vehicle = get_object_or_404(Vehicle, id=vehicle_id, status='available')
+                    
+                    # Parse dates in YYYY-MM-DD HH:mm format
+                    try:
+                        start_datetime = timezone.make_aware(timezone.datetime.strptime(start_date, '%Y-%m-%d %H:%M'))
+                        end_datetime = timezone.make_aware(timezone.datetime.strptime(end_date, '%Y-%m-%d %H:%M'))
+                    except ValueError as e:
+                        logger.error(f"Date parsing error: {str(e)}")
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': 'Invalid date format. Please use YYYY-MM-DD HH:mm format'
+                        })
+                    
+                    if start_datetime >= end_datetime:
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': 'End date must be after start date'
+                        })
+
+                    # Check vehicle availability
+                    vehicle_is_available = not DriverBooking.objects.filter(
+                        vehicle=vehicle,
+                        status__in=['confirmed', 'pending'],
+                        payment_status='paid',
+                        start_date__lt=end_datetime,
+                        end_date__gt=start_datetime
+                    ).exists()
+
+                    if not vehicle_is_available:
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': 'Selected vehicle is not available for these dates'
+                        })
+
+                    # Calculate duration and total amount
+                    duration = (end_datetime - start_datetime).days + 1
+                    driver_rate = decimal.Decimal('500.00')  # Convert to Decimal
+                    total_amount = duration * (driver_rate + vehicle.rental_rate)  # Both values are now Decimal
+
+                    # Update booking data
+                    booking_data.update({
+                        'start_date': start_datetime,
+                        'end_date': end_datetime,
+                        'vehicle': vehicle,
+                        'amount': total_amount
+                    })
+
+                except Vehicle.DoesNotExist:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Invalid vehicle selected'
+                    })
+                except Exception as e:
+                    logger.error(f"Error processing vehicle booking: {str(e)}")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': str(e)
+                    })
 
             # Check for overlapping bookings
             overlapping_bookings = DriverBooking.objects.filter(
                 driver=driver,
                 status='confirmed',
-                payment_status='paid',
-                start_date__lt=end_datetime,
-                end_date__gt=start_datetime
-            ).exists()
+                payment_status='paid'
+            )
 
-            if overlapping_bookings:
+            if booking_type == 'specific_date':
+                overlapping_bookings = overlapping_bookings.filter(
+                    booking_type='specific_date',
+                    booking_date=booking_data['booking_date']
+                ).filter(
+                    models.Q(
+                        start_time__lt=booking_data['end_time'],
+                        end_time__gt=booking_data['start_time']
+                    )
+                )
+            elif booking_type == 'with_vehicle':
+                overlapping_bookings = overlapping_bookings.filter(
+                    start_date__lt=booking_data['end_date'],
+                    end_date__gt=booking_data['start_date']
+                )
+            else:  # point_to_point
+                overlapping_bookings = overlapping_bookings.filter(
+                    service_date=booking_data['service_date']
+                )
+
+            if overlapping_bookings.exists():
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Selected dates are not available',
+                    'message': 'Selected time slot is not available',
                     'show_modal': True
                 })
-            
-            # Calculate duration in days
-            duration = (end_datetime - start_datetime).days + 1
-            total_amount = duration * 500.00  # Base rate of 500 per day
-            
+
             # Create driver booking
-            driver_booking = DriverBooking.objects.create(
-                driver=driver,
-                user=request.user,
-                start_date=start_datetime,
-                end_date=end_datetime,
-                amount=total_amount,
-                status='pending',
-                payment_status='pending'
-            )
+            booking_data['amount'] = total_amount
+            driver_booking = DriverBooking.objects.create(**booking_data)
             
             # Create Stripe payment session
             session = stripe.checkout.Session.create(
@@ -556,10 +932,10 @@ def book_driver(request, driver_id):
                 line_items=[{
                     'price_data': {
                         'currency': 'inr',
-                        'unit_amount': int(driver_booking.amount * 100),
+                        'unit_amount': int(total_amount * 100),
                         'product_data': {
                             'name': f'Driver Booking - {driver.full_name}',
-                            'description': f'From {start_date} to {end_date}'
+                            'description': get_booking_description(booking_type, booking_data)
                         },
                     },
                     'quantity': 1,
@@ -585,55 +961,164 @@ def book_driver(request, driver_id):
                 'message': str(e)
             })
     
+    # Get available vehicles for 'with_vehicle' booking type
+    available_vehicles = Vehicle.objects.filter(status='available', availability=True)
+    
     context = {
         'driver': driver,
-        'stripe_publishable_key': settings.STRIPE_PUBLIC_KEY
+        'stripe_publishable_key': settings.STRIPE_PUBLIC_KEY,
+        'available_vehicles': available_vehicles,
+        'booking_types': DriverBooking.BOOKING_TYPE_CHOICES,
+        'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
     }
     return render(request, 'drivers/book_driver.html', context)
+
+def get_booking_description(booking_type, booking_data):
+    if booking_type == 'specific_date':
+        return f"Single Day Booking on {booking_data['booking_date']} from {booking_data['start_time']} to {booking_data['end_time']}"
+    elif booking_type == 'point_to_point':
+        return f"Point to Point Service from {booking_data['pickup_location']} to {booking_data['drop_location']} on {booking_data['service_date']}"
+    else:
+        return f"Vehicle Booking from {booking_data['start_date']} to {booking_data['end_date']}"
 
 @login_required
 def check_driver_availability(request, driver_id):
     if request.method == 'POST':
         try:
-            start_date = request.POST.get('start_date')
-            end_date = request.POST.get('end_date')
-            
-            if not start_date or not end_date:
-                return JsonResponse({
-                    'status': 'error',
-                    'message': 'Please provide both start and end dates'
-                })
+            booking_type = request.POST.get('booking_type')
+            driver = get_object_or_404(Driver, id=driver_id)
 
-            start_datetime = timezone.make_aware(
-                timezone.datetime.strptime(start_date, '%Y-%m-%dT%H:%M')
-            )
-            end_datetime = timezone.make_aware(
-                timezone.datetime.strptime(end_date, '%Y-%m-%dT%H:%M')
-            )
+            if booking_type == 'specific_date':
+                booking_date = request.POST.get('booking_date')
+                start_time = request.POST.get('start_time')
+                end_time = request.POST.get('end_time')
+                
+                if not all([booking_date, start_time, end_time]):
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Please provide booking date, start time and end time'
+                    })
 
-            # Check for overlapping bookings
-            overlapping_bookings = DriverBooking.objects.filter(
-                driver_id=driver_id,
-                status__in=['confirmed', 'pending'],
-                payment_status='paid',
-                start_date__lt=end_datetime,
-                end_date__gt=start_datetime
-            )
+                booking_date = timezone.datetime.strptime(booking_date, '%Y-%m-%d').date()
+                start_time = timezone.datetime.strptime(start_time, '%H:%M').time()
+                end_time = timezone.datetime.strptime(end_time, '%H:%M').time()
+
+                overlapping_bookings = DriverBooking.objects.filter(
+                    driver=driver,
+                    status__in=['confirmed', 'pending'],
+                    payment_status='paid',
+                    booking_type='specific_date',
+                    booking_date=booking_date
+                ).filter(
+                    models.Q(
+                        start_time__lt=end_time,
+                        end_time__gt=start_time
+                    )
+                )
+
+            elif booking_type == 'with_vehicle':
+                start_date = request.POST.get('start_date')
+                end_date = request.POST.get('end_date')
+                
+                if not all([start_date, end_date]):
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Please provide start and end dates'
+                    })
+
+                try:
+                    # Parse dates in YYYY-MM-DD HH:mm format
+                    start_datetime = timezone.make_aware(
+                        timezone.datetime.strptime(start_date, '%Y-%m-%d %H:%M')
+                    )
+                    end_datetime = timezone.make_aware(
+                        timezone.datetime.strptime(end_date, '%Y-%m-%d %H:%M')
+                    )
+                    
+                    if start_datetime >= end_datetime:
+                        return JsonResponse({
+                            'status': 'error',
+                            'message': 'End date must be after start date'
+                        })
+
+                    # Check driver availability
+                    overlapping_bookings = DriverBooking.objects.filter(
+                        driver=driver,
+                        status__in=['confirmed', 'pending'],
+                        payment_status='paid',
+                        start_date__lt=end_datetime,
+                        end_date__gt=start_datetime
+                    )
+
+                    # If vehicle is specified, also check vehicle availability
+                    vehicle_id = request.POST.get('vehicle_id')
+                    if vehicle_id:
+                        try:
+                            vehicle = Vehicle.objects.get(id=vehicle_id, status='available')
+                            vehicle_overlapping = DriverBooking.objects.filter(
+                                vehicle=vehicle,
+                                status__in=['confirmed', 'pending'],
+                                payment_status='paid',
+                                start_date__lt=end_datetime,
+                                end_date__gt=start_datetime
+                            ).exists()
+                            
+                            if vehicle_overlapping:
+                                return JsonResponse({
+                                    'status': 'error',
+                                    'available': False,
+                                    'message': 'Selected vehicle is not available for these dates'
+                                })
+                        except Vehicle.DoesNotExist:
+                            return JsonResponse({
+                                'status': 'error',
+                                'message': 'Invalid vehicle selected'
+                            })
+                except ValueError as e:
+                    logger.error(f"Date parsing error in availability check: {str(e)}")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Invalid date format. Please use YYYY-MM-DD HH:mm format'
+                    })
+
+            else:  # point_to_point
+                service_date = request.POST.get('service_date')
+                if not service_date:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Please provide service date'
+                    })
+
+                service_date = timezone.datetime.strptime(service_date, '%Y-%m-%d').date()
+                overlapping_bookings = DriverBooking.objects.filter(
+                    driver=driver,
+                    status__in=['confirmed', 'pending'],
+                    payment_status='paid',
+                    service_date=service_date
+                )
 
             if overlapping_bookings.exists():
-                # Get the next available date after the last overlapping booking
-                next_available = overlapping_bookings.order_by('-end_date').first().end_date
+                message = "This time slot is not available. "
+                if booking_type == 'specific_date':
+                    available_slots = get_available_time_slots(driver, booking_date)
+                    if available_slots:
+                        message += f"Available slots: {', '.join(available_slots)}"
+                    else:
+                        message += "No available slots for this date."
+                else:
+                    next_available = get_next_available_date(driver, booking_type)
+                    message += f"Next available date is {next_available.strftime('%Y-%m-%d')}"
+
                 return JsonResponse({
                     'status': 'error',
                     'available': False,
-                    'message': f'Selected dates are not available. Next available date is {next_available.strftime("%Y-%m-%d %H:%M")}',
-                    'next_available': next_available.isoformat()
+                    'message': message
                 })
 
             return JsonResponse({
                 'status': 'success',
                 'available': True,
-                'message': 'Driver is available for selected dates'
+                'message': 'Driver is available for selected time slot'
             })
 
         except Exception as e:
@@ -646,6 +1131,67 @@ def check_driver_availability(request, driver_id):
         'status': 'error',
         'message': 'Invalid request method'
     })
+
+def get_available_time_slots(driver, date):
+    # Define available time slots (e.g., 2-hour blocks from 8 AM to 8 PM)
+    all_slots = [
+        ('08:00', '10:00'), ('10:00', '12:00'), ('12:00', '14:00'),
+        ('14:00', '16:00'), ('16:00', '18:00'), ('18:00', '20:00')
+    ]
+    
+    # Get booked slots for the date
+    booked_slots = DriverBooking.objects.filter(
+        driver=driver,
+        booking_type='specific_date',
+        booking_date=date,
+        status__in=['confirmed', 'pending'],
+        payment_status='paid'
+    ).values_list('start_time', 'end_time')
+    
+    # Filter out available slots
+    available_slots = []
+    for start, end in all_slots:
+        slot_start = timezone.datetime.strptime(start, '%H:%M').time()
+        slot_end = timezone.datetime.strptime(end, '%H:%M').time()
+        
+        is_available = True
+        for booked_start, booked_end in booked_slots:
+            if (slot_start < booked_end and slot_end > booked_start):
+                is_available = False
+                break
+        
+        if is_available:
+            available_slots.append(f"{start}-{end}")
+    
+    return available_slots
+
+def get_next_available_date(driver, booking_type):
+    today = timezone.now().date()
+    next_date = today
+    
+    while True:
+        if booking_type == 'point_to_point':
+            has_booking = DriverBooking.objects.filter(
+                driver=driver,
+                booking_type='point_to_point',
+                service_date=next_date,
+                status__in=['confirmed', 'pending'],
+                payment_status='paid'
+            ).exists()
+        else:
+            has_booking = DriverBooking.objects.filter(
+                driver=driver,
+                booking_type='with_vehicle',
+                start_date__date__lte=next_date,
+                end_date__date__gte=next_date,
+                status__in=['confirmed', 'pending'],
+                payment_status='paid'
+            ).exists()
+        
+        if not has_booking:
+            return next_date
+        
+        next_date += timezone.timedelta(days=1)
 
 @login_required
 def driver_booking_success(request):

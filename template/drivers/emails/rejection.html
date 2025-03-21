@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Driver Application Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+        .reason-box {
+            background-color: #f9f9f9;
+            border-left: 3px solid #f44336;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>WheelsOnRent</h1>
+    </div>
+    <div class="content">
+        <h2>Hello, {{ driver.full_name }}</h2>
+        
+        <p>Thank you for your interest in becoming a driver with WheelsOnRent.</p>
+        
+        <p>After careful review of your application, we regret to inform you that we are unable to approve your driver application at this time.</p>
+        
+        {% if reason %}
+        <div class="reason-box">
+            <h3>Reason for rejection:</h3>
+            <p>{{ reason }}</p>
+        </div>
+        {% endif %}
+        
+        <p>Common reasons for application rejection include:</p>
+        <ul>
+            <li>Incomplete or incorrect documentation</li>
+            <li>Driving experience requirements not met</li>
+            <li>License verification issues</li>
+            <li>Background check concerns</li>
+        </ul>
+        
+        <p>You are welcome to reapply after addressing these issues or after a period of 30 days with updated information.</p>
+        
+        <a href="{{ support_url }}" class="button">Contact Support</a>
+        
+        <p>If you have questions about your application or would like more specific feedback, please contact our driver support team.</p>
+        
+        <p>Best regards,<br>
+        The WheelsOnRent Team</p>
+    </div>
+    <div class="footer">
+        <p>© {% now "Y" %} WheelsOnRent. All rights reserved.</p>
+        <p>This email was sent to {{ driver.auth.email }}. Please do not reply to this email.</p>
+    </div>
+</body>
+</html> 

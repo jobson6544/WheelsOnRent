@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Driver Booking Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .booking-details {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .driver-info {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .driver-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+        .driver-details {
+            flex-grow: 1;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>WheelsOnRent</h1>
+    </div>
+    <div class="content">
+        <h2>Booking Confirmation</h2>
+        
+        <p>Dear {{ user.get_full_name|default:user.username }},</p>
+        
+        <p>Your driver booking has been confirmed! Here are the details of your booking:</p>
+        
+        <div class="booking-details">
+            <p><strong>Booking ID:</strong> #{{ booking.id }}</p>
+            <p><strong>Start Date/Time:</strong> {{ booking.start_date|date:"F j, Y, g:i a" }}</p>
+            <p><strong>End Date/Time:</strong> {{ booking.end_date|date:"F j, Y, g:i a" }}</p>
+            <p><strong>Amount:</strong> ${{ booking.amount }}</p>
+            <p><strong>Status:</strong> {{ booking.get_status_display }}</p>
+            <p><strong>Payment Status:</strong> {{ booking.get_payment_status_display }}</p>
+        </div>
+        
+        <h3>Your Driver</h3>
+        
+        <div class="driver-info">
+            {% if driver.profile_photo %}
+            <img src="{{ driver.profile_photo.url }}" alt="{{ driver.full_name }}" class="driver-photo">
+            {% endif %}
+            <div class="driver-details">
+                <h4>{{ driver.full_name }}</h4>
+                <p><strong>Experience:</strong> {{ driver.driving_experience }} years</p>
+                <p><strong>Driving Skill:</strong> {{ driver.get_driving_skill_display }}</p>
+            </div>
+        </div>
+        
+        <p>The driver has been notified of your booking and will contact you before the scheduled time.</p>
+        
+        <a href="{{ booking_details_url }}" class="button">View Booking Details</a>
+        
+        <p>If you need to cancel or modify your booking, please visit your account dashboard or contact our support team.</p>
+        
+        <p>Thank you for choosing WheelsOnRent!</p>
+        
+        <p>Best regards,<br>
+        The WheelsOnRent Team</p>
+    </div>
+    <div class="footer">
+        <p>© {% now "Y" %} WheelsOnRent. All rights reserved.</p>
+        <p>This email was sent to {{ user.email }}. Please do not reply to this email.</p>
+    </div>
+</body>
+</html> 

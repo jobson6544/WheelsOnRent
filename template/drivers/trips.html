@@ -1,0 +1,400 @@
+{% extends "drivers/base.html" %}
+
+{% block title %}My Trips - WheelsOnRent{% endblock %}
+
+{% block extra_css %}
+<style>
+    .trips-container {
+        max-width: 1200px;
+        margin: 30px auto;
+    }
+    
+    .trips-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .filter-section {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+    }
+    
+    .trip-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+        transition: transform 0.2s ease;
+    }
+    
+    .trip-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .trip-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .trip-body {
+        padding: 20px;
+    }
+    
+    .trip-footer {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-confirmed {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .status-completed {
+        background-color: #cce5ff;
+        color: #004085;
+    }
+    
+    .status-cancelled {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    .trip-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .info-item i {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+    }
+    
+    .trip-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-action {
+        padding: 8px 16px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: #ccc;
+        margin-bottom: 20px;
+    }
+    
+    .pagination {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main id="main" class="main">
+<div class="trips-container">
+    <div class="trips-header">
+        <h2 class="mb-0"><i class="fas fa-route me-2"></i> My Trips</h2>
+        <p class="text-white-50 mb-0">View and manage your trips</p>
+    </div>
+    
+    <div class="filter-section">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="completed" {% if status == 'completed' %}selected{% endif %}>Completed</option>
+                    <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Date Range</label>
+                <input type="date" name="date" class="form-control" value="{{ date }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Search</label>
+                <input type="text" name="search" class="form-control" placeholder="Search by booking ID or user name" value="{{ search }}">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-filter me-2"></i> Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    {% if trips %}
+        {% for trip in trips %}
+        <div class="trip-card">
+            <div class="trip-header">
+                <div>
+                    <h5 class="mb-0">Booking #{{ trip.booking_id }}</h5>
+                    <small class="text-muted">Booked on {{ trip.created_at|date:"M d, Y" }}</small>
+                </div>
+                <span class="status-badge status-{{ trip.status }}">{{ trip.get_status_display }}</span>
+            </div>
+            
+            <div class="trip-body">
+                <div class="trip-info">
+                    <div class="info-item">
+                        <i class="fas fa-user"></i>
+                        <div>
+                            <small class="text-muted">User</small>
+                            <div>{{ trip.user.get_full_name }}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-calendar"></i>
+                        <div>
+                            <small class="text-muted">Date</small>
+                            <div>{{ trip.date|date:"M d, Y" }}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <small class="text-muted">Time</small>
+                            <div>{{ trip.time|time:"h:i A" }}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <small class="text-muted">Location</small>
+                            <div>{{ trip.location }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="trip-actions">
+                    {% if trip.status == 'pending' %}
+                    <button class="btn btn-success btn-action" data-bs-toggle="modal" data-bs-target="#confirmModal{{ trip.id }}">
+                        <i class="fas fa-check"></i> Confirm
+                    </button>
+                    <button class="btn btn-danger btn-action" data-bs-toggle="modal" data-bs-target="#rejectModal{{ trip.id }}">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                    {% endif %}
+                    
+                    {% if trip.status == 'confirmed' %}
+                    <button class="btn btn-primary btn-action" data-bs-toggle="modal" data-bs-target="#startTripModal{{ trip.id }}">
+                        <i class="fas fa-play"></i> Start Trip
+                    </button>
+                    {% endif %}
+                    
+                    {% if trip.status == 'in_progress' %}
+                    <button class="btn btn-success btn-action" data-bs-toggle="modal" data-bs-target="#completeTripModal{{ trip.id }}">
+                        <i class="fas fa-flag-checkered"></i> Complete Trip
+                    </button>
+                    {% endif %}
+                    
+                    <a href="{% url 'drivers:trip_details' trip.id %}" class="btn btn-outline-primary btn-action">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                </div>
+            </div>
+            
+            <div class="trip-footer">
+                <div>
+                    <small class="text-muted">Amount:</small>
+                    <span class="fw-bold">₹{{ trip.amount }}</span>
+                </div>
+                <div>
+                    <small class="text-muted">Duration:</small>
+                    <span class="fw-bold">{{ trip.duration }} hours</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Confirm Trip Modal -->
+        <div class="modal fade" id="confirmModal{{ trip.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Trip</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to confirm this trip?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form method="post" action="{% url 'drivers:confirm_trip' trip.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Confirm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reject Trip Modal -->
+        <div class="modal fade" id="rejectModal{{ trip.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reject Trip</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="{% url 'drivers:reject_trip' trip.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Reason for Rejection</label>
+                                <textarea name="reason" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <div class="text-end">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger">Reject</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Start Trip Modal -->
+        <div class="modal fade" id="startTripModal{{ trip.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Start Trip</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you ready to start this trip?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form method="post" action="{% url 'drivers:start_trip' trip.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Start Trip</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Complete Trip Modal -->
+        <div class="modal fade" id="completeTripModal{{ trip.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Complete Trip</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="{% url 'drivers:complete_trip' trip.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Trip Notes (Optional)</label>
+                                <textarea name="notes" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="text-end">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-success">Complete Trip</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if trips.has_other_pages %}
+        <div class="pagination">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {% if trips.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ trips.previous_page_number }}{% if status %}&status={{ status }}{% endif %}{% if date %}&date={{ date }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in trips.paginator.page_range %}
+                    <li class="page-item {% if trips.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}{% if status %}&status={{ status }}{% endif %}{% if date %}&date={{ date }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                            {{ num }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                    
+                    {% if trips.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ trips.next_page_number }}{% if status %}&status={{ status }}{% endif %}{% if date %}&date={{ date }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-route"></i>
+        <h4>No Trips Found</h4>
+        <p class="text-muted">You don't have any trips matching your filters.</p>
+        <a href="{% url 'drivers:trips' %}" class="btn btn-primary">
+            <i class="fas fa-sync me-2"></i> Clear Filters
+        </a>
+    </div>
+    {% endif %}
+</div>
+</main>
+{% endblock %}
