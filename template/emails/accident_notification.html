@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accident Report Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: {% if accident.is_emergency %}#dc3545{% else %}#007bff{% endif %};
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #777;
+            font-size: 12px;
+        }
+        .severity {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: white;
+            background-color: {% if accident.severity == 'minor' %}#28a745{% elif accident.severity == 'moderate' %}#ffc107{% elif accident.severity == 'major' %}#fd7e14{% else %}#dc3545{% endif %};
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 3px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>{% if accident.is_emergency %}🚨 URGENT: {% endif %}Accident Report Notification</h2>
+        </div>
+        <div class="content">
+            <p>Dear Vendor,</p>
+            
+            <p>A customer has reported an accident involving one of your vehicles. Details of the incident are below:</p>
+            
+            {% if accident.is_emergency %}
+            <div class="alert">
+                <strong>⚠️ This is marked as an EMERGENCY situation and requires immediate attention!</strong>
+            </div>
+            {% endif %}
+            
+            <h3>Accident Details</h3>
+            <p>
+                <strong>Severity:</strong> <span class="severity">{{ accident.get_severity_display }}</span><br>
+                <strong>Location:</strong> {{ accident.location }}<br>
+                <strong>Date/Time:</strong> {{ accident.report_date|date:"F d, Y - H:i" }}<br>
+            </p>
+            
+            <h4>Description</h4>
+            <p>{{ accident.description }}</p>
+            
+            <h3>Vehicle Information</h3>
+            <p>
+                <strong>Model:</strong> {{ vehicle.model }}<br>
+                <strong>Registration:</strong> {{ vehicle.registration.registration_number }}<br>
+                <strong>Booking ID:</strong> {{ booking.booking_id }}
+            </p>
+            
+            <h3>Customer Information</h3>
+            <p>
+                <strong>Name:</strong> {{ customer.get_full_name }}<br>
+                <strong>Email:</strong> {{ customer.email }}<br>
+                <strong>Phone:</strong> {{ customer.profile.phone_number }}
+            </p>
+            
+            <p>Please log in to your vendor dashboard to view more details and take appropriate action.</p>
+            
+            <p style="text-align: center; margin-top: 30px;">
+                <a href="{{ vendor_dashboard_url }}" class="btn">View Report in Dashboard</a>
+            </p>
+            
+            {% if accident.is_emergency %}
+            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                <h4>Emergency Contacts</h4>
+                <p>
+                    <strong>Police:</strong> 100<br>
+                    <strong>Ambulance:</strong> 108<br>
+                    <strong>Fire:</strong> 101<br>
+                    <strong>Emergency Helpline:</strong> 112
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="footer">
+            <p>&copy; {{ current_year }} WheelsOnRent. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html> 

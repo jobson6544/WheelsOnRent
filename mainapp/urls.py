@@ -30,4 +30,15 @@ urlpatterns = [
     path('submit-feedback/<int:booking_id>/', views.submit_feedback, name='submit_feedback'),
     path('chatbot/response/', views.chatbot_response, name='chatbot_response'),
     path('chatbot/message/', views.chatbot_message, name='chatbot_message'),
+    
+    # New URL patterns for current rental management
+    path('my-rentals/', views.current_rentals, name='current_rentals'),
+    path('rental/<int:booking_id>/', views.rental_details, name='rental_details'),
+    path('rental/<int:booking_id>/early-return/', views.early_return, name='early_return'),
+    path('rental/<int:booking_id>/report-accident/', views.report_accident, name='report_accident'),
+    path('rental/<int:booking_id>/share-location/', views.share_location, name='share_location'),
+    path('rental/<int:booking_id>/share-location-test/', views.share_location_test, name='share_location_test'),
+    path('rental/<int:booking_id>/check-extension/', views.check_extension, name='check_extension'),
+    path('rental/<int:booking_id>/process-extension/', views.process_extension, name='process_extension'),
+    path('extension-success/', views.extension_success, name='extension_success'),
 ]

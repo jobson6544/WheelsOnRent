@@ -1,0 +1,502 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+
+{% block title %}Report Accident{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Force map to be visible with !important flags */
+    #map {
+        height: 300px !important;
+        width: 100% !important;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        background-color: #f8f9fa;
+        position: relative;
+        display: block !important;
+        min-height: 300px !important;
+        overflow: visible;
+        z-index: 1;
+    }
+    
+    /* Map loading message */
+    #map-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 0;
+        font-weight: bold;
+        color: #6c757d;
+    }
+    
+    .required-field::after {
+        content: "*";
+        color: red;
+        margin-left: 4px;
+    }
+    
+    /* Location input styling */
+    #location {
+        background-image: url('https://maps.gstatic.com/mapfiles/api-3/images/powered-by-google-on-white3.png');
+        background-position: right 10px bottom 5px;
+        background-repeat: no-repeat;
+        background-size: 100px;
+        padding-right: 110px;
+    }
+    
+    /* Map preview area styling */
+    .map-preview {
+        margin-top: 10px;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    /* Enhance visibility of the autocomplete dropdown */
+    .pac-container {
+        z-index: 10000 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        transform: none !important;
+        display: block !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Report Vehicle Accident</h2>
+            <p class="text-muted">Please provide details about the accident involving your rented vehicle.</p>
+        </div>
+        <div class="col-md-4 text-md-right">
+            <a href="{% url 'mainapp:rental_details' booking.booking_id %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Rental Details
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Accident Report Form</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="accidentReportForm">
+                        {% csrf_token %}
+                        
+                        <div class="form-group mb-3">
+                            <label for="location" class="required-field">Location</label>
+                            <input type="text" class="form-control location-input" id="location" name="location" placeholder="Enter location" required>
+                            <small class="form-text text-muted">Enter the address or location where the accident occurred</small>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="map">Pin Accident Location on Map</label>
+                            <!-- Map container with loading indicator -->
+                            <div id="map-container" style="position: relative;">
+                                <div id="map" role="application" aria-label="Google Map showing accident location"></div>
+                                <div id="map-loading">Map loading...</div>
+                            </div>
+                            <small class="form-text text-muted">Click on the map to mark the exact location of the accident</small>
+                            
+                            <button type="button" id="currentLocationBtn" class="btn btn-sm btn-outline-secondary mt-2">
+                                <i class="fas fa-map-marker-alt"></i> Use My Current Location
+                            </button>
+                            <button type="button" id="refreshMapBtn" class="btn btn-sm btn-outline-secondary mt-2 ml-2">
+                                <i class="fas fa-sync-alt"></i> Refresh Map
+                            </button>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="severity" class="required-field">Severity</label>
+                            <select class="form-control" id="severity" name="severity" required>
+                                <option value="">Select severity level</option>
+                                <option value="minor">Minor - Small scratches or dents</option>
+                                <option value="moderate">Moderate - Significant damage, vehicle still drivable</option>
+                                <option value="major">Major - Severe damage, vehicle difficult to drive</option>
+                                <option value="severe">Severe - Complete breakdown, vehicle undrivable</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="description" class="required-field">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+                            <small class="form-text text-muted">Describe what happened in detail, including any injuries or other vehicles involved</small>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="photos">Photos</label>
+                            <input type="file" class="form-control-file" id="photos" name="photos" accept="image/*">
+                            <small class="form-text text-muted">Upload photos of the damage (recommended)</small>
+                        </div>
+                        
+                        <div class="form-group form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="is_emergency" name="is_emergency">
+                            <label class="form-check-label" for="is_emergency">This is an emergency (check if you need immediate assistance)</label>
+                        </div>
+                        
+                        <!-- Hidden fields for coordinates -->
+                        <div class="form-group" style="display: none;">
+                            <label for="latitude-input">Latitude</label>
+                            <input type="hidden" id="latitude-input" name="latitude" value="0" required>
+                            <label for="longitude-input">Longitude</label>
+                            <input type="hidden" id="longitude-input" name="longitude" value="0" required>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <p><i class="fas fa-exclamation-triangle"></i> Important Note:</p>
+                            <ul>
+                                <li>If there are injuries, please contact emergency services immediately.</li>
+                                <li>Document the accident scene with photos if possible.</li>
+                                <li>Exchange information with other involved parties if applicable.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="form-group mt-4 text-right">
+                            <a href="{% url 'mainapp:rental_details' booking.booking_id %}" class="btn btn-secondary mr-2">Cancel</a>
+                            <button type="submit" class="btn btn-danger">Submit Report</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Vehicle Information</h4>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Make/Model:</strong> {{ booking.vehicle.model }}<br>
+                        <strong>Registration:</strong> {{ booking.vehicle.registration.registration_number }}<br>
+                        <strong>Booking ID:</strong> {{ booking.booking_id }}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Vendor Contact</h4>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>{{ booking.vehicle.vendor.business_name }}</strong><br>
+                        <strong>Phone:</strong> {{ booking.vehicle.vendor.contact_number }}<br>
+                    </p>
+                    <a href="tel:{{ booking.vehicle.vendor.contact_number }}" class="btn btn-outline-primary btn-block">
+                        <i class="fas fa-phone-alt"></i> Call Vendor
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4>Emergency Contacts</h4>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Police:</strong> 100<br>
+                        <strong>Ambulance:</strong> 108<br>
+                        <strong>Fire:</strong> 101<br>
+                        <strong>Emergency Helpline:</strong> 112
+                    </p>
+                    <a href="tel:112" class="btn btn-danger btn-block">
+                        <i class="fas fa-phone-alt"></i> Call Emergency Services
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Load Google Maps API synchronously to ensure availability -->
+<script>
+    // Check if Google Maps API is already loaded
+    if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
+        document.write('<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=initializeGoogleMaps" onerror="handleGoogleMapsError()"><\/script>');
+    } else {
+        console.log("Google Maps API already loaded");
+        window.setTimeout(initializeGoogleMaps, 100);
+    }
+    
+    function handleGoogleMapsError() {
+        console.error("Failed to load Google Maps API");
+        document.getElementById('map-loading').innerHTML = "Error loading Google Maps. Please check your internet connection.";
+    }
+    
+    // Global initialization function that will be called when API loads
+    function initializeGoogleMaps() {
+        console.log("Google Maps API loaded, initializing components");
+        initializeMapAndAutocomplete();
+    }
+</script>
+
+<script>
+// Main initialization function
+function initializeMapAndAutocomplete() {
+    console.log("DOM fully loaded, initializing map and autocomplete");
+    
+    // Initialize map
+    let map = null;
+    let marker = null;
+    let geocoder = null;
+    
+    try {
+        initializeMap();
+        setupEventHandlers();
+    } catch (e) {
+        console.error("Error during initialization:", e);
+        document.getElementById('map-loading').innerHTML = "Error loading map: " + e.message;
+    }
+    
+    // Initialize the map
+    function initializeMap() {
+        console.log("Initializing map");
+        const mapElement = document.getElementById('map');
+        
+        if (!mapElement) {
+            throw new Error("Map element not found!");
+        }
+        
+        const defaultLocation = { lat: 20.5937, lng: 78.9629 }; // Center of India
+        
+        // Create map instance
+        map = new google.maps.Map(mapElement, {
+            center: defaultLocation,
+            zoom: 5,
+            mapTypeControl: true,
+            fullscreenControl: true
+        });
+        
+        // Create geocoder
+        geocoder = new google.maps.Geocoder();
+        
+        // Hide loading message when map is ready
+        google.maps.event.addListenerOnce(map, 'idle', function() {
+            console.log("Map loaded successfully");
+            const loading = document.getElementById('map-loading');
+            if (loading) loading.style.display = 'none';
+        });
+        
+        // Setup autocomplete for location input
+        const input = document.getElementById('location');
+        if (!input) {
+            console.error("Location input element not found");
+            return;
+        }
+        
+        // Ensure Google Places is loaded before initializing autocomplete
+        if (google.maps.places) {
+            const autocomplete = new google.maps.places.Autocomplete(input);
+            autocomplete.setComponentRestrictions({'country': ['in']});
+            
+            // Bind autocomplete to map
+            autocomplete.bindTo('bounds', map);
+            
+            // Set up Google Maps event listeners
+            map.addListener('click', function(event) {
+                placeMarker(event.latLng);
+            });
+            
+            autocomplete.addListener('place_changed', function() {
+                const place = autocomplete.getPlace();
+                
+                if (!place.geometry || !place.geometry.location) {
+                    alert("Please select a location from the dropdown menu");
+                    return;
+                }
+                
+                map.setCenter(place.geometry.location);
+                map.setZoom(15);
+                placeMarker(place.geometry.location);
+            });
+        } else {
+            console.error("Google Places library not loaded");
+            alert("Could not initialize location search. Please try refreshing the page.");
+        }
+    }
+    
+    // Set up event handlers for buttons
+    function setupEventHandlers() {
+        // Current location button
+        const currentLocationBtn = document.getElementById('currentLocationBtn');
+        if (currentLocationBtn) {
+            currentLocationBtn.addEventListener('click', function() {
+                console.log("Current location button clicked");
+                getCurrentLocation();
+            });
+        }
+        
+        // Refresh map button
+        const refreshMapBtn = document.getElementById('refreshMapBtn');
+        if (refreshMapBtn) {
+            refreshMapBtn.addEventListener('click', function() {
+                console.log("Refresh map button clicked");
+                if (map) {
+                    google.maps.event.trigger(map, 'resize');
+                    console.log("Map resized");
+                    
+                    // Force recentering if marker exists
+                    if (marker) {
+                        map.setCenter(marker.getPosition());
+                    }
+                }
+            });
+        }
+        
+        // Ensure input field triggers autocomplete properly
+        const locationInput = document.getElementById('location');
+        if (locationInput) {
+            locationInput.addEventListener('focus', function() {
+                // Force any existing dropdown to display
+                const pacContainers = document.querySelectorAll('.pac-container');
+                pacContainers.forEach(container => {
+                    container.style.display = 'block';
+                    container.style.visibility = 'visible';
+                    container.style.opacity = '1';
+                });
+            });
+        }
+        
+        // Form validation
+        const form = document.getElementById('accidentReportForm');
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                const lat = parseFloat(document.getElementById('latitude-input').value);
+                const lng = parseFloat(document.getElementById('longitude-input').value);
+                
+                if (isNaN(lat) || isNaN(lng) || (lat === 0 && lng === 0)) {
+                    event.preventDefault();
+                    alert('Please mark the accident location on the map');
+                    
+                    const mapElement = document.getElementById('map');
+                    if (mapElement) {
+                        mapElement.style.border = '2px solid red';
+                        setTimeout(function() {
+                            mapElement.style.border = '1px solid #ddd';
+                        }, 3000);
+                    }
+                }
+            });
+        }
+    }
+    
+    // Place marker on map
+    function placeMarker(location) {
+        console.log("Placing marker at", location.lat(), location.lng());
+        
+        // Remove existing marker
+        if (marker) {
+            marker.setMap(null);
+        }
+        
+        // Create new marker
+        marker = new google.maps.Marker({
+            position: location,
+            map: map,
+            draggable: true,
+            animation: google.maps.Animation.DROP
+        });
+        
+        // Update form fields
+        document.getElementById('latitude-input').value = location.lat();
+        document.getElementById('longitude-input').value = location.lng();
+        
+        // Reverse geocode to get address
+        geocoder.geocode({ 'location': location }, function(results, status) {
+            if (status === 'OK' && results[0]) {
+                document.getElementById('location').value = results[0].formatted_address;
+                console.log("Address found:", results[0].formatted_address);
+            } else {
+                console.warn("Geocoding failed:", status);
+            }
+        });
+        
+        // Add drag event listener
+        marker.addListener('dragend', function() {
+            const newPos = marker.getPosition();
+            document.getElementById('latitude-input').value = newPos.lat();
+            document.getElementById('longitude-input').value = newPos.lng();
+            
+            // Update address field
+            geocoder.geocode({ 'location': newPos }, function(results, status) {
+                if (status === 'OK' && results[0]) {
+                    document.getElementById('location').value = results[0].formatted_address;
+                }
+            });
+        });
+    }
+    
+    // Get current location
+    function getCurrentLocation() {
+        const btn = document.getElementById('currentLocationBtn');
+        
+        // Disable the button during the request
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting location...';
+        btn.disabled = true;
+        
+        // Use the global location service
+        window.WheelsOnRentLocationServices.requestPermission(
+            // Success callback
+            function(coords) {
+                // Update map and marker
+                const userLocation = new google.maps.LatLng(
+                    coords.latitude,
+                    coords.longitude
+                );
+                
+                map.setCenter(userLocation);
+                map.setZoom(15);
+                placeMarker(userLocation);
+                
+                // Reset button
+                btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Use My Current Location';
+                btn.disabled = false;
+                
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Location Found',
+                    text: 'Successfully found your current location!',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            },
+            // Error callback
+            function(error) {
+                // Reset button
+                btn.innerHTML = '<i class="fas fa-map-marker-alt"></i> Use My Current Location';
+                btn.disabled = false;
+            }
+        );
+    }
+}
+
+// If DOM is already loaded, initialize immediately
+if (document.readyState === "complete" || document.readyState === "interactive") {
+    console.log("Document already ready, checking Google Maps API availability");
+    if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
+        initializeMapAndAutocomplete();
+    } else {
+        console.log("Waiting for Google Maps API to load");
+    }
+} else {
+    // Otherwise, wait for DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOM content loaded, checking Google Maps API availability");
+        if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
+            initializeMapAndAutocomplete();
+        } else {
+            console.log("Waiting for Google Maps API to load");
+        }
+    });
+}
+</script>
+{% endblock %} 

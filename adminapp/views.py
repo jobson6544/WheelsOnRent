@@ -32,6 +32,7 @@ from django.db.models import Count
 from django.utils import timezone
 from drivers.models import Driver, DriverAuth, DriverDocument, DriverApplicationLog
 from django.db import models
+from blockchain.driver_verification import DriverBlockchain  # Fixed import
 
 logger = logging.getLogger(__name__)
 
@@ -821,27 +822,50 @@ def approve_driver(request, driver_id):
         return redirect('adminapp:view_driver_details', driver_id=driver.id)
     
     if request.method == 'POST':
-        driver.status = 'approved'
-        driver.approved_at = timezone.now()
-        driver.approved_by = request.user
-        driver.save()
-        
-        # Create application log
-        DriverApplicationLog.objects.create(
-            driver=driver,
-            admin=request.user,
-            action='approve',
-            notes=request.POST.get('notes', '')
-        )
-        
-        # Send email notification
         try:
-            driver.send_approval_email()
-            messages.success(request, f'Driver {driver.full_name} has been approved and notified')
+            # Register driver on blockchain
+            blockchain = DriverBlockchain()
+            driver_data = {
+                'license_number': driver.license_number,
+                'full_name': driver.full_name,
+                'dob': driver.date_of_birth.strftime('%Y-%m-%d') if hasattr(driver, 'date_of_birth') else datetime.now().strftime('%Y-%m-%d')
+            }
+            
+            tx_receipt = blockchain.register_driver(str(driver.id), driver_data)
+            
+            if tx_receipt:
+                # Update driver status
+                driver.status = 'approved'
+                driver.approved_at = timezone.now()
+                driver.approved_by = request.user
+                driver.blockchain_tx_hash = tx_receipt['transactionHash'].hex()
+                driver.blockchain_verified = True  # Set verification status
+                driver.save()
+                
+                # Create application log
+                DriverApplicationLog.objects.create(
+                    driver=driver,
+                    admin=request.user,
+                    action='approve',
+                    notes=f'Driver approved and registered on blockchain. Transaction hash: {driver.blockchain_tx_hash}'
+                )
+                
+                # Send email notification
+                try:
+                    driver.send_approval_email()
+                except Exception as e:
+                    messages.warning(request, f'Driver approved but email notification failed: {str(e)}')
+                else:
+                    messages.success(request, f'Driver {driver.full_name} has been approved and registered on blockchain')
+                
+                return redirect('adminapp:approved_drivers')
+            else:
+                messages.error(request, 'Failed to register driver on blockchain')
+                return redirect('adminapp:view_driver_details', driver_id=driver.id)
+                
         except Exception as e:
-            messages.warning(request, f'Driver approved but email notification failed: {str(e)}')
-        
-        return redirect('adminapp:pending_drivers')
+            messages.error(request, f'Error approving driver: {str(e)}')
+            return redirect('adminapp:view_driver_details', driver_id=driver.id)
     
     return render(request, 'adminapp/drivers/approve_driver.html', {'driver': driver})
 

@@ -24,12 +24,12 @@
     <!-- Booking Tabs -->
     <ul class="nav nav-tabs mb-4" id="bookingTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="vehicles-tab" data-bs-toggle="tab" data-bs-target="#vehicles" type="button" role="tab">
+            <button class="nav-link {% if active_tab == 'vehicles' %}active{% endif %}" id="vehicles-tab" data-bs-toggle="tab" data-bs-target="#vehicles" type="button" role="tab">
                 <i class="bi bi-car-front"></i> Vehicle Bookings
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="drivers-tab" data-bs-toggle="tab" data-bs-target="#drivers" type="button" role="tab">
+            <button class="nav-link {% if active_tab == 'drivers' %}active{% endif %}" id="drivers-tab" data-bs-toggle="tab" data-bs-target="#drivers" type="button" role="tab">
                 <i class="bi bi-person"></i> Driver Bookings
             </button>
         </li>
@@ -38,7 +38,7 @@
     <!-- Tab Content -->
     <div class="tab-content" id="bookingTabsContent">
         <!-- Vehicle Bookings Tab -->
-        <div class="tab-pane fade show active" id="vehicles" role="tabpanel">
+        <div class="tab-pane fade {% if active_tab == 'vehicles' %}show active{% endif %}" id="vehicles" role="tabpanel">
             {% if bookings %}
                 <div class="table-responsive">
                     <table class="table table-hover">
@@ -109,8 +109,8 @@
         </div>
 
         <!-- Driver Bookings Tab -->
-        <div class="tab-pane fade" id="drivers" role="tabpanel">
-            {% if driver_bookings %}
+        <div class="tab-pane fade {% if active_tab == 'drivers' %}show active{% endif %}" id="drivers" role="tabpanel">
+            {% if has_driver_bookings %}
                 <div class="row">
                     {% for booking in driver_bookings %}
                         <div class="col-md-6 col-lg-4 mb-4">
@@ -193,6 +193,9 @@
     <div class="text-center mt-4">
         <a href="{% url 'mainapp:home' %}" class="btn btn-outline-primary">
             <i class="bi bi-arrow-left"></i> Back to Home
+        </a>
+        <a href="{% url 'mainapp:user_booking_history' %}?tab=drivers" class="btn btn-outline-primary ms-2">
+            <i class="bi bi-person"></i> View Driver Bookings
         </a>
     </div>
 </div>

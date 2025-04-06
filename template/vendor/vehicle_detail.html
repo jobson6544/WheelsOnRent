@@ -1,8 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'vendor/base.html' %}
 {% load static %}
 {% load custom_filters %}
 
 {% block content %}
+<main id="main" class="main">
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-6">
@@ -65,6 +66,7 @@
         <a href="{% url 'vendor:vendor_vehicles' %}" class="btn btn-outline-primary">Back to List</a>
     </div>
 </div>
+</main>
 
 <style>
     @keyframes fadeIn {

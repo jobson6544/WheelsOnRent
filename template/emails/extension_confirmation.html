@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Extension Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #777;
+            font-size: 12px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Booking Extension Confirmation</h2>
+        </div>
+        <div class="content">
+            <p>Dear {{ user.get_full_name }},</p>
+            
+            <p>Your booking extension has been successfully processed. Your rental period has been extended by <strong>{{ days }} day{{ days|pluralize }}</strong>.</p>
+            
+            <div class="highlight">
+                <h3 style="margin-top: 0;">Booking Details</h3>
+                <p>
+                    <strong>Booking ID:</strong> {{ booking.booking_id }}<br>
+                    <strong>Vehicle:</strong> {{ booking.vehicle.model }} ({{ booking.vehicle.registration.registration_number }})<br>
+                    <strong>New Return Date:</strong> {{ new_end_date|date:"F d, Y - H:i" }}
+                </p>
+            </div>
+            
+            <h3>Extension Summary</h3>
+            <table>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                </tr>
+                <tr>
+                    <td>Extension ({{ days }} day{{ days|pluralize }})</td>
+                    <td>₹{{ booking.calculate_extension_amount|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Paid</strong></td>
+                    <td><strong>₹{{ booking.calculate_extension_amount|floatformat:2 }}</strong></td>
+                </tr>
+            </table>
+            
+            <p>The vendor has been notified of your booking extension. If you have any questions or need assistance, please contact the vendor directly.</p>
+            
+            <h3>Vendor Contact Information</h3>
+            <p>
+                <strong>{{ booking.vehicle.vendor.business_name }}</strong><br>
+                <strong>Phone:</strong> {{ booking.vehicle.vendor.contact_number }}
+            </p>
+            
+            <p style="text-align: center; margin-top: 30px;">
+                <a href="{{ booking_url }}" class="btn">View Booking Details</a>
+            </p>
+        </div>
+        <div class="footer">
+            <p>Thank you for choosing WheelsOnRent for your vehicle rental needs.</p>
+            <p>If you need further assistance, please contact our customer support at support@wheelsonrent.com.</p>
+            <p>&copy; {{ current_year }} WheelsOnRent. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html> 

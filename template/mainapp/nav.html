@@ -30,6 +30,13 @@
                 <li class="nav-item">
                     <a class="nav-link font-weight-bold" href="{% url 'mainapp:user_booking_history' %}">My Bookings</a>
                 </li>
+                {% if user.role == 'user' %}
+                <li class="nav-item">
+                    <a class="nav-link font-weight-bold" href="{% url 'mainapp:current_rentals' %}">
+                        <i class="fas fa-car-side"></i> My Current Rentals
+                    </a>
+                </li>
+                {% endif %}
                 <li class="nav-item">
                   <a class="nav-link font-weight-bold" href="{% url 'mainapp:profile_view' %}">My Profile</a>
               </li>

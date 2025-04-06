@@ -575,3 +575,255 @@ INFO 2025-03-17 13:48:14,581 models 35056 19596 Is vehicle available: True
 INFO 2025-03-17 13:48:14,581 views 35056 19596 Vehicle is available for the selected dates.
 INFO 2025-03-17 13:48:14,586 views 35056 19596 Booking created successfully: 5
 INFO 2025-03-17 13:48:48,394 views 35056 19596 Confirmation email sent for booking 5
+INFO 2025-04-04 10:00:19,845 views 25628 19268 Booking view called for vehicle id: 2
+INFO 2025-04-04 10:00:32,141 views 25628 19268 Booking view called for vehicle id: 2
+INFO 2025-04-04 10:00:32,143 views 25628 19268 POST request received
+INFO 2025-04-04 10:00:32,143 views 25628 19268 Start date: 2025-04-18, End date: 2025-04-19
+INFO 2025-04-04 10:00:32,145 views 25628 19268 Adjusted dates - Start: 2025-04-18 00:00:00+00:00, End: 2025-04-19 23:59:59.999999+00:00
+INFO 2025-04-04 10:00:32,145 models 25628 19268 Checking availability for vehicle 2 from 2025-04-18 00:00:00+00:00 to 2025-04-19 23:59:59.999999+00:00
+INFO 2025-04-04 10:00:32,149 models 25628 19268 Overlapping bookings found: 0
+INFO 2025-04-04 10:00:32,149 models 25628 19268 Is vehicle available: True
+INFO 2025-04-04 10:00:32,149 views 25628 19268 Vehicle is available for the selected dates.
+INFO 2025-04-04 10:00:32,159 views 25628 19268 Booking created successfully: 6
+INFO 2025-04-04 10:01:45,002 views 25628 19268 Confirmation email sent for booking 6
+ERROR 2025-04-04 11:34:36,575 views 30100 18116 Error in user_booking_history: Reverse for 'active_rentals' not found. 'active_rentals' is not a valid view function or pattern name.
+INFO 2025-04-05 12:31:26,943 views 26164 28812 Booking view called for vehicle id: 3
+INFO 2025-04-05 12:31:39,528 views 26164 28812 Booking view called for vehicle id: 3
+INFO 2025-04-05 12:31:39,529 views 26164 28812 POST request received
+INFO 2025-04-05 12:31:39,530 views 26164 28812 Start date: 2025-04-05, End date: 2025-04-05
+INFO 2025-04-05 12:31:39,531 views 26164 28812 Adjusted dates - Start: 2025-04-05 00:00:00+00:00, End: 2025-04-06 23:59:59.999999+00:00
+INFO 2025-04-05 12:31:39,531 models 26164 28812 Checking availability for vehicle 3 from 2025-04-05 00:00:00+00:00 to 2025-04-06 23:59:59.999999+00:00
+INFO 2025-04-05 12:31:39,533 models 26164 28812 Overlapping bookings found: 0
+INFO 2025-04-05 12:31:39,533 models 26164 28812 Is vehicle available: True
+INFO 2025-04-05 12:31:39,533 views 26164 28812 Vehicle is available for the selected dates.
+INFO 2025-04-05 12:31:39,539 views 26164 28812 Booking created successfully: 7
+INFO 2025-04-05 12:31:57,889 views 26164 7596 Confirmation email sent for booking 7
+INFO 2025-04-05 12:53:06,575 views 2352 15824 Simple location share test called for booking 7
+INFO 2025-04-05 12:53:06,576 views 2352 15824 Request method: POST
+INFO 2025-04-05 12:53:06,576 views 2352 15824 POST data: <QueryDict: {'csrfmiddlewaretoken': ['OxTIbCJDBAWWZOtkrECW8mJb0irTWnZjisbL50WqYJqYVXQvsHcS5wQMUjsNpp2u'], 'latitude': ['12.9716'], 'longitude': ['77.5946']}>
+INFO 2025-04-05 12:53:14,163 views 2352 15824 Simple location share test called for booking 7
+INFO 2025-04-05 12:53:14,164 views 2352 15824 Request method: POST
+INFO 2025-04-05 12:53:14,166 views 2352 15824 POST data: <QueryDict: {'csrfmiddlewaretoken': ['MGBNtZumPQTOghQW3ytkAP56Fkz9BGJ5gBTQnnH9cZnQcqd74B3gxZcHzlA34IMg'], 'latitude': ['12.9716'], 'longitude': ['77.5946']}>
+INFO 2025-04-05 12:55:46,008 views 2352 15824 Simple location share test called for booking 7
+INFO 2025-04-05 12:55:46,008 views 2352 15824 Request method: POST
+INFO 2025-04-05 12:55:46,009 views 2352 15824 POST data: <QueryDict: {'csrfmiddlewaretoken': ['f7Flu3YsEtfKOqRl7dzE6zTRLOs5008AJ2Xoorbf1CJMKzew8g9A3J0sFPtZt2bL'], 'latitude': ['12.9716'], 'longitude': ['77.5946']}>
+INFO 2025-04-05 13:32:44,292 views 1044 3360 Simple location share test called for booking 7
+INFO 2025-04-05 13:32:44,293 views 1044 3360 Request method: POST
+INFO 2025-04-05 13:32:44,293 views 1044 3360 POST data: <QueryDict: {'csrfmiddlewaretoken': ['WU7byemwEtdpPWnqy4Ji151IcwTYStLkqPpesCzj1CHrL5KBz7jeYf8j6xUSlvOv'], 'latitude': ['12.9716'], 'longitude': ['77.5946']}>
+INFO 2025-04-05 13:41:03,688 views 1044 3360 Simple location share test called for booking 7
+INFO 2025-04-05 13:41:03,689 views 1044 3360 Request method: POST
+INFO 2025-04-05 13:41:03,690 views 1044 3360 POST data: <QueryDict: {'csrfmiddlewaretoken': ['6nZ1nx9paMmTBximxmGl1WjlZPZHfcJ4Aih4hVmcxVQVxGFxypghY6qWTQ0BIeMf'], 'latitude': ['12.9716'], 'longitude': ['77.5946']}>
+INFO 2025-04-05 13:41:21,894 views 1044 3360 Simple location share test called for booking 7
+INFO 2025-04-05 13:41:21,894 views 1044 3360 Request method: POST
+INFO 2025-04-05 13:41:21,895 views 1044 3360 POST data: <QueryDict: {'csrfmiddlewaretoken': ['3WmDkkuh40lSULJ36vJK5SIYf8bxc6EjxREGeIH4r9PUQU6e7yjG22Pz99crF8Hu'], 'latitude': ['12.9716'], 'longitude': ['77.5946']}>
+INFO 2025-04-05 21:14:41,599 views 2460 12440 Simple location share test called for booking 7
+INFO 2025-04-05 21:14:41,599 views 2460 12440 Request method: POST
+INFO 2025-04-05 21:14:41,600 views 2460 12440 POST data: <QueryDict: {'csrfmiddlewaretoken': ['VcV28LY7rTg5xlVMwgiGpTaZkNpNBOeehWlie9hJEbcxG0mTBRjGvc6TQ6SptfG6'], 'latitude': ['12.9716'], 'longitude': ['77.5946']}>
+DEBUG 2025-04-05 21:31:28,322 views 21952 18152 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 21:36:13,529 views 21952 6032 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 21:39:16,495 views 21952 6032 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 21:42:22,568 views 21952 6032 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 22:04:35,524 views 21952 27720 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 22:04:38,064 views 21952 27720 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 22:04:38,771 views 21952 27720 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 22:19:05,205 views 21952 4492 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 22:21:07,537 views 21952 4492 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 22:21:37,544 views 21952 4492 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 22:27:34,279 views 21248 20508 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 22:28:05,073 views 21248 20508 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 22:46:43,950 views 21248 29000 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 22:52:01,713 views 25840 20408 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 22:59:21,880 views 25840 18204 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:02:42,444 views 25840 18204 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:02:57,291 views 25840 18612 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:05:27,601 views 25840 18612 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:07:37,886 views 21152 1052 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:09:11,090 views 21152 1052 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:11:25,400 views 24592 19868 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:14:45,371 views 24592 18076 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:15:21,912 views 24592 18076 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:21:46,434 views 24592 4660 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:21:58,552 views 24592 4660 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:21:58,947 views 24592 4660 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:21:59,503 views 24592 4660 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:21:59,718 views 24592 4660 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:24:55,230 views 24592 4660 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:27:52,053 views 24592 4660 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:32:14,537 views 24592 4660 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:34:39,238 views 24592 4660 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:35:06,002 views 15656 23660 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:39:49,976 views 15656 23660 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:41:46,741 views 15656 24128 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:42:16,734 views 15656 24128 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:47:25,647 views 15656 20832 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:48:51,031 views 15656 20832 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:52:31,678 views 17460 30972 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-05 23:54:19,472 views 17460 27396 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:00:18,789 views 17460 11868 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:01:41,245 views 17460 11868 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:04:06,776 views 17460 11868 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:16:30,623 views 17460 23344 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:18:46,423 views 17460 23344 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:19:11,174 views 17460 23344 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:24:04,787 views 17460 1884 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:26:49,454 views 13808 28764 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:28:23,344 views 13808 28764 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:31:02,356 views 13808 28764 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:35:05,039 views 13808 28764 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-06 00:46:40,953 views 3188 23592 Google Maps API Key in report_accident view: AIzaS...
+INFO 2025-04-06 00:51:01,328 views 3188 23592 Share location request received for booking 7
+INFO 2025-04-06 00:51:01,328 views 3188 23592 Raw latitude value: 9.17504
+INFO 2025-04-06 00:51:01,328 views 3188 23592 Raw longitude value: 76.7229952
+INFO 2025-04-06 00:51:01,328 views 3188 23592 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 00:51:01,333 views 3188 23592 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 00:51:01,342 views 3188 23592 Location share created: 8
+INFO 2025-04-06 00:58:41,786 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 00:58:41,788 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 00:58:41,790 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 00:58:41,790 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 00:58:41,803 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 00:58:41,811 views 10032 24116 Location share created: 9
+INFO 2025-04-06 00:58:43,821 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 00:58:43,825 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 00:58:43,825 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 00:58:43,825 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 00:58:43,827 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 00:58:43,835 views 10032 24116 Location share created: 10
+INFO 2025-04-06 00:58:45,752 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 00:58:45,752 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 00:58:45,752 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 00:58:45,754 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 00:58:45,758 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 00:58:45,762 views 10032 24116 Location share created: 11
+INFO 2025-04-06 00:59:21,446 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 00:59:21,448 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 00:59:21,448 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 00:59:21,449 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 00:59:21,450 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 00:59:21,458 views 10032 24116 Location share created: 12
+INFO 2025-04-06 01:00:33,450 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 01:00:33,450 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 01:00:33,453 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:00:33,453 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:00:33,456 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:00:33,462 views 10032 24116 Location share created: 13
+INFO 2025-04-06 01:00:35,172 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 01:00:35,174 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 01:00:35,175 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:00:35,175 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:00:35,175 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:00:35,185 views 10032 24116 Location share created: 14
+INFO 2025-04-06 01:00:36,899 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 01:00:36,900 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 01:00:36,900 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:00:36,900 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:00:36,904 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:00:36,910 views 10032 24116 Location share created: 15
+INFO 2025-04-06 01:03:15,883 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 01:03:15,883 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 01:03:15,883 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:03:15,883 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:03:15,893 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:03:15,902 views 10032 24116 Location share created: 16
+INFO 2025-04-06 01:03:18,166 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 01:03:18,166 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 01:03:18,166 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:03:18,166 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:03:18,170 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:03:18,176 views 10032 24116 Location share created: 17
+INFO 2025-04-06 01:04:16,091 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 01:04:16,092 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 01:04:16,092 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:04:16,092 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:04:16,102 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:04:16,109 views 10032 24116 Location share created: 18
+INFO 2025-04-06 01:04:18,065 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 01:04:18,065 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 01:04:18,065 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:04:18,065 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:04:18,072 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:04:18,080 views 10032 24116 Location share created: 19
+INFO 2025-04-06 01:04:19,776 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 01:04:19,776 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 01:04:19,778 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:04:19,779 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:04:19,780 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:04:19,788 views 10032 24116 Location share created: 20
+INFO 2025-04-06 01:04:25,899 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 01:04:25,900 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 01:04:25,900 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:04:25,900 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:04:25,904 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:04:25,911 views 10032 24116 Location share created: 21
+INFO 2025-04-06 01:04:27,828 views 10032 24116 Share location request received for booking 7
+INFO 2025-04-06 01:04:27,829 views 10032 24116 Raw latitude value: 9.17504
+INFO 2025-04-06 01:04:27,829 views 10032 24116 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:04:27,829 views 10032 24116 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:04:27,834 views 10032 24116 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:04:27,834 views 10032 24116 Location share created: 22
+INFO 2025-04-06 01:07:02,156 views 25036 13964 Share location request received for booking 7
+INFO 2025-04-06 01:07:02,156 views 25036 13964 Raw latitude value: 9.17504
+INFO 2025-04-06 01:07:02,156 views 25036 13964 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:07:02,156 views 25036 13964 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:07:02,164 views 25036 13964 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:07:02,176 views 25036 13964 Location share created: 23
+INFO 2025-04-06 01:07:06,301 views 25036 13964 Share location request received for booking 7
+INFO 2025-04-06 01:07:06,301 views 25036 13964 Raw latitude value: 9.17504
+INFO 2025-04-06 01:07:06,301 views 25036 13964 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:07:06,301 views 25036 13964 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:07:06,308 views 25036 13964 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:07:06,315 views 25036 13964 Location share created: 24
+INFO 2025-04-06 01:08:55,190 views 25036 13964 Share location request received for booking 7
+INFO 2025-04-06 01:08:55,190 views 25036 13964 Raw latitude value: 9.17504
+INFO 2025-04-06 01:08:55,190 views 25036 13964 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:08:55,190 views 25036 13964 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:08:55,198 views 25036 13964 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:08:55,206 views 25036 13964 Location share created: 25
+INFO 2025-04-06 01:41:42,286 views 5384 30424 Share location request received for booking 7
+INFO 2025-04-06 01:41:42,288 views 5384 30424 Raw latitude value: 9.17504
+INFO 2025-04-06 01:41:42,289 views 5384 30424 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:41:42,289 views 5384 30424 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:41:42,295 views 5384 30424 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:41:42,296 views 5384 30424 Location share created: 26
+INFO 2025-04-06 01:42:24,707 views 5384 30424 Share location request received for booking 7
+INFO 2025-04-06 01:42:24,708 views 5384 30424 Raw latitude value: 9.17504
+INFO 2025-04-06 01:42:24,709 views 5384 30424 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:42:24,709 views 5384 30424 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:42:24,714 views 5384 30424 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:42:24,721 views 5384 30424 Location share created: 27
+INFO 2025-04-06 01:52:36,471 views 29516 30224 Share location request received for booking 7
+INFO 2025-04-06 01:52:36,476 views 29516 30224 Raw latitude value: 9.17504
+INFO 2025-04-06 01:52:36,476 views 29516 30224 Raw longitude value: 76.7229952
+INFO 2025-04-06 01:52:36,476 views 29516 30224 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 01:52:36,480 views 29516 30224 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 01:52:36,488 views 29516 30224 Location share created: 28
+INFO 2025-04-06 02:16:30,319 views 10020 29336 Share location request received for booking 7
+INFO 2025-04-06 02:16:30,320 views 10020 29336 Raw latitude value: 9.17504
+INFO 2025-04-06 02:16:30,320 views 10020 29336 Raw longitude value: 76.7229952
+INFO 2025-04-06 02:16:30,320 views 10020 29336 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 02:16:30,325 views 10020 29336 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 02:16:30,330 views 10020 29336 Location share created: 29
+INFO 2025-04-06 02:20:39,606 views 27952 3256 Location share request for booking 7
+INFO 2025-04-06 02:20:39,607 views 27952 3256 Coordinates received: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 02:20:39,607 views 27952 3256 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 02:20:39,609 views 27952 3256 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 02:20:39,617 views 27952 3256 Location share created: 30
+INFO 2025-04-06 02:24:26,506 views 14360 21580 Location share called for booking 7
+INFO 2025-04-06 02:24:26,506 views 14360 21580 Request method: POST
+INFO 2025-04-06 02:24:26,506 views 14360 21580 Received coordinates: lat=9.17504, lng=76.7229952, timestamp=None
+INFO 2025-04-06 02:24:26,506 views 14360 21580 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 02:24:26,515 views 14360 21580 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 02:24:26,519 views 14360 21580 Location share created: 31 with timestamp: 2025-04-05 20:54:26.515107+00:00
+INFO 2025-04-06 02:25:17,709 views 14360 21580 Location share called for booking 7
+INFO 2025-04-06 02:25:17,710 views 14360 21580 Request method: POST
+INFO 2025-04-06 02:25:17,710 views 14360 21580 Received coordinates: lat=9.17504, lng=76.7229952, timestamp=None
+INFO 2025-04-06 02:25:17,711 views 14360 21580 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 02:25:17,716 views 14360 21580 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 02:25:17,716 views 14360 21580 Location share created: 32 with timestamp: 2025-04-05 20:55:17.716678+00:00
+INFO 2025-04-06 02:26:20,420 views 14360 21580 Location share called for booking 1
+INFO 2025-04-06 02:26:20,420 views 14360 21580 Request method: POST
+INFO 2025-04-06 02:26:20,420 views 14360 21580 Received coordinates: lat=9.17504, lng=76.7229952, timestamp=None
+INFO 2025-04-06 02:26:20,420 views 14360 21580 Valid coordinates: lat=9.17504, lng=76.7229952
+INFO 2025-04-06 02:26:20,427 views 14360 21580 Booking found: Booking for Figo (2010) - KL34A6544 by jobson, status: confirmed
+INFO 2025-04-06 02:26:20,432 views 14360 21580 Location share created: 33 with timestamp: 2025-04-05 20:56:20.427090+00:00
+INFO 2025-04-06 10:49:39,261 views 3492 2968 Booking view called for vehicle id: 2

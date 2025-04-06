@@ -1,0 +1,94 @@
+{% extends 'vendor/base.html' %}
+{% load static %}
+
+{% block title %}Extension Requests{% endblock %}
+
+{% block extra_css %}
+<style>
+    .extension-card {
+        transition: transform 0.3s;
+    }
+    .extension-card:hover {
+        transform: translateY(-5px);
+    }
+    .status-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main id="main" class="main">
+<div class="container-fluid py-4">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0">Booking Extension Requests</h1>
+    </div>
+    
+    <div class="row">
+        {% if extension_requests %}
+            {% for extension in extension_requests %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card shadow h-100 extension-card">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            Extension Request #{{ extension.id }}
+                        </h6>
+                        <div class="text-xs text-muted">
+                            {{ extension.created_at|date:"M d, Y" }}
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <p class="mb-1">
+                                <strong>Original End Date:</strong> {{ extension.original_end_date|date:"M d, Y" }}
+                            </p>
+                            <p class="mb-1">
+                                <strong>New End Date:</strong> {{ extension.new_end_date|date:"M d, Y" }}
+                            </p>
+                            <p class="mb-1">
+                                <strong>Extension Amount:</strong> ₹{{ extension.extension_amount }}
+                            </p>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="small mb-0"><strong>Vehicle:</strong><br>{{ extension.booking.vehicle.model }}</p>
+                            </div>
+                            <div class="col-6">
+                                <p class="small mb-0"><strong>Customer:</strong><br>{{ extension.booking.user.get_full_name }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 text-center">
+                            <a href="{% url 'vendor:booking_detail' extension.booking.booking_id %}" class="btn btn-primary btn-sm">
+                                View Booking
+                            </a>
+                            
+                            <a href="tel:{{ extension.booking.user.profile.phone_number }}" class="btn btn-outline-success btn-sm ml-1">
+                                <i class="fas fa-phone"></i> Call Customer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="card shadow mb-4">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h5>No Extension Requests</h5>
+                        <p class="text-muted">There are no booking extension requests at this time.</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+</main>
+{% endblock %} 

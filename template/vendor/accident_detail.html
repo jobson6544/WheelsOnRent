@@ -1,0 +1,217 @@
+{% extends 'vendor/base.html' %}
+{% load static %}
+
+{% block title %}Accident Report Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<style>
+    #map {
+        height: 300px;
+        width: 100%;
+        border-radius: 8px;
+    }
+    .severity-indicator {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        margin-right: 6px;
+    }
+    .severity-minor {
+        background-color: #28a745;
+    }
+    .severity-moderate {
+        background-color: #ffc107;
+    }
+    .severity-major {
+        background-color: #fd7e14;
+    }
+    .severity-severe {
+        background-color: #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main id="main" class="main">
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-0">Accident Report Details</h1>
+            <p class="text-muted">
+                Reported on {{ report.report_date|date:"F d, Y - H:i" }}
+                {% if report.is_emergency %}
+                <span class="badge badge-danger ml-2">EMERGENCY</span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="col-md-4 text-md-right">
+            <a href="{% url 'vendor:accident_reports' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Reports
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Main Report Details -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <span class="severity-indicator severity-{{ report.severity }}"></span>
+                        {{ report.get_severity_display }} Accident
+                    </h6>
+                    <span class="badge badge-{% if report.status == 'reported' %}warning{% elif report.status == 'processing' %}info{% else %}success{% endif %}">
+                        {{ report.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <h5>Description</h5>
+                    <p>{{ report.description }}</p>
+                    
+                    <h5>Location</h5>
+                    <p>{{ report.location }}</p>
+                    
+                    <div id="map" class="mb-4"></div>
+                    
+                    {% if report.photos %}
+                    <h5>Accident Photos</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img src="{{ report.photos.url }}" alt="Accident Photo" class="img-fluid rounded">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Update Status Form -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Update Status</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="processing" {% if report.status == "processing" %}selected{% endif %}>Processing</option>
+                                <option value="resolved" {% if report.status == "resolved" %}selected{% endif %}>Resolved</option>
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <p class="mb-0">
+                                <i class="fas fa-info-circle"></i> Update the status to "Processing" when you start handling this report, or "Resolved" when the issue has been addressed.
+                                {% if report.status == "reported" %}
+                                <strong>This report is currently unprocessed.</strong>
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Customer Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Customer Information</h6>
+                </div>
+                <div class="card-body">
+                    <h5>{{ customer.get_full_name }}</h5>
+                    <p>
+                        <strong>Email:</strong> {{ customer.email }}<br>
+                        {% if customer.profile.phone_number %}
+                        <strong>Phone:</strong> {{ customer.profile.phone_number }}<br>
+                        {% endif %}
+                    </p>
+                    
+                    <a href="tel:{{ customer.profile.phone_number }}" class="btn btn-outline-primary btn-block">
+                        <i class="fas fa-phone"></i> Call Customer
+                    </a>
+                    
+                    <a href="mailto:{{ customer.email }}" class="btn btn-outline-secondary btn-block">
+                        <i class="fas fa-envelope"></i> Email Customer
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Vehicle Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Vehicle Information</h6>
+                </div>
+                <div class="card-body">
+                    <h5>{{ vehicle.model }}</h5>
+                    <p>
+                        <strong>Registration:</strong> {{ vehicle.registration.registration_number }}<br>
+                        <strong>Year:</strong> {{ vehicle.model.model_year }}<br>
+                        <strong>Status:</strong> {{ vehicle.get_status_display }}
+                    </p>
+                    
+                    <h6 class="mt-3">Booking Details</h6>
+                    <p>
+                        <strong>Booking ID:</strong> {{ booking.booking_id }}<br>
+                        <strong>Start Date:</strong> {{ booking.start_date|date:"M d, Y" }}<br>
+                        <strong>End Date:</strong> {{ booking.end_date|date:"M d, Y" }}<br>
+                        <strong>Status:</strong> {{ booking.get_status_display }}
+                    </p>
+                    
+                    <a href="{% url 'vendor:booking_detail' booking.booking_id %}" class="btn btn-outline-info btn-block">
+                        <i class="fas fa-clipboard-list"></i> View Booking
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Emergency Contacts -->
+            {% if report.is_emergency and report.status != 'resolved' %}
+            <div class="card shadow mb-4 border-left-danger">
+                <div class="card-header py-3 bg-danger text-white">
+                    <h6 class="m-0 font-weight-bold">Emergency Resources</h6>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Police:</strong> 100<br>
+                        <strong>Ambulance:</strong> 108<br>
+                        <strong>Fire:</strong> 101<br>
+                        <strong>Emergency Helpline:</strong> 112
+                    </p>
+                    
+                    <a href="tel:112" class="btn btn-danger btn-block">
+                        <i class="fas fa-phone"></i> Call Emergency Services
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    // Initialize map
+    var map = L.map('map').setView([{{ report.latitude|default:"20.5937" }}, {{ report.longitude|default:"78.9629" }}], 
+                                    {{ report.latitude|yesno:"13,5" }});
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    {% if report.latitude and report.longitude %}
+    // Add marker for accident location
+    L.marker([{{ report.latitude }}, {{ report.longitude }}]).addTo(map)
+        .bindPopup('Accident Location<br>{{ report.location|truncatechars:50 }}')
+        .openPopup();
+    {% endif %}
+</script>
+{% endblock %} 

@@ -330,10 +330,16 @@
             <div class="row">
                 {% for driver in drivers %}
                 <div class="col-md-4 mb-4">
-                    <div class="card">
-                        {% if driver.profile_photo %}
-                        <img src="{{ driver.profile_photo.url }}" class="card-img-top" alt="{{ driver.full_name }}">
-                        {% endif %}
+                    <div class="card h-100">
+                        <div class="driver-image-container" style="height: 250px; overflow: hidden;">
+                            {% if driver.profile_photo %}
+                            <img src="{{ driver.profile_photo.url }}" class="card-img-top" alt="{{ driver.full_name }}" 
+                                 style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                            <img src="{% static 'img/default-driver.png' %}" class="card-img-top" alt="Default Driver" 
+                                 style="width: 100%; height: 100%; object-fit: cover;">
+                            {% endif %}
+                        </div>
                         <div class="card-body">
                             <h5 class="card-title">{{ driver.full_name }}</h5>
                             <p class="card-text">
@@ -349,7 +355,6 @@
                             <div class="d-grid">
                                 <a href="{% url 'drivers:book_driver' driver.id %}" 
                                    class="btn btn-primary">Book Driver</a>
-                            </div>
                             </div>
                         </div>
                     </div>

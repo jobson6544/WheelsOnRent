@@ -1,0 +1,240 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+
+{% block title %}My Current Rentals{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        padding: 25px 0;
+        margin-bottom: 30px;
+        color: white;
+        border-radius: 0 0 15px 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .page-header h1 {
+        color: #ffffff;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .page-header p {
+        color: rgba(255, 255, 255, 0.9);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        font-size: 1rem;
+    }
+    
+    .page-header .btn {
+        padding: 0.4rem 1rem;
+    }
+    
+    .rental-card {
+        border: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .rental-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    
+    .rental-card .card-header {
+        background: linear-gradient(to right, #f8f9fa, #ffffff);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 15px 20px;
+    }
+    
+    .rental-card .badge {
+        padding: 8px 12px;
+        border-radius: 30px;
+        font-weight: 500;
+        font-size: 0.8rem;
+    }
+    
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .badge-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .vehicle-img {
+        height: 140px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    
+    .card-title {
+        font-weight: 600;
+        color: #1e3c72;
+    }
+    
+    .info-alert {
+        background-color: rgba(209, 236, 241, 0.7);
+        border-left: 4px solid #17a2b8;
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+    
+    .info-alert i {
+        font-size: 24px;
+        color: #17a2b8;
+        margin-right: 15px;
+    }
+    
+    .action-btn {
+        transition: all 0.3s ease;
+        border-radius: 30px;
+        padding: 8px 20px;
+        font-weight: 500;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        border: none;
+    }
+    
+    .btn-outline-secondary {
+        border: 1px solid #6c757d;
+        color: #6c757d;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+    }
+    
+    .rental-details {
+        line-height: 1.8;
+    }
+    
+    .rental-details strong {
+        color: #495057;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-4 fw-bold mb-2">My Current Rentals</h1>
+                <p class="lead mb-0">Manage your ongoing vehicle rentals and bookings</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'mainapp:home' %}" class="btn btn-light action-btn mt-3 mt-md-0">
+                    <i class="fas fa-car me-2"></i>Browse Vehicles
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if active_bookings %}
+        <div class="row">
+            {% for booking in active_bookings %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 rental-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">Booking #{{ booking.booking_id }}</h5>
+                        <span class="badge badge-{% if booking.status == 'picked_up' %}success{% else %}primary{% endif %}">
+                            {{ booking.get_status_display }}
+                        </span>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                {% if booking.vehicle.image %}
+                                <img src="{{ booking.vehicle.image.url }}" alt="{{ booking.vehicle.model }}" class="img-fluid vehicle-img w-100">
+                                {% else %}
+                                <img src="{% static 'images/no-image.png' %}" alt="No image" class="img-fluid vehicle-img w-100">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <h5 class="card-title">{{ booking.vehicle.model }}</h5>
+                                <div class="rental-details">
+                                    <p class="card-text mb-3">
+                                        <strong><i class="fas fa-store me-2 text-muted"></i>Vendor:</strong> {{ booking.vehicle.vendor.business_name }}<br>
+                                        <strong><i class="fas fa-calendar-check me-2 text-muted"></i>Pick-up:</strong> {{ booking.start_date|date:"M d, Y" }}<br>
+                                        <strong><i class="fas fa-calendar-times me-2 text-muted"></i>Return:</strong> {{ booking.end_date|date:"M d, Y" }}<br>
+                                        <strong><i class="fas fa-rupee-sign me-2 text-muted"></i>Amount:</strong> ₹{{ booking.total_amount }}
+                                    </p>
+                                </div>
+                                
+                                <div class="d-grid gap-2 mt-3">
+                                    <a href="{% url 'mainapp:rental_details' booking.booking_id %}" class="btn btn-primary action-btn">
+                                        <i class="fas fa-tasks me-2"></i>Manage Rental
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="info-alert">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <h4 class="fs-5 mb-1">You don't have any active rentals.</h4>
+                <p class="mb-0">Browse our collection of quality vehicles and find the perfect one for your needs.</p>
+            </div>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col-md-8 offset-md-2 text-center">
+                <img src="{% static 'images/car-rental.webp' %}" alt="No rentals" class="img-fluid mb-4" style="max-height: 200px;">
+                <h3 class="mb-3">Start Your Journey Today</h3>
+                <p class="text-muted mb-4">Experience the freedom of the open road with our premium rental vehicles.</p>
+                <a href="{% url 'mainapp:home' %}" class="btn btn-primary btn-lg action-btn">
+                    <i class="fas fa-car me-2"></i>Explore Available Vehicles
+                </a>
+            </div>
+        </div>
+    {% endif %}
+    
+    <div class="d-flex justify-content-between mt-5">
+        <a href="{% url 'mainapp:user_booking_history' %}" class="btn btn-outline-secondary action-btn">
+            <i class="fas fa-history me-2"></i>View Booking History
+        </a>
+        <a href="{% url 'mainapp:home' %}" class="btn btn-primary action-btn">
+            <i class="fas fa-car me-2"></i>Rent Another Vehicle
+        </a>
+    </div>
+</div>
+{% endblock %} 

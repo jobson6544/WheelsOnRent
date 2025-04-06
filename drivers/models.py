@@ -9,6 +9,7 @@ from django.utils.html import strip_tags
 import random
 import string
 from django.contrib.auth.hashers import make_password, check_password
+from datetime import datetime
 
 class DriverAuth(models.Model):
     email = models.EmailField(unique=True)
@@ -79,7 +80,7 @@ class Driver(models.Model):
     auth = models.OneToOneField(
         DriverAuth, 
         on_delete=models.CASCADE,
-        null=True,  # Allow null temporarily for migration
+        null=True,
         blank=True
     )
     full_name = models.CharField(max_length=255)
@@ -107,6 +108,8 @@ class Driver(models.Model):
         blank=True,
         related_name='approved_drivers'
     )
+    blockchain_tx_hash = models.CharField(max_length=66, null=True, blank=True)  # Ethereum transaction hash is 66 characters
+    blockchain_verified = models.BooleanField(default=False)  # New field to track blockchain verification status
     availability_status = models.CharField(
         max_length=20,
         choices=[
@@ -146,15 +149,40 @@ class Driver(models.Model):
             html_message=html_message
         )
 
+    def verify_on_blockchain(self):
+        """
+        Verify the driver's status on the blockchain
+        """
+        try:
+            blockchain = DriverBlockchain()
+            driver_data = {
+                'license_number': self.license_number,
+                'full_name': self.full_name,
+                'dob': self.created_at.strftime('%Y-%m-%d') if hasattr(self, 'created_at') else datetime.now().strftime('%Y-%m-%d')
+            }
+            is_verified = blockchain.verify_driver(str(self.id), driver_data)
+            if is_verified != self.blockchain_verified:
+                self.blockchain_verified = is_verified
+                self.save(update_fields=['blockchain_verified'])
+            return is_verified
+        except Exception as e:
+            return False
+
 class DriverApplicationLog(models.Model):
+    ACTION_CHOICES = (
+        ('approve', 'Approved'),
+        ('reject', 'Rejected'),
+        ('document_verify', 'Document Verified'),
+    )
+    
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE)
     admin = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-    action = models.CharField(max_length=20)  # 'approve', 'reject', etc.
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
     notes = models.TextField(blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True)  # Changed from created_at
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.driver.full_name} - {self.action} - {self.timestamp}"
+        return f"{self.driver.full_name} - {self.get_action_display()} - {self.timestamp}"
 
     class Meta:
         ordering = ['-timestamp']

@@ -12,7 +12,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
 from .forms import UserRegistrationForm, UserProfileForm, UserEditForm, UserProfileEditForm, FeedbackForm
-from .models import UserProfile, Booking, User, Feedback
+from .models import UserProfile, Booking, User, Feedback, LocationShare, AccidentReport, BookingExtension
 from vendor.models import Vehicle
 from drivers.models import Driver, DriverBooking
 from datetime import datetime, timedelta
@@ -32,6 +32,7 @@ import json  # Also make sure this is imported
 from openai import OpenAI
 import os
 from django.db.models import Avg
+from decimal import Decimal
 
 User = get_user_model()
 
@@ -149,10 +150,9 @@ def complete_profile(request):
         return redirect('mainapp:home')
 
 def home(request):
-    # Get available vehicles with related data
-    vehicles = Vehicle.objects.filter(
-        status='available',  # Changed from status=1 to status='available'
-        availability=True
+    # Get all vehicles except those explicitly marked as not available
+    vehicles = Vehicle.objects.exclude(
+        status='not_available'  # Only exclude vehicles marked as not available
     ).select_related(
         'vendor', 
         'model__sub_category__category'
@@ -933,3 +933,518 @@ def chatbot_response(request):
         return JsonResponse({'reply': reply})
     
     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@login_required
+def current_rentals(request):
+    """View for displaying user's current rentals"""
+    active_bookings = Booking.objects.filter(
+        user=request.user,
+        status__in=['picked_up']
+    ).select_related('vehicle', 'vehicle__vendor')
+    
+    context = {
+        'active_bookings': active_bookings
+    }
+    
+    return render(request, 'mainapp/current_rentals.html', context)
+
+@login_required
+def rental_details(request, booking_id):
+    """View for displaying details of a specific rental"""
+    booking = get_object_or_404(
+        Booking, 
+        booking_id=booking_id, 
+        user=request.user, 
+        status__in=['confirmed', 'picked_up']
+    )
+    
+    # Get any accident reports
+    accident_reports = AccidentReport.objects.filter(booking=booking)
+    
+    # Check if extension is possible
+    extension_possible = False
+    if booking.status == 'picked_up':
+        # Check if there's a 7-day window available for extension
+        potential_end_date = booking.end_date + timezone.timedelta(days=7)
+        extension_possible = booking.check_extension_availability(potential_end_date)
+    
+    context = {
+        'booking': booking,
+        'vehicle': booking.vehicle,
+        'vendor': booking.vehicle.vendor,
+        'accident_reports': accident_reports,
+        'extension_possible': extension_possible
+    }
+    
+    return render(request, 'mainapp/rental_details.html', context)
+
+@login_required
+@require_http_methods(["POST"])
+def early_return(request, booking_id):
+    """Process early return of a vehicle"""
+    booking = get_object_or_404(
+        Booking, 
+        booking_id=booking_id, 
+        user=request.user, 
+        status='picked_up'
+    )
+    
+    success, unused_days = booking.process_early_return()
+    
+    if success:
+        # If there are unused days, calculate potential refund amount
+        refund_amount = 0
+        if unused_days > 0:
+            daily_rate = booking.vehicle.rental_rate
+            refund_amount = daily_rate * unused_days
+        
+        # Mark vehicle as returned
+        booking.vehicle.mark_as_returned()
+        
+        # Send return confirmation email
+        booking.send_return_email()
+        
+        messages.success(request, f'Vehicle returned successfully. {unused_days} unused days.')
+        
+        # If refund applicable, show additional message
+        if refund_amount > 0:
+            messages.info(
+                request, 
+                f'A refund of ₹{refund_amount} may be applicable. Our team will process this within 5-7 business days.'
+            )
+        
+        return redirect('mainapp:user_booking_history')
+    else:
+        messages.error(request, 'Unable to process early return. Please contact customer support.')
+        return redirect('mainapp:rental_details', booking_id=booking_id)
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def report_accident(request, booking_id):
+    """Report an accident for a current rental"""
+    booking = get_object_or_404(
+        Booking, 
+        booking_id=booking_id, 
+        user=request.user, 
+        status='picked_up'
+    )
+    
+    # Debug logging for API key
+    logger.debug(f"Google Maps API Key in report_accident view: {settings.GOOGLE_MAPS_API_KEY[:5]}...")
+    
+    if request.method == 'POST':
+        location = request.POST.get('location')
+        description = request.POST.get('description')
+        severity = request.POST.get('severity')
+        
+        # Handle latitude and longitude conversion - use the updated input field IDs
+        try:
+            latitude = float(request.POST.get('latitude-input') or request.POST.get('latitude', '0'))
+            if latitude == 0:  # Default value if not provided
+                latitude = None
+        except (ValueError, TypeError):
+            latitude = None
+            
+        try:
+            longitude = float(request.POST.get('longitude-input') or request.POST.get('longitude', '0'))
+            if longitude == 0:  # Default value if not provided
+                longitude = None
+        except (ValueError, TypeError):
+            longitude = None
+            
+        is_emergency = request.POST.get('is_emergency') == 'on'
+        photos = request.FILES.get('photos')
+        
+        # Log received values for debugging
+        logger.debug(f"Accident report values - Location: {location}, Lat: {latitude}, Long: {longitude}")
+        
+        # Validate the required fields
+        if not location or not description or not severity:
+            messages.error(request, 'Please fill in all required fields.')
+            return render(request, 'mainapp/report_accident.html', {
+                'booking': booking,
+                'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
+            })
+        
+        # Validate coordinates
+        if latitude is None or longitude is None:
+            messages.error(request, 'Please mark the accident location on the map.')
+            return render(request, 'mainapp/report_accident.html', {
+                'booking': booking,
+                'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
+            })
+        
+        accident_report = AccidentReport.objects.create(
+            booking=booking,
+            location=location,
+            description=description,
+            severity=severity,
+            latitude=latitude,
+            longitude=longitude,
+            is_emergency=is_emergency,
+            photos=photos
+        )
+        
+        # Send notification to vendor
+        send_accident_notification(accident_report)
+        
+        if is_emergency:
+            # Send emergency notification
+            messages.warning(request, 'Emergency services have been notified. Please stay at your location.')
+        
+        messages.success(request, 'Accident report submitted successfully.')
+        return redirect('mainapp:rental_details', booking_id=booking_id)
+    
+    context = {
+        'booking': booking,
+        'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
+    }
+    
+    return render(request, 'mainapp/report_accident.html', context)
+
+def send_accident_notification(accident_report):
+    """Send notification to vendor about accident"""
+    booking = accident_report.booking
+    vendor_email = booking.vehicle.vendor.user.email
+    
+    subject = f'URGENT: Accident Report for Booking #{booking.booking_id}'
+    html_message = render_to_string('emails/accident_notification.html', {
+        'accident': accident_report,
+        'booking': booking,
+        'customer': booking.user,
+        'vehicle': booking.vehicle
+    })
+    plain_message = strip_tags(html_message)
+    
+    send_mail(
+        subject,
+        plain_message,
+        settings.DEFAULT_FROM_EMAIL,
+        [vendor_email],
+        html_message=html_message,
+        fail_silently=False
+    )
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_exempt
+def share_location(request, booking_id):
+    """Share location with vendor"""
+    try:
+        logger.info(f"Location share called for booking {booking_id}")
+        logger.info(f"Request method: {request.method}")
+        
+        # Check if JSON data
+        if request.content_type == 'application/json':
+            try:
+                data = json.loads(request.body)
+                latitude = data.get('latitude')
+                longitude = data.get('longitude')
+                client_timestamp = data.get('timestamp')  # Get client timestamp if provided
+            except json.JSONDecodeError:
+                logger.error("Invalid JSON payload")
+                return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
+        else:
+            # Handle form data
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
+            client_timestamp = request.POST.get('timestamp')  # Get client timestamp if provided
+        
+        logger.info(f"Received coordinates: lat={latitude}, lng={longitude}, timestamp={client_timestamp}")
+        
+        try:
+            # Convert to float
+            latitude = float(latitude)
+            longitude = float(longitude)
+            
+            # Basic validation
+            if not (-90 <= latitude <= 90) or not (-180 <= longitude <= 180):
+                raise ValueError("Coordinates out of valid range")
+                
+            logger.info(f"Valid coordinates: lat={latitude}, lng={longitude}")
+        except (ValueError, TypeError) as e:
+            logger.error(f"Invalid coordinates: {str(e)}")
+            messages.error(request, "Invalid location data. Please try again.")
+            return redirect('mainapp:rental_details', booking_id=booking_id)
+        
+        # Allow both confirmed and picked_up status bookings
+        booking = get_object_or_404(
+            Booking, 
+            booking_id=booking_id, 
+            user=request.user, 
+            status__in=['confirmed', 'picked_up']
+        )
+        
+        logger.info(f"Booking found: {booking}, status: {booking.status}")
+        
+        # Create location share record
+        location_data = {
+            "booking": booking,
+            "latitude": latitude,
+            "longitude": longitude
+        }
+        
+        # If client timestamp is provided, parse and use it
+        if client_timestamp:
+            try:
+                # Try to parse the client timestamp (accepts various formats)
+                from dateutil import parser
+                parsed_timestamp = parser.parse(client_timestamp)
+                location_data["timestamp"] = parsed_timestamp
+                logger.info(f"Using client timestamp: {parsed_timestamp}")
+            except Exception as e:
+                logger.warning(f"Could not parse client timestamp: {str(e)}")
+                # Fall back to server time (default behavior)
+        
+        location_share = LocationShare.objects.create(**location_data)
+        
+        logger.info(f"Location share created: {location_share.id} with timestamp: {location_share.timestamp}")
+        
+        # If this is called from AJAX/fetch, return JSON
+        if request.content_type == 'application/json':
+            return JsonResponse({'status': 'success', 'message': 'Location shared successfully'})
+        
+        # Otherwise return HTML response for form submissions - ADD LAT/LNG TO REDIRECT URL
+        messages.success(request, "Location shared successfully with vendor")
+        redirect_url = reverse('mainapp:rental_details', kwargs={'booking_id': booking_id})
+        redirect_url = f"{redirect_url}?lat={latitude}&lng={longitude}"
+        return redirect(redirect_url)
+    
+    except Exception as e:
+        logger.error(f"Error sharing location: {str(e)}")
+        logger.error(traceback.format_exc())
+        
+        # If this is called from AJAX/fetch, return JSON error
+        if request.content_type == 'application/json':
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+        
+        # Otherwise return HTML error
+        messages.error(request, f"Error sharing location: {str(e)}")
+        return redirect('mainapp:rental_details', booking_id=booking_id)
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def check_extension(request, booking_id):
+    """Check availability and calculate price for booking extension"""
+    booking = get_object_or_404(
+        Booking, 
+        booking_id=booking_id, 
+        user=request.user, 
+        status='picked_up'
+    )
+    
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body) if request.body else request.POST
+            days = int(data.get('days', 0))
+            
+            if days <= 0:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'Please select a valid number of days'
+                })
+            
+            # Calculate new end date
+            new_end_date = booking.end_date + timezone.timedelta(days=days)
+            
+            # Check availability
+            is_available = booking.check_extension_availability(new_end_date)
+            
+            if not is_available:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'Extension not available for the selected dates'
+                })
+            
+            # Calculate extension amount
+            extension_amount = booking.calculate_extension_amount(new_end_date)
+            
+            return JsonResponse({
+                'status': 'success',
+                'is_available': is_available,
+                'extension_amount': float(extension_amount),
+                'new_end_date': new_end_date.strftime('%Y-%m-%d'),
+                'days': days
+            })
+            
+        except Exception as e:
+            logger.error(f"Error checking extension: {str(e)}")
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    
+    # For GET requests, just render the form
+    context = {
+        'booking': booking
+    }
+    
+    return render(request, 'mainapp/check_extension.html', context)
+
+@login_required
+@require_http_methods(["POST"])
+def process_extension(request, booking_id):
+    """Process booking extension and payment"""
+    booking = get_object_or_404(
+        Booking, 
+        booking_id=booking_id, 
+        user=request.user, 
+        status='picked_up'
+    )
+    
+    try:
+        data = json.loads(request.body) if request.body else request.POST
+        days = int(data.get('days', 0))
+        
+        if days <= 0:
+            return JsonResponse({
+                'status': 'error', 
+                'message': 'Please select a valid number of days'
+            })
+        
+        # Calculate new end date
+        new_end_date = booking.end_date + timezone.timedelta(days=days)
+        
+        # Check availability
+        is_available = booking.check_extension_availability(new_end_date)
+        
+        if not is_available:
+            return JsonResponse({
+                'status': 'error', 
+                'message': 'Extension not available for the selected dates'
+            })
+        
+        # Calculate extension amount
+        extension_amount = booking.calculate_extension_amount(new_end_date)
+        
+        # Create Stripe checkout session for extension payment
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'inr',
+                    'unit_amount': int(extension_amount * 100),
+                    'product_data': {
+                        'name': f'Booking Extension for {booking.booking_id}',
+                        'description': f'Extend rental by {days} days',
+                    },
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=request.build_absolute_uri(reverse('mainapp:extension_success')) + 
+                        f'?session_id={{CHECKOUT_SESSION_ID}}&booking_id={booking_id}&days={days}',
+            cancel_url=request.build_absolute_uri(reverse('mainapp:rental_details', args=[booking_id])),
+            client_reference_id=str(booking_id),
+        )
+        
+        return JsonResponse({
+            'status': 'success',
+            'session_id': session.id,
+            'stripe_public_key': settings.STRIPE_PUBLIC_KEY
+        })
+        
+    except Exception as e:
+        logger.error(f"Error processing extension: {str(e)}")
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+@login_required
+def extension_success(request):
+    """Handle successful extension payment"""
+    session_id = request.GET.get('session_id')
+    booking_id = request.GET.get('booking_id')
+    days = int(request.GET.get('days', 0))
+    
+    if not session_id or not booking_id or days <= 0:
+        messages.error(request, "Invalid extension confirmation")
+        return redirect('mainapp:current_rentals')
+    
+    booking = get_object_or_404(Booking, booking_id=booking_id, user=request.user)
+    
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        
+        if session.payment_status == "paid" and str(session.client_reference_id) == str(booking_id):
+            # Calculate new end date
+            new_end_date = booking.end_date + timezone.timedelta(days=days)
+            
+            # Process the extension
+            success = booking.extend_booking(new_end_date, session.payment_intent)
+            
+            if success:
+                # Send confirmation email
+                send_extension_confirmation_email(booking, days)
+                
+                messages.success(request, f"Booking successfully extended by {days} days. New return date: {new_end_date.strftime('%Y-%m-%d')}")
+            else:
+                messages.error(request, "Booking extension failed. Please contact support.")
+        else:
+            messages.warning(request, "Payment was successful, but booking extension failed. Please contact support.")
+        
+    except stripe.error.StripeError as e:
+        messages.error(request, f"An error occurred while processing your extension: {str(e)}")
+    
+    return redirect('mainapp:rental_details', booking_id=booking_id)
+
+def send_extension_confirmation_email(booking, days):
+    """Send confirmation email for booking extension"""
+    subject = 'Booking Extension Confirmation'
+    html_message = render_to_string('emails/extension_confirmation.html', {
+        'booking': booking,
+        'user': booking.user,
+        'days': days,
+        'new_end_date': booking.end_date,
+    })
+    plain_message = strip_tags(html_message)
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to_email = booking.user.email
+
+    try:
+        send_mail(
+            subject,
+            plain_message,
+            from_email,
+            [to_email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+        logger.info(f"Extension confirmation email sent for booking {booking.booking_id}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send extension confirmation email for booking {booking.booking_id}: {str(e)}")
+        return False
+
+@login_required
+@require_http_methods(["POST"])
+@csrf_exempt
+def share_location_test(request, booking_id):
+    """A simplified version of share_location that just returns success"""
+    try:
+        logger.info(f"Simple location share test called for booking {booking_id}")
+        logger.info(f"Request method: {request.method}")
+        logger.info(f"POST data: {request.POST}")
+        
+        latitude = request.POST.get('latitude', '12.9716')
+        longitude = request.POST.get('longitude', '77.5946')
+        
+        booking = get_object_or_404(
+            Booking, 
+            booking_id=booking_id, 
+            user=request.user
+        )
+        
+        # Create test location share
+        LocationShare.objects.create(
+            booking=booking,
+            latitude=float(latitude),
+            longitude=float(longitude)
+        )
+        
+        messages.success(request, "Test location shared successfully")
+        # Add coordinates to the redirect URL for map display
+        redirect_url = reverse('mainapp:rental_details', kwargs={'booking_id': booking_id})
+        redirect_url = f"{redirect_url}?lat={latitude}&lng={longitude}"
+        return redirect(redirect_url)
+    
+    except Exception as e:
+        logger.error(f"Error in test location sharing: {str(e)}")
+        logger.error(traceback.format_exc())
+        messages.error(request, f"Error in test: {str(e)}")
+        return redirect('mainapp:rental_details', booking_id=booking_id)

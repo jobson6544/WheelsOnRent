@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import logging
 
 # GitHub token for AI model
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')  # Set this in your environment variables
@@ -65,7 +66,9 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'formtools',
     'widget_tweaks',
-    'drivers'
+    'drivers',
+    'blockchain',
+    'sslserver',
 ]
 
 
@@ -75,12 +78,13 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'wheelsonrent.urls'
@@ -88,7 +92,7 @@ ROOT_URLCONF = 'wheelsonrent.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'template')],
+        'DIRS': [BASE_DIR / 'template'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -96,6 +100,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'vendor.context_processors.vendor_processor',
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
                 
@@ -316,6 +321,46 @@ AI_BASE_URL = "https://models.inference.ai.azure.com"  # The base URL for the mo
 
 # Update these settings
 DRIVER_LOGIN_URL = 'drivers:driver_login'  # New setting for drivers
+
+# Blockchain settings
+ETHEREUM_NODE_URL = 'http://127.0.0.1:7545'  # Ganache default URL
+ETHEREUM_ACCOUNT_ADDRESS = '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1'  # First account from your Ganache
+ETHEREUM_PRIVATE_KEY = '4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d'  # Private key without 0x prefix
+DRIVER_CONTRACT_ADDRESS = '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1'  # Your deployed contract address
+DRIVER_CONTRACT_ABI = [
+    {
+        "inputs": [
+            {"internalType": "string", "name": "driverId", "type": "string"},
+            {"internalType": "string", "name": "driverHash", "type": "string"}
+        ],
+        "name": "registerDriver",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {"internalType": "string", "name": "driverId", "type": "string"},
+            {"internalType": "string", "name": "driverHash", "type": "string"}
+        ],
+        "name": "verifyDriver",
+        "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [{"internalType": "string", "name": "", "type": "string"}],
+        "name": "drivers",
+        "outputs": [
+            {"internalType": "string", "name": "hash", "type": "string"},
+            {"internalType": "uint256", "name": "timestamp", "type": "uint256"}
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
+
+# Add these settings after your existing settings
 
 
 

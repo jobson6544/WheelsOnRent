@@ -140,6 +140,9 @@ class Booking(models.Model):
         ('refunded', 'Refunded'),
         ('failed', 'Refund Failed'),
     ], default='not_refunded')
+    # Add field for tracking rental extensions
+    has_been_extended = models.BooleanField(default=False)
+    extension_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f"Booking for {self.vehicle} by {self.user.username}"
@@ -160,6 +163,66 @@ class Booking(models.Model):
         logger.info(f"Overlapping bookings found: {overlapping_bookings.count()}")
         logger.info(f"Is vehicle available: {is_available}")
         return is_available
+        
+    def check_extension_availability(self, new_end_date):
+        """Check if the vehicle is available for extension until the new end date"""
+        if new_end_date <= self.end_date:
+            return False
+        
+        # Check if there are any other bookings that would overlap with the extended period
+        overlapping_bookings = Booking.objects.filter(
+            vehicle=self.vehicle,
+            status__in=['confirmed', 'pending'],
+            start_date__lt=new_end_date,
+            end_date__gt=self.end_date
+        ).exclude(booking_id=self.booking_id)
+        
+        return not overlapping_bookings.exists()
+    
+    def calculate_extension_amount(self, new_end_date):
+        """Calculate the additional amount for extending the booking"""
+        if new_end_date <= self.end_date:
+            return 0
+        
+        # Calculate days difference
+        additional_days = (new_end_date - self.end_date).days
+        if additional_days <= 0:
+            return 0
+        
+        # Calculate the amount based on the daily rate
+        daily_rate = self.vehicle.rental_rate
+        extension_amount = additional_days * daily_rate
+        
+        return extension_amount
+    
+    def extend_booking(self, new_end_date, payment_intent_id=None):
+        """Extend the booking to the new end date"""
+        if not self.check_extension_availability(new_end_date):
+            return False
+        
+        old_end_date = self.end_date
+        extension_amount = self.calculate_extension_amount(new_end_date)
+        
+        # Update booking
+        self.end_date = new_end_date
+        self.has_been_extended = True
+        self.total_amount += extension_amount
+        
+        if payment_intent_id:
+            self.extension_payment_intent_id = payment_intent_id
+            
+        self.save()
+        
+        # Create extension record
+        BookingExtension.objects.create(
+            booking=self,
+            original_end_date=old_end_date,
+            new_end_date=new_end_date,
+            extension_amount=extension_amount,
+            payment_intent_id=payment_intent_id
+        )
+        
+        return True
 
     def generate_qr_code(self, qr_type):
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
@@ -330,6 +393,26 @@ class Booking(models.Model):
             }
             send_status_email(self.user.email, self.status, context)
 
+    def process_early_return(self):
+        """Process early return of the vehicle"""
+        if self.status != 'picked_up':
+            return False, "This booking is not in picked up status"
+        
+        # Calculate unused days
+        current_time = timezone.now()
+        if current_time >= self.end_date:
+            # No unused days if returning after end date
+            unused_days = 0
+        else:
+            # Calculate unused days (round down)
+            unused_days = (self.end_date - current_time).days
+        
+        # Update booking status
+        self.status = 'returned'
+        self.save()
+        
+        return True, unused_days
+
 class Feedback(models.Model):
     RATING_CHOICES = (
         (1, '1 Star'),
@@ -346,3 +429,53 @@ class Feedback(models.Model):
     
     def __str__(self):
         return f"Feedback for Booking {self.booking.booking_id}"
+
+class BookingExtension(models.Model):
+    """Model to track booking extensions"""
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='extensions')
+    original_end_date = models.DateTimeField()
+    new_end_date = models.DateTimeField()
+    extension_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Extension for Booking {self.booking.booking_id}"
+
+class AccidentReport(models.Model):
+    """Model to store accident reports"""
+    SEVERITY_CHOICES = [
+        ('minor', 'Minor'),
+        ('moderate', 'Moderate'),
+        ('major', 'Major'),
+        ('severe', 'Severe'),
+    ]
+    
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='accident_reports')
+    report_date = models.DateTimeField(auto_now_add=True)
+    location = models.CharField(max_length=255)
+    description = models.TextField()
+    severity = models.CharField(max_length=10, choices=SEVERITY_CHOICES)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    is_emergency = models.BooleanField(default=False)
+    photos = models.ImageField(upload_to='accident_reports/', blank=True, null=True)
+    status = models.CharField(max_length=20, choices=[
+        ('reported', 'Reported'),
+        ('processing', 'Processing'),
+        ('resolved', 'Resolved'),
+    ], default='reported')
+    
+    def __str__(self):
+        return f"Accident Report {self.id} for Booking {self.booking.booking_id}"
+
+class LocationShare(models.Model):
+    """Model to store location sharing data"""
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='shared_locations')
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    timestamp = models.DateTimeField(default=timezone.now)  # Changed from auto_now_add to allow custom timestamps
+    is_active = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return f"Location for Booking {self.booking.booking_id} at {self.timestamp}"

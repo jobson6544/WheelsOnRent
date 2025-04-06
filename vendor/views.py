@@ -18,7 +18,7 @@ from decimal import Decimal
 from django.conf import settings  # Add this import
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from mainapp.models import Booking, User  # Adjust this import based on your project structure
+from mainapp.models import Booking, User, AccidentReport, LocationShare
 import qrcode
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -42,7 +42,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-from datetime import datetime
+from datetime import datetime, timedelta
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Spacer, Paragraph
 import os
@@ -1177,6 +1177,234 @@ def chatbot_response(request):
         response = {'reply': 'This is a sample response'}
         return JsonResponse(response)
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@never_cache
+@login_required
+def track_rented_vehicles(request):
+    """View for vendors to track their rented vehicles"""
+    vendor = request.user.vendor  # Get the vendor associated with the user
+    
+    # Get active bookings for this vendor's vehicles
+    active_bookings = Booking.objects.filter(
+        vehicle__vendor=vendor,
+        status='picked_up'
+    ).select_related('user', 'vehicle')
+    
+    context = {
+        'active_bookings': active_bookings
+    }
+    
+    return render(request, 'vendor/track_vehicles.html', context)
+
+@never_cache
+@login_required
+def vehicle_location(request, booking_id):
+    """Get the latest location for a vehicle"""
+    try:
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        vendor = request.user.vendor
+        booking = get_object_or_404(Booking, booking_id=booking_id, vehicle__vendor=vendor)
+        
+        # Debug logging
+        print(f"Vehicle location requested for booking {booking_id} by vendor {vendor.vendor_id}")
+        
+        # First try to get location through booking relationship
+        latest_location = LocationShare.objects.filter(
+            booking=booking
+        ).order_by('-timestamp').first()
+        
+        # If that doesn't work, try direct SQL query by booking_id
+        if not latest_location:
+            print(f"No location found through relation, trying direct query by booking_id")
+            from django.db import connection
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT id, latitude, longitude, timestamp FROM mainapp_locationshare WHERE booking_id = %s ORDER BY timestamp DESC LIMIT 1",
+                    [booking.id]
+                )
+                row = cursor.fetchone()
+                
+                if row:
+                    print(f"Found location through direct query: {row}")
+                    # Manually create a location object
+                    class TempLocation:
+                        def __init__(self, id, lat, lng, timestamp):
+                            self.id = id
+                            self.latitude = lat
+                            self.longitude = lng
+                            self.timestamp = timestamp
+                    
+                    latest_location = TempLocation(row[0], row[1], row[2], row[3])
+        
+        # Third attempt: check if any customer shared their location
+        if not latest_location:
+            print(f"Still no location found, checking ALL customer locations")
+            # Normally this wouldn't be appropriate but this is for debugging
+            all_locations = LocationShare.objects.all().order_by('-timestamp')[:5]
+            for loc in all_locations:
+                print(f"Recent location: booking_id={loc.booking.booking_id}, lat={loc.latitude}, lng={loc.longitude}")
+        
+        if latest_location:
+            # Debug logging for successful location
+            print(f"Location found for booking {booking_id}: lat={latest_location.latitude}, lng={latest_location.longitude}")
+            
+            # Check if location is recent (less than 30 minutes old)
+            is_recent = (timezone.now() - latest_location.timestamp) < timedelta(minutes=30)
+            
+            # Format the timestamp in a readable format
+            formatted_timestamp = latest_location.timestamp.strftime('%b %d, %Y at %I:%M %p')
+            
+            location_data = {
+                'latitude': latest_location.latitude,
+                'longitude': latest_location.longitude,
+                'timestamp': formatted_timestamp,
+                'is_recent': is_recent,
+                'age_minutes': int((timezone.now() - latest_location.timestamp).total_seconds() / 60)
+            }
+            
+            # Get customer's phone number if available
+            phone_number = "N/A"
+            if hasattr(booking.user, 'profile') and booking.user.profile.phone_number:
+                phone_number = booking.user.profile.phone_number
+            
+            return JsonResponse({
+                'status': 'success',
+                'location': location_data,
+                'booking': {
+                    'id': booking.booking_id,
+                    'status': booking.status,
+                    'end_date': booking.end_date.strftime('%Y-%m-%d')
+                },
+                'vehicle': {
+                    'model': str(booking.vehicle.model),
+                    'registration': booking.vehicle.registration.registration_number
+                },
+                'customer': {
+                    'name': booking.user.get_full_name() or booking.user.username,
+                    'phone': phone_number,
+                    'email': booking.user.email
+                }
+            })
+        else:
+            # Debug logging for missing location
+            print(f"No location data found for booking {booking_id}")
+            
+            return JsonResponse({
+                'status': 'error',
+                'message': 'No location data available for this booking',
+                'booking_id': booking_id,
+                'customer': {
+                    'name': booking.user.get_full_name() or booking.user.username,
+                    'phone': booking.user.profile.phone_number if hasattr(booking.user, 'profile') else 'N/A'
+                }
+            })
+    except Exception as e:
+        print(f"Error in vehicle_location view: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Error retrieving location: {str(e)}',
+        }, status=500)
+
+@never_cache
+@login_required
+def accident_reports(request):
+    """View for vendors to see accident reports for their vehicles"""
+    vendor = request.user.vendor
+    
+    # Get all accident reports for this vendor's vehicles
+    reports = AccidentReport.objects.filter(
+        booking__vehicle__vendor=vendor
+    ).select_related('booking', 'booking__user', 'booking__vehicle').order_by('-report_date')
+    
+    context = {
+        'reports': reports,
+        'emergency_reports': reports.filter(is_emergency=True, status='reported')
+    }
+    
+    return render(request, 'vendor/accident_reports.html', context)
+
+@never_cache
+@login_required
+def accident_detail(request, report_id):
+    """View details of a specific accident report"""
+    vendor = request.user.vendor
+    report = get_object_or_404(
+        AccidentReport, 
+        id=report_id, 
+        booking__vehicle__vendor=vendor
+    )
+    
+    if request.method == 'POST':
+        # Update the report status
+        status = request.POST.get('status')
+        if status in ['processing', 'resolved']:
+            report.status = status
+            report.save()
+            
+            # If resolved, notify the customer
+            if status == 'resolved':
+                send_accident_resolution_notification(report)
+            
+            return redirect('vendor:accident_reports')
+    
+    context = {
+        'report': report,
+        'booking': report.booking,
+        'customer': report.booking.user,
+        'vehicle': report.booking.vehicle
+    }
+    
+    return render(request, 'vendor/accident_detail.html', context)
+
+def send_accident_resolution_notification(report):
+    """Send notification to customer about accident resolution"""
+    from django.core.mail import send_mail
+    from django.template.loader import render_to_string
+    from django.utils.html import strip_tags
+    from django.conf import settings
+    
+    booking = report.booking
+    customer_email = booking.user.email
+    
+    subject = f'Update on Your Accident Report for Booking #{booking.booking_id}'
+    html_message = render_to_string('emails/accident_resolution.html', {
+        'accident': report,
+        'booking': booking,
+        'customer': booking.user,
+        'vehicle': booking.vehicle
+    })
+    plain_message = strip_tags(html_message)
+    
+    send_mail(
+        subject,
+        plain_message,
+        settings.DEFAULT_FROM_EMAIL,
+        [customer_email],
+        html_message=html_message,
+        fail_silently=False
+    )
+
+@never_cache
+@login_required
+def extension_requests(request):
+    """View for vendors to see booking extension records"""
+    vendor = request.user.vendor
+    
+    # Get bookings that have been extended
+    from mainapp.models import BookingExtension
+    extension_requests = BookingExtension.objects.filter(
+        booking__vehicle__vendor=vendor
+    ).select_related('booking', 'booking__user', 'booking__vehicle').order_by('-created_at')
+    
+    context = {
+        'extension_requests': extension_requests
+    }
+    
+    return render(request, 'vendor/extension_requests.html', context)
 
 
 

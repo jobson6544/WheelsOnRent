@@ -40,4 +40,11 @@ urlpatterns = [
     path('customers/', views.customer_list, name='customer_list'),
     path('reports/dashboard/', views.reports_dashboard, name='reports_dashboard'),
     path('reports/generate/', views.generate_report, name='generate_report'),
+    
+    # New URL patterns for tracking vehicles and handling accident reports
+    path('track-vehicles/', views.track_rented_vehicles, name='track_vehicles'),
+    path('vehicle-location/<int:booking_id>/', views.vehicle_location, name='vehicle_location'),
+    path('accident-reports/', views.accident_reports, name='accident_reports'),
+    path('accident-detail/<int:report_id>/', views.accident_detail, name='accident_detail'),
+    path('extension-requests/', views.extension_requests, name='extension_requests'),
 ]

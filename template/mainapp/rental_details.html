@@ -1,0 +1,490 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+
+{% block title %}Booking #{{ booking.booking_id }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<style>
+    /* Action cards styling */
+    .action-card {
+        border-radius: 10px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid #e9ecef;
+    }
+    
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    /* Map container */
+    #map {
+        height: 300px;
+        width: 100%;
+        border-radius: 5px;
+    }
+    
+    /* Status badge styling */
+    .status-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Booking #{{ booking.booking_id }}</h2>
+            <span class="badge badge-{{ booking.get_status_display_class }}">{{ booking.get_status_display }}</span>
+        </div>
+        <div class="col-md-4 text-md-right">
+            <a href="{% url 'mainapp:current_rentals' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Current Rentals
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Vehicle Details -->
+        <div class="col-md-7">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Vehicle Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            {% if vehicle.image %}
+                                <img src="{{ vehicle.image.url }}" alt="{{ vehicle.model }}" class="img-fluid rounded mb-3">
+                            {% else %}
+                                <img src="{% static 'images/no-image.png' %}" alt="No image" class="img-fluid rounded mb-3">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-7">
+                            <h5>{{ vehicle.model }}</h5>
+                            <p>
+                                <strong>Registration:</strong> {{ vehicle.registration.registration_number }}<br>
+                                <strong>Fuel Type:</strong> {{ vehicle.get_fuel_type_display }}<br>
+                                <strong>Year:</strong> {{ vehicle.model.model_year }}<br>
+                                <strong>Features:</strong>
+                                <ul class="list-inline">
+                                    {% for feature in vehicle.features.all %}
+                                    <li class="list-inline-item"><span class="badge badge-info">{{ feature.feature_name }}</span></li>
+                                    {% endfor %}
+                                </ul>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Booking Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Pick-up Date:</strong><br>
+                                {{ booking.start_date|date:"M d, Y - h:i A" }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Return Date:</strong><br>
+                                {{ booking.end_date|date:"M d, Y - h:i A" }}
+                            </p>
+                        </div>
+                    </div>
+                    <p>
+                        <strong>Total Amount Paid:</strong> ₹{{ booking.total_amount }}<br>
+                        <strong>Booking Status:</strong> {{ booking.get_status_display }}
+                    </p>
+                    {% if booking.has_been_extended %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> This booking has been extended from its original end date.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Vendor Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Vendor Information</h4>
+                </div>
+                <div class="card-body">
+                    <h5>{{ vendor.business_name }}</h5>
+                    <p>
+                        <strong>Address:</strong> {{ vendor.full_address }}<br>
+                        <strong>Contact:</strong> {{ vendor.contact_number }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions Column -->
+        <div class="col-md-5">
+            <!-- Management Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Actions</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Early Return Action -->
+                        <div class="col-md-6 mb-3">
+                            <div class="card action-card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-undo fa-3x text-primary mb-3"></i>
+                                    <h5>Early Return</h5>
+                                    <p class="small">Return the vehicle before your scheduled end date</p>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#earlyReturnModal">
+                                        Return Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Report Accident -->
+                        <div class="col-md-6 mb-3">
+                            <div class="card action-card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-car-crash fa-3x text-danger mb-3"></i>
+                                    <h5>Report Accident</h5>
+                                    <p class="small">Report a vehicle accident or damage</p>
+                                    <a href="{% url 'mainapp:report_accident' booking.booking_id %}" class="btn btn-outline-danger btn-sm">
+                                        Report Now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Share Location -->
+                        <div class="col-md-6 mb-3">
+                            <div class="card action-card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-map-marker-alt fa-3x text-success mb-3"></i>
+                                    <h5>Share Location</h5>
+                                    <p class="small">Share your current location with the vendor</p>
+                                    
+                                    <!-- Location sharing button container -->
+                                    <div id="shareLocationBtn" data-share-location-booking="{{ booking.booking_id }}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Extend Booking -->
+                        <div class="col-md-6 mb-3">
+                            <div class="card action-card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-calendar-plus fa-3x text-info mb-3"></i>
+                                    <h5>Extend Booking</h5>
+                                    <p class="small">Extend your rental period</p>
+                                    {% if extension_possible %}
+                                    <a href="{% url 'mainapp:check_extension' booking.booking_id %}" class="btn btn-outline-info btn-sm">
+                                        Extend Now
+                                    </a>
+                                    {% else %}
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
+                                        Not Available
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Location Map -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Current Location</h4>
+                </div>
+                <div class="card-body">
+                    <div id="map"></div>
+                    <div id="locationStatus" class="mt-2 text-center">
+                        <p class="text-muted small">
+                            <i class="fas fa-info-circle"></i> Your location will be visible here when shared
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Accident Reports -->
+            {% if accident_reports %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Accident Reports</h4>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for report in accident_reports %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">
+                                    {{ report.get_severity_display }} Accident
+                                </h5>
+                                <small>{{ report.report_date|date:"M d, Y" }}</small>
+                            </div>
+                            <p class="mb-1">{{ report.description|truncatechars:100 }}</p>
+                            <small>Status: <span class="badge badge-{% if report.status == 'reported' %}warning{% elif report.status == 'processing' %}info{% else %}success{% endif %}">{{ report.get_status_display }}</span></small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Early Return Modal -->
+<div class="modal fade" id="earlyReturnModal" tabindex="-1" role="dialog" aria-labelledby="earlyReturnModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="earlyReturnModalLabel">Confirm Early Return</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to return this vehicle now? This action cannot be undone.</p>
+                <p><strong>Current Return Date:</strong> {{ booking.end_date|date:"M d, Y" }}</p>
+                <p class="text-info">
+                    <i class="fas fa-info-circle"></i> If you return early, you may be eligible for a partial refund for unused days.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form action="{% url 'mainapp:early_return' booking.booking_id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Confirm Return</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="{% static 'js/location_sharing.js' %}"></script>
+<script>
+    // Initialize map
+    var map = L.map('map').setView([20.5937, 78.9629], 5); // Default to India
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    var marker;
+    
+    // Check if there's a shared location in URL parameters
+    function checkForSharedLocation() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const latitude = urlParams.get('lat');
+        const longitude = urlParams.get('lng');
+        
+        if (latitude && longitude) {
+            console.log("Found location in URL parameters:", latitude, longitude);
+            updateMap(parseFloat(latitude), parseFloat(longitude));
+            
+            // Make sure SweetAlert doesn't show while a bootstrap modal is visible
+            if (!$('.modal.show').length) {
+                // Display a notification that location was shared
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Location Shared',
+                        text: 'Your location has been successfully shared!',
+                        timer: 4000,
+                        showConfirmButton: true,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#1e3c72'
+                    });
+                }, 500);
+            } else {
+                // Just show a simple status message if modal is open
+                console.log("Modal is open, not showing SweetAlert");
+                document.getElementById('locationStatus').innerHTML = 
+                    '<p class="text-success"><i class="fas fa-check-circle"></i> Location shared successfully!</p>';
+            }
+        }
+    }
+    
+    // Update map when location is shared
+    window.updateMap = function(latitude, longitude) {
+        console.log("Updating map with coordinates:", latitude, longitude);
+        
+        if (marker) {
+            map.removeLayer(marker);
+        }
+        
+        try {
+            map.setView([latitude, longitude], 13);
+            marker = L.marker([latitude, longitude]).addTo(map);
+            
+            document.getElementById('locationStatus').innerHTML = 
+                '<p class="text-success"><i class="fas fa-check-circle"></i> Location shared successfully!</p>';
+                
+            // Force map redraw to ensure it displays correctly
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 100);
+        } catch (e) {
+            console.error("Error updating map:", e);
+            document.getElementById('locationStatus').innerHTML = 
+                '<p class="text-danger"><i class="fas fa-exclamation-circle"></i> Error displaying location on map</p>';
+        }
+    };
+    
+    // Check for location parameters when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make sure the map renders correctly
+        setTimeout(function() {
+            map.invalidateSize();
+        }, 500);
+        
+        // Check for shared location
+        checkForSharedLocation();
+    });
+
+    function shareCurrentLocation() {
+        // Get button and show loading state
+        const shareButton = document.getElementById('share-location-btn');
+        shareButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sharing...';
+        shareButton.disabled = true;
+        
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    // Get current client timestamp
+                    const now = new Date();
+                    const timestamp = now.toISOString();
+                    
+                    // Create form data
+                    const data = {
+                        'latitude': lat,
+                        'longitude': lng,
+                        'timestamp': timestamp
+                    };
+                    
+                    // Log location in console for debugging
+                    console.log(`Location obtained: ${lat}, ${lng} at ${timestamp}`);
+                    
+                    // Send to server via fetch API
+                    fetch("{% url 'mainapp:share_location' booking.booking_id %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Reset button state
+                        shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
+                        shareButton.disabled = false;
+                        
+                        // Show success and update map if needed
+                        Swal.fire({
+                            title: 'Location Shared!',
+                            text: 'Your location has been successfully shared with the vendor.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                        
+                        // If map isn't visible, show it now with location
+                        const mapContainer = document.getElementById('location-map-container');
+                        if (mapContainer && window.map) {
+                            mapContainer.classList.remove('d-none');
+                            
+                            // Update map view with new coordinates
+                            window.map.setView([lat, lng], 15);
+                            
+                            // Update or create marker
+                            if (window.locationMarker) {
+                                window.locationMarker.setLatLng([lat, lng]);
+                            } else {
+                                window.locationMarker = L.marker([lat, lng]).addTo(window.map)
+                                    .bindPopup("Your current location").openPopup();
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
+                        shareButton.disabled = false;
+                        
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Failed to share location. Please try again.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+                },
+                function(error) {
+                    console.error("Error getting location:", error);
+                    shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
+                    shareButton.disabled = false;
+                    
+                    // Show appropriate error message based on error code
+                    let errorMessage = 'An error occurred while getting your location.';
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'You denied the request for location access. Please enable location services in your browser settings.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information is unavailable. Please check your device GPS or try again later.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'The request to get your location timed out. Please try again.';
+                            break;
+                    }
+                    
+                    Swal.fire({
+                        title: 'Location Error',
+                        text: errorMessage,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        } else {
+            shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
+            shareButton.disabled = false;
+            
+            Swal.fire({
+                title: 'Not Supported',
+                text: 'Geolocation is not supported by this browser. Please try using a different browser.',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
+</script>
+{% endblock %} 
