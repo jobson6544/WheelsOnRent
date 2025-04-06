@@ -476,6 +476,8 @@ class LocationShare(models.Model):
     longitude = models.FloatField()
     timestamp = models.DateTimeField(default=timezone.now)  # Changed from auto_now_add to allow custom timestamps
     is_active = models.BooleanField(default=True)
+    is_live_tracking = models.BooleanField(default=False)  # Indicates if this is from live tracking
+    accuracy = models.FloatField(null=True, blank=True)  # GPS accuracy in meters, if available
     
     def __str__(self):
         return f"Location for Booking {self.booking.booking_id} at {self.timestamp}"

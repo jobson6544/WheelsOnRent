@@ -40,6 +40,31 @@
     .location-tag.old {
         background-color: #dc3545;
     }
+    /* Pulsing marker for live tracking */
+    .pulse-marker {
+        width: 20px;
+        height: 20px;
+        background-color: #e74a3b;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        animation: pulse 1.5s infinite;
+        box-shadow: 0 0 0 rgba(231, 74, 59, 0.4);
+    }
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(231, 74, 59, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 15px rgba(231, 74, 59, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(231, 74, 59, 0);
+        }
+    }
 </style>
 {% endblock %}
 
@@ -47,7 +72,13 @@
 <main id="main" class="main">
 <div class="container-fluid py-4">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0">Track Rented Vehicles</h1>
+        <h1 class="h3 mb-0 text-gray-800">Track Rented Vehicles</h1>
+    </div>
+    
+    <!-- Live tracking feature alert -->
+    <div class="alert alert-info mb-4">
+        <h5><i class="fas fa-info-circle"></i> New Feature: Live Tracking</h5>
+        <p>Customers can now enable live tracking to share their location with you in real-time. When a customer enables live tracking, you'll see a pulsing indicator on the map and a "LIVE TRACKING ACTIVE" label.</p>
     </div>
     
     <div class="row">
@@ -125,7 +156,16 @@
                     <h6 class="m-0 font-weight-bold text-primary">Vehicle Location Map</h6>
                 </div>
                 <div class="card-body">
-                    <div id="map"></div>
+                    <div id="map" style="height: 500px; width: 100%; border-radius: 8px;"></div>
+                    <div id="map-loading" class="text-center my-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading map...</span>
+                        </div>
+                        <p class="mt-2 font-weight-bold">Initializing map and loading vehicle locations...</p>
+                        <div class="progress mt-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                        </div>
+                    </div>
                     <div id="location-info" class="mt-3 d-none">
                         <div class="alert alert-info">
                             <h5 id="selected-vehicle">Vehicle Information</h5>
@@ -149,23 +189,40 @@
     </div>
 </div>
 
-
-<!-- Direct debug map to show vehicle locations -->
-<div class="container mt-5">
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h5>Direct Location Tracking (Debug Map)</h5>
+<!-- Direct debug display for troubleshooting -->
+<div class="container mt-5 mb-5">
+    <div class="card shadow">
+        <div class="card-header bg-warning text-white">
+            <h5><i class="fas fa-bug"></i> Location Troubleshooting</h5>
         </div>
         <div class="card-body">
-            <div class="row">
+            <div class="row mb-3">
                 <div class="col-md-12">
-                    <div id="debug-map" style="height: 400px;"></div>
+                    <div id="debug-info" class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Debug Information</h6>
+                        <p>This section shows raw debugging information about location requests.</p>
+                    </div>
                 </div>
             </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="debugBookingId">Enter Booking ID to test:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="debugBookingId" placeholder="Booking ID">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button" id="debugFetchBtn">Fetch Location</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="row mt-3">
                 <div class="col-md-12">
-                    <div id="debug-status" class="alert alert-info">
-                        Initializing debug map...
+                    <div id="debug-result" class="border p-3 bg-light">
+                        <p>API response will appear here</p>
                     </div>
                 </div>
             </div>
@@ -173,52 +230,124 @@
     </div>
 </div>
 </main>
+{% endblock %}
+
+{% block extra_js %}
 <script>
-    // Debug info
-    console.log("Track vehicles page loaded");
-    
-    // Initialize map
-    var map = L.map('map').setView([20.5937, 78.9629], 5); // Default to India
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-    
-    // Check if SweetAlert is available
-    if (window.Swal) {
-        console.log("SweetAlert2 is available");
-    } else {
-        console.error("SweetAlert2 is not available - notifications won't work");
-    }
-    
+    // Global variables
+    var map = null;
     var markers = {};
     var activeBookingId = null;
-    
-    // Handle vehicle selection
-    document.querySelectorAll('.vehicle-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking-id');
-            setActiveVehicle(bookingId);
-            getVehicleLocation(bookingId);
-            
-            // Start periodic updates for the selected vehicle
-            startLocationPolling(bookingId);
-        });
-    });
-    
-    // Handle get location button clicks
-    document.querySelectorAll('.get-location-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevent the parent click event
-            const bookingId = this.getAttribute('data-booking-id');
-            getVehicleLocation(bookingId);
-        });
-    });
-    
-    // Polling variables
-    let pollingIntervalId = null;
+    var pollingIntervalId = null;
     const pollingInterval = 5000; // 5 seconds
     
+    // Initialize map after the page has fully loaded
+    window.addEventListener('load', function() {
+        console.log("Window fully loaded, initializing map...");
+        
+        try {
+            // Check if Leaflet is loaded
+            if (typeof L === 'undefined') {
+                console.error("Leaflet library (L) is not available!");
+                document.getElementById('map-loading').innerHTML = 
+                    '<p class="text-danger">Error: Leaflet map library not loaded</p>';
+                return;
+            }
+            
+            console.log("Leaflet is available! Creating map...");
+            
+            // Initialize the map
+            map = L.map('map').setView([20.5937, 78.9629], 5); // Default to India
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            console.log("Map initialized successfully!");
+            
+            // Add a test marker to verify map is working
+            var testMarker = L.marker([20.5937, 78.9629]).addTo(map);
+            testMarker.bindPopup("Map initialized successfully!").openPopup();
+            
+            // Remove test marker after 5 seconds
+            setTimeout(function() {
+                map.removeLayer(testMarker);
+            }, 5000);
+            
+            // Make sure map is properly rendered
+            setTimeout(function() {
+                if (map) {
+                    map.invalidateSize();
+                    console.log("Map size refreshed");
+                    
+                    // Hide loading indicator
+                    document.getElementById('map-loading').style.display = 'none';
+                    
+                    // Load the first vehicle automatically
+                    loadFirstVehicle();
+                    
+                    // Setup event handlers
+                    setupEventHandlers();
+                }
+            }, 1000);
+            
+        } catch (error) {
+            console.error("Error initializing map:", error);
+            document.getElementById('map-loading').innerHTML = 
+                `<p class="text-danger">Error initializing map: ${error.message}</p>
+                <p>Please refresh the page and try again.</p>`;
+        }
+    });
+    
+    // Function to set up event handlers
+    function setupEventHandlers() {
+        // Handle vehicle selection
+        document.querySelectorAll('.vehicle-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+                const bookingId = this.getAttribute('data-booking-id');
+                setActiveVehicle(bookingId);
+                getVehicleLocation(bookingId);
+                
+                // Start periodic updates for the selected vehicle
+                startLocationPolling(bookingId);
+            });
+        });
+        
+        // Handle get location button clicks
+        document.querySelectorAll('.get-location-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent the parent click event
+                const bookingId = this.getAttribute('data-booking-id');
+                getVehicleLocation(bookingId);
+            });
+        });
+    }
+    
+    // Function to load the first vehicle's location
+    function loadFirstVehicle() {
+        // Get all booking IDs on the page
+        const bookingItems = document.querySelectorAll('.vehicle-item');
+        if (bookingItems.length > 0) {
+            console.log(`Found ${bookingItems.length} vehicles to check for locations`);
+            
+            // Check the first vehicle by default
+            const firstBookingId = bookingItems[0].getAttribute('data-booking-id');
+            if (firstBookingId) {
+                console.log(`Loading location for first vehicle (Booking ID: ${firstBookingId})`);
+                // Set it as active
+                setActiveVehicle(firstBookingId);
+                // Try to get its location
+                getVehicleLocation(firstBookingId);
+                // Start polling
+                startLocationPolling(firstBookingId);
+            }
+        } else {
+            console.log("No vehicles found on page");
+            document.getElementById('map-loading').innerHTML = '<p class="text-warning">No active rentals found</p>';
+        }
+    }
+    
+    // All your existing functions for tracking vehicles
     function startLocationPolling(bookingId) {
         // Clear any existing polling
         stopLocationPolling();
@@ -246,24 +375,72 @@
         <input type="checkbox" class="custom-control-input" id="autoRefreshToggle" checked>
         <label class="custom-control-label" for="autoRefreshToggle">Auto-refresh location (5s)</label>
     `;
-    document.querySelector('.card-body').appendChild(autoRefreshToggle);
-    
-    // Handle auto-refresh toggle
-    document.getElementById('autoRefreshToggle').addEventListener('change', function() {
-        if (this.checked && activeBookingId) {
-            startLocationPolling(activeBookingId);
-        } else {
-            stopLocationPolling();
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.card-body').appendChild(autoRefreshToggle);
+        
+        // Handle auto-refresh toggle
+        document.getElementById('autoRefreshToggle').addEventListener('change', function() {
+            if (this.checked && activeBookingId) {
+                startLocationPolling(activeBookingId);
+            } else {
+                stopLocationPolling();
+            }
+        });
     });
     
     // Add code to handle live tracking indicator
-    function updateLiveTrackingStatus(isLive, timestamp) {
+    function updateLiveTrackingStatus(isLive, timestamp, isLiveTracking) {
         const indicator = document.getElementById('live-tracking-indicator');
         if (isLive) {
             indicator.classList.remove('d-none');
-            if (timestamp) {
-                document.getElementById('last-update-time').textContent = 'Last update: ' + timestamp;
+            
+            // Check if this is active live tracking
+            if (isLiveTracking) {
+                // Show as LIVE tracking
+                indicator.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-grow text-danger mr-2" role="status" style="width: 1rem; height: 1rem;">
+                            <span class="sr-only">Live</span>
+                        </div>
+                        <span class="text-danger font-weight-bold">LIVE TRACKING ACTIVE</span>
+                        <span class="ml-2" id="last-update-time">${timestamp ? 'Last update: ' + timestamp : ''}</span>
+                    </div>
+                `;
+                // Add a pulsing effect to the marker
+                const bookingId = activeBookingId;
+                if (bookingId && markers[bookingId]) {
+                    // Add pulsing effect to the marker
+                    if (!markers[bookingId]._pulseIcon) {
+                        markers[bookingId]._pulseIcon = true;
+                        markers[bookingId].setIcon(L.divIcon({
+                            html: '<div class="pulse-marker"><i class="fas fa-car"></i></div>',
+                            className: '',
+                            iconSize: [20, 20]
+                        }));
+                    }
+                }
+            } else {
+                // Show as recent but not live
+                indicator.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-map-marker-alt text-success mr-2"></i>
+                        <span class="text-success">LOCATION UPDATED</span>
+                        <span class="ml-2" id="last-update-time">${timestamp ? 'at ' + timestamp : ''}</span>
+                    </div>
+                `;
+                // Reset marker if needed
+                const bookingId = activeBookingId;
+                if (bookingId && markers[bookingId] && markers[bookingId]._pulseIcon) {
+                    markers[bookingId]._pulseIcon = false;
+                    markers[bookingId].setIcon(L.icon({
+                        iconUrl: '/static/img/marker-icon.png',
+                        shadowUrl: '/static/img/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    }));
+                }
             }
         } else {
             indicator.classList.add('d-none');
@@ -285,13 +462,15 @@
         activeBookingId = bookingId;
     }
     
-    // Modify getVehicleLocation to support polling and live tracking
+    // The rest of your existing functions...
     function getVehicleLocation(bookingId, isPolling = false) {
         // Show loading indicator
         const statusElement = document.getElementById(`location-status-${bookingId}`);
-        statusElement.classList.remove('recent', 'old');
-        statusElement.classList.add('old');
-        statusElement.setAttribute('title', 'Fetching location...');
+        if (statusElement) {
+            statusElement.classList.remove('recent', 'old');
+            statusElement.classList.add('old');
+            statusElement.setAttribute('title', 'Fetching location...');
+        }
         
         console.log(`Fetching location for booking ${bookingId}, polling: ${isPolling}`);
         
@@ -307,14 +486,16 @@
                     console.log(`Location found for booking ${bookingId}:`, data.location);
                     
                     // Update location status indicator
-                    if (data.location.is_recent) {
-                        statusElement.classList.remove('old');
-                        statusElement.classList.add('recent');
-                        statusElement.setAttribute('title', 'Recent location (< 30 minutes)');
-                    } else {
-                        statusElement.classList.remove('recent');
-                        statusElement.classList.add('old');
-                        statusElement.setAttribute('title', 'Location outdated (> 30 minutes)');
+                    if (statusElement) {
+                        if (data.location.is_recent) {
+                            statusElement.classList.remove('old');
+                            statusElement.classList.add('recent');
+                            statusElement.setAttribute('title', 'Recent location (< 30 minutes)');
+                        } else {
+                            statusElement.classList.remove('recent');
+                            statusElement.classList.add('old');
+                            statusElement.setAttribute('title', 'Location outdated (> 30 minutes)');
+                        }
                     }
                     
                     // Show the timestamp in the list
@@ -337,382 +518,101 @@
                     setActiveVehicle(bookingId);
                     
                     // Remove existing marker if any
-                    if (markers[bookingId]) {
+                    if (markers[bookingId] && map) {
                         map.removeLayer(markers[bookingId]);
                     }
                     
                     // Create new marker with popup
-                    markers[bookingId] = L.marker([lat, lng]).addTo(map)
-                        .bindPopup(`
-                            <strong>${data.customer.name}</strong><br>
-                            Last shared: ${data.location.timestamp}<br>
-                            <a href="tel:${data.customer.phone}" class="btn btn-sm btn-outline-primary mt-2">
-                                <i class="fas fa-phone"></i> Call
-                            </a>
-                        `);
-                    
-                    // Center the map - even on polling if this is the active vehicle
-                    if (!isPolling || activeBookingId === bookingId) {
-                        map.setView([lat, lng], 13);
+                    if (map) {
+                        markers[bookingId] = L.marker([lat, lng]).addTo(map)
+                            .bindPopup(`
+                                <strong>${data.customer.name}</strong><br>
+                                Last shared: ${data.location.timestamp}<br>
+                                <a href="tel:${data.customer.phone}" class="btn btn-sm btn-outline-primary mt-2">
+                                    <i class="fas fa-phone"></i> Call
+                                </a>
+                            `);
+                        
+                        // Center the map - even on polling if this is the active vehicle
+                        if (!isPolling || activeBookingId === bookingId) {
+                            map.setView([lat, lng], 13);
+                        }
                     }
                     
                     // Show location info
                     const locationInfo = document.getElementById('location-info');
-                    locationInfo.classList.remove('d-none');
-                    
-                    // Get vehicle details from DOM
-                    const vehicleItem = document.querySelector(`.vehicle-item[data-booking-id="${bookingId}"]`);
-                    const vehicleName = vehicleItem.querySelector('h6').innerText;
-                    const vehicleRegNumber = vehicleItem.querySelector('small').innerText.replace('Reg: ', '');
-                    
-                    // Update info display
-                    document.getElementById('selected-vehicle').innerText = vehicleName;
-                    document.getElementById('location-details').innerHTML = `
-                        <strong>Last Location:</strong> ${data.location.timestamp}<br>
-                        <strong>Coordinates:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}<br>
-                        <strong>Status:</strong> ${data.location.is_recent ? '<span class="text-success">Recent</span>' : '<span class="text-warning">Outdated</span>'}
-                    `;
-                    document.getElementById('customer-details').innerHTML = `
-                        <strong>Customer:</strong> ${data.customer.name}<br>
-                        <strong>Phone:</strong> <a href="tel:${data.customer.phone}">${data.customer.phone}</a>${data.customer.email ? `<br><strong>Email:</strong> ${data.customer.email}` : ''}
-                    `;
-                    
-                    // Update live tracking status
-                    updateLiveTrackingStatus(data.location.is_recent, data.location.timestamp);
-                    
-                    // Play notification sound for new locations if this was from auto-refresh
-                    if (isPolling && data.location.is_recent && data.location.age_minutes <= 5) {
-                        playNotificationSound();
-                        
-                        // Notify user with a toast if this is a very recent update (last 5 minutes)
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'info',
-                            title: 'Location Updated',
-                            text: `${data.customer.name} just shared their location`,
-                            showConfirmButton: false,
-                            timer: 3000
-                        });
-                    }
-                } else {
-                    // Only update UI if this is not a polling update to avoid flickering
-                    if (!isPolling) {
-                        // Update status to indicate no location
-                        statusElement.classList.remove('recent');
-                        statusElement.classList.add('old');
-                        statusElement.setAttribute('title', 'No location data');
-                        
-                        // Hide the timestamp
-                        const timeElement = document.getElementById(`location-time-${bookingId}`);
-                        if (timeElement) {
-                            timeElement.classList.add('d-none');
-                        }
-                        
-                        // Show error message
-                        const locationInfo = document.getElementById('location-info');
-                        locationInfo.classList.remove('d-none');
-                        document.getElementById('selected-vehicle').innerText = 'Location Unavailable';
-                        document.getElementById('location-details').innerHTML = `
-                            <p class="text-danger">${data.message}</p>
-                            <p>The customer has not shared their location yet, or the location sharing has expired.</p>
-                        `;
-                        document.getElementById('customer-details').innerHTML = '';
-                        
-                        // Update live tracking status
-                        updateLiveTrackingStatus(false);
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Only update UI if this is not a polling update
-                if (!isPolling) {
-                    statusElement.classList.remove('recent');
-                    statusElement.classList.add('old');
-                    statusElement.setAttribute('title', 'Error fetching location');
-                }
-            });
-    }
-    
-    // Play notification sound for new locations
-    function playNotificationSound() {
-        try {
-            // Create a simple beep sound using Web Audio API instead of relying on external files
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.type = 'sine';
-            oscillator.frequency.value = 800;
-            gainNode.gain.value = 0.1;
-            
-            oscillator.start();
-            setTimeout(function() {
-                oscillator.stop();
-            }, 300);
-        } catch (e) {
-            console.error('Error playing notification sound:', e);
-            // Silent fail - no sound is better than an error
-        }
-    }
-</script>
-
-<!-- DIRECT LOCATION FETCH SCRIPT - BYPASS OTHER CODE -->
-<script>
-    // This script directly loads locations for active bookings
-    // Add to the bottom of the page so it runs after everything else
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("Direct location finder activated");
-        
-        // Load locations for all visible rental cars on page load
-        setTimeout(function() {
-            // Get all booking IDs on the page
-            const bookingItems = document.querySelectorAll('.vehicle-item');
-            if (bookingItems.length > 0) {
-                console.log(`Found ${bookingItems.length} vehicles to check for locations`);
-                
-                // Check the first vehicle by default
-                const firstBookingId = bookingItems[0].getAttribute('data-booking-id');
-                if (firstBookingId) {
-                    console.log(`Loading location for first vehicle (Booking ID: ${firstBookingId})`);
-                    loadDirectLocation(firstBookingId);
-                    setActiveVehicle(firstBookingId);
-                }
-            } else {
-                console.log("No vehicles found on page");
-            }
-        }, 1000);
-        
-        // Make the direct location load also happen on button clicks
-        document.querySelectorAll('.get-location-btn').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const bookingId = this.getAttribute('data-booking-id');
-                console.log(`Direct location load requested for booking ${bookingId}`);
-                loadDirectLocation(bookingId);
-                e.stopPropagation();
-            });
-        });
-    });
-    
-    // Direct location loader - simpler version that bypasses all the existing code
-    function loadDirectLocation(bookingId) {
-        console.log(`Directly loading location for booking ${bookingId}`);
-        
-        // Update UI to show we're loading
-        const item = document.querySelector(`.vehicle-item[data-booking-id="${bookingId}"]`);
-        if (item) {
-            item.classList.add('active');
-        }
-        
-        // Make the API call directly
-        fetch(`{% url 'vendor:vehicle_location' 0 %}`.replace('0', bookingId))
-            .then(response => response.json())
-            .then(data => {
-                console.log("Direct location response:", data);
-                
-                if (data.status === 'success') {
-                    // We got a location - update the map
-                    const lat = data.location.latitude;
-                    const lng = data.location.longitude;
-                    
-                    // Update marker
-                    if (markers[bookingId]) {
-                        map.removeLayer(markers[bookingId]);
-                    }
-                    
-                    // Create a visible marker
-                    markers[bookingId] = L.marker([lat, lng]).addTo(map)
-                        .bindPopup(`
-                            <strong>${data.customer.name}</strong><br>
-                            ${data.location.timestamp}
-                        `).openPopup();
-                    
-                    // Center the map
-                    map.setView([lat, lng], 13);
-                    
-                    // Turn the status indicator green
-                    const statusElement = document.getElementById(`location-status-${bookingId}`);
-                    if (statusElement) {
-                        statusElement.classList.remove('old');
-                        statusElement.classList.add('recent');
-                    }
-                    
-                    // Show success info
-                    const locationInfo = document.getElementById('location-info');
                     if (locationInfo) {
                         locationInfo.classList.remove('d-none');
-                        const vehicle = document.querySelector(`.vehicle-item[data-booking-id="${bookingId}"] h6`);
-                        const vehicleName = vehicle ? vehicle.innerText : `Booking #${bookingId}`;
                         
+                        // Get vehicle details from DOM
+                        const vehicleItem = document.querySelector(`.vehicle-item[data-booking-id="${bookingId}"]`);
+                        const vehicleName = vehicleItem.querySelector('h6').innerText;
+                        const vehicleRegNumber = vehicleItem.querySelector('small').innerText.replace('Reg: ', '');
+                        
+                        // Update info display
                         document.getElementById('selected-vehicle').innerText = vehicleName;
                         document.getElementById('location-details').innerHTML = `
                             <strong>Last Location:</strong> ${data.location.timestamp}<br>
                             <strong>Coordinates:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}<br>
-                            <strong>Found:</strong> <span class="text-success">✓ Location found!</span>
+                            <strong>Status:</strong> ${data.location.is_recent ? '<span class="text-success">Recent</span>' : '<span class="text-warning">Outdated</span>'}
                         `;
                         document.getElementById('customer-details').innerHTML = `
                             <strong>Customer:</strong> ${data.customer.name}<br>
-                            <strong>Phone:</strong> ${data.customer.phone || 'N/A'}<br>
-                            <strong>Vehicle:</strong> ${data.vehicle?.model || 'N/A'}
+                            <strong>Phone:</strong> <a href="tel:${data.customer.phone}">${data.customer.phone}</a>${data.customer.email ? `<br><strong>Email:</strong> ${data.customer.email}` : ''}
                         `;
+                        
+                        // Update live tracking status
+                        updateLiveTrackingStatus(data.location.is_recent, data.location.timestamp, data.location.is_live_tracking);
                     }
-                    
-                    console.log(`Successfully displayed location at ${lat}, ${lng}`);
                 } else {
-                    // No location found - show error message
-                    console.log("No location found for this booking");
-                    const locationInfo = document.getElementById('location-info');
-                    if (locationInfo) {
-                        locationInfo.classList.remove('d-none');
-                        document.getElementById('selected-vehicle').innerText = 'Location Unavailable';
-                        document.getElementById('location-details').innerHTML = `
-                            <p class="text-danger">No location data available for this booking</p>
-                            <p>The customer has not shared their location yet, or the location sharing has expired.</p>
-                        `;
-                        document.getElementById('customer-details').innerHTML = '';
-                    }
+                    console.error("Error or no location data:", data);
+                    // Handle error or no location data case
                 }
             })
             .catch(error => {
-                console.error("Error fetching location data:", error);
+                console.error('Error:', error);
             });
     }
-</script>
-
-<!-- Independent tracking code for debug map -->
-<script>
-// Independent tracking code for debug map
-document.addEventListener('DOMContentLoaded', function() {
-    // Update status
-    const debugStatus = document.getElementById('debug-status');
-    function updateStatus(message, type = 'info') {
-        console.log(`[DEBUG] ${message}`);
-        debugStatus.innerHTML = message;
-        debugStatus.className = `alert alert-${type}`;
-    }
     
-    updateStatus('Initializing map...');
-    
-    // Initialize map
-    const debugMap = L.map('debug-map').setView([20.5937, 78.9629], 5); // Center on India
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(debugMap);
-    
-    updateStatus('Map initialized. Fetching vehicle locations...');
-    
-    // Store markers
-    const debugMarkers = {};
-    
-    // Function to fetch all bookings
-    function getAllBookings() {
-        // Get all booking IDs from vehicle items
-        const vehicleItems = document.querySelectorAll('.vehicle-item');
-        const bookingIds = Array.from(vehicleItems)
-            .map(item => item.getAttribute('data-booking-id'))
-            .filter(id => id); // Filter out null/undefined
-            
-        updateStatus(`Found ${bookingIds.length} bookings to check: ${bookingIds.join(', ')}`);
+    // Debug utilities for troubleshooting
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Location debug tools initializing");
         
-        return bookingIds;
-    }
-    
-    // Function to refresh locations
-    function refreshLocations() {
-        const bookingIds = getAllBookings();
+        const debugFetchBtn = document.getElementById('debugFetchBtn');
+        const debugBookingId = document.getElementById('debugBookingId');
+        const debugResult = document.getElementById('debug-result');
         
-        if (bookingIds.length === 0) {
-            updateStatus('No active bookings found!', 'warning');
-            return;
-        }
-        
-        let locationsFound = 0;
-        
-        // Check location for each booking
-        bookingIds.forEach(bookingId => {
-            fetch(`/vendor/vehicle-location/${bookingId}/`)
-                .then(response => {
-                    console.log(`Response for booking ${bookingId}: ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(`Data for booking ${bookingId}:`, data);
-                    
-                    if (data.status === 'success' && data.location) {
-                        // Found a location!
-                        locationsFound++;
-                        
-                        const lat = data.location.latitude;
-                        const lng = data.location.longitude;
-                        
-                        // Create popup content
-                        const popupContent = `
-                            <strong>${data.vehicle.model}</strong><br>
-                            Booking ID: ${bookingId}<br>
-                            Customer: ${data.customer.name}<br>
-                            Phone: ${data.customer.phone}<br>
-                            Last updated: ${data.location.timestamp}
-                        `;
-                        
-                        // Add or update marker
-                        if (debugMarkers[bookingId]) {
-                            debugMarkers[bookingId].setLatLng([lat, lng]);
-                            debugMarkers[bookingId].getPopup().setContent(popupContent);
-                        } else {
-                            const marker = L.marker([lat, lng]).addTo(debugMap);
-                            marker.bindPopup(popupContent);
-                            debugMarkers[bookingId] = marker;
-                        }
-                        
-                        // Highlight the vehicle in the list
-                        const vehicleItem = document.querySelector(`.vehicle-item[data-booking-id="${bookingId}"]`);
-                        if (vehicleItem) {
-                            // Add a location indicator
-                            const statusIndicator = vehicleItem.querySelector('.location-status') || 
-                                                   vehicleItem.querySelector('.vehicle-status');
-                            if (statusIndicator) {
-                                statusIndicator.innerHTML = '<i class="fas fa-map-marker-alt text-success"></i>';
-                                statusIndicator.title = `Location updated ${data.location.age_minutes} minutes ago`;
-                            }
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error(`Error fetching location for booking ${bookingId}:`, error);
-                });
-        });
-        
-        // After a delay, update the map view to include all markers
-        setTimeout(() => {
-            const markerArray = Object.values(debugMarkers);
-            if (markerArray.length > 0) {
-                // Create bounds object
-                const bounds = L.latLngBounds(markerArray.map(m => m.getLatLng()));
-                debugMap.fitBounds(bounds, { padding: [50, 50] });
+        if (debugFetchBtn && debugBookingId) {
+            debugFetchBtn.addEventListener('click', function() {
+                const bookingId = debugBookingId.value.trim();
+                if (!bookingId) {
+                    debugResult.innerHTML = '<p class="text-danger">Please enter a booking ID</p>';
+                    return;
+                }
                 
-                updateStatus(`Found ${locationsFound} locations out of ${bookingIds.length} bookings. Last updated: ${new Date().toLocaleTimeString()}`, 'success');
-            } else {
-                updateStatus(`No locations found for any of the ${bookingIds.length} bookings. Try refreshing or checking the database.`, 'warning');
-            }
-        }, 2000);
-    }
-    
-    // Initial load
-    refreshLocations();
-    
-    // Refresh every 2 minutes
-    setInterval(refreshLocations, 120000);
-    
-    // Add manual refresh button
-    const refreshButton = document.createElement('button');
-    refreshButton.className = 'btn btn-sm btn-primary mt-2';
-    refreshButton.innerHTML = 'Refresh Locations';
-    refreshButton.onclick = refreshLocations;
-    debugStatus.after(refreshButton);
-});
+                debugResult.innerHTML = '<p class="text-info">Fetching location data...</p>';
+                
+                // Make the API call
+                fetch(`/vendor/vehicle-location/${bookingId}/`)
+                    .then(response => {
+                        debugResult.innerHTML += `<p>Response status: ${response.status}</p>`;
+                        return response.json();
+                    })
+                    .then(data => {
+                        const formattedJson = JSON.stringify(data, null, 2);
+                        debugResult.innerHTML = `
+                            <p class="text-success">Response received!</p>
+                            <pre class="bg-dark text-light p-3" style="max-height: 300px; overflow: auto;">${formattedJson}</pre>
+                        `;
+                    })
+                    .catch(error => {
+                        debugResult.innerHTML = `
+                            <p class="text-danger">Error fetching data:</p>
+                            <pre class="bg-dark text-light p-3">${error.toString()}</pre>
+                        `;
+                    });
+            });
+        }
+    });
 </script>
 {% endblock %} 

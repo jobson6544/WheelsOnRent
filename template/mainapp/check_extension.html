@@ -1,0 +1,343 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+
+{% block title %}Extend Rental Booking{% endblock %}
+
+{% block extra_css %}
+<style>
+    .extension-card {
+        border-radius: 10px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid #e9ecef;
+    }
+    
+    .extension-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .availability-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .date-picker-container {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Extend Your Rental</h2>
+            <p class="text-muted">Booking #{{ booking.booking_id }}</p>
+        </div>
+        <div class="col-md-4 text-md-right">
+            <a href="{% url 'mainapp:rental_details' booking.booking_id %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Rental Details
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Extension Options -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Current Booking</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            {% if booking.vehicle.image %}
+                                <img src="{{ booking.vehicle.image.url }}" alt="{{ booking.vehicle.model }}" class="img-fluid rounded mb-3">
+                            {% else %}
+                                <img src="{% static 'images/no-image.png' %}" alt="No image" class="img-fluid rounded mb-3">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-7">
+                            <h5>{{ booking.vehicle.model }}</h5>
+                            <p>
+                                <strong>Registration:</strong> {{ booking.vehicle.registration.registration_number }}<br>
+                                <strong>Current Return Date:</strong> {{ booking.end_date|date:"M d, Y - h:i A" }}<br>
+                                <strong>Booking Status:</strong> <span class="badge badge-{{ booking.get_status_display_class }}">{{ booking.get_status_display }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Choose Extension Period</h4>
+                </div>
+                <div class="card-body">
+                    <form id="extensionForm" method="post">
+                        {% csrf_token %}
+                        
+                        <div class="date-picker-container">
+                            <div class="form-group mb-3">
+                                <label for="days">Number of Days to Extend</label>
+                                <input type="number" class="form-control" id="days" name="days" min="1" max="30" required>
+                                <small class="form-text text-muted">
+                                    Choose how many days you want to extend your rental. Maximum extension period may vary based on vehicle availability.
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Extending your booking will incur additional charges based on the number of days extended.
+                        </div>
+                        
+                        <div id="extension-preview" class="mb-4" style="display: none;">
+                            <h5>Extension Summary</h5>
+                            <div class="card extension-card">
+                                <div class="card-body">
+                                    <p id="extension-preview-loading" class="text-center">
+                                        <i class="fas fa-spinner fa-spin"></i> Checking availability...
+                                    </p>
+                                    <div id="extension-preview-content" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p>
+                                                    <strong>Additional Days:</strong> <span id="additional-days">0</span><br>
+                                                    <strong>Extension Cost:</strong> ₹<span id="extension-cost">0</span>
+                                                </p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p>
+                                                    <strong>Current End Date:</strong> {{ booking.end_date|date:"M d, Y" }}<br>
+                                                    <strong>New End Date:</strong> <span id="new-end-date">-</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group text-right">
+                            <button type="button" id="check-btn" class="btn btn-outline-primary mr-2">
+                                Check Availability
+                            </button>
+                            <button type="button" id="proceed-btn" class="btn btn-primary" style="display: none;">
+                                Proceed to Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Extension Policy</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="fa-ul">
+                        <li><span class="fa-li"><i class="fas fa-check-circle text-success"></i></span>Extensions are subject to vehicle availability</li>
+                        <li><span class="fa-li"><i class="fas fa-check-circle text-success"></i></span>Extension requests must be made at least 24 hours before the current end date</li>
+                        <li><span class="fa-li"><i class="fas fa-check-circle text-success"></i></span>Extension payments are non-refundable</li>
+                        <li><span class="fa-li"><i class="fas fa-check-circle text-success"></i></span>Maximum extension period may vary based on vehicle availability</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Need Help?</h4>
+                </div>
+                <div class="card-body">
+                    <p>If you have any questions about extending your rental, our customer support team is here to help.</p>
+                    <a href="tel:+911234567890" class="btn btn-outline-primary btn-block mb-2">
+                        <i class="fas fa-phone-alt"></i> Call Support
+                    </a>
+                    <a href="mailto:support@wheelsonrent.com" class="btn btn-outline-secondary btn-block">
+                        <i class="fas fa-envelope"></i> Email Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize variables
+        const daysInput = document.getElementById('days');
+        const checkBtn = document.getElementById('check-btn');
+        const proceedBtn = document.getElementById('proceed-btn');
+        const extensionPreview = document.getElementById('extension-preview');
+        const extensionPreviewLoading = document.getElementById('extension-preview-loading');
+        const extensionPreviewContent = document.getElementById('extension-preview-content');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Calculate extension cost when button is clicked
+        if (checkBtn) {
+            checkBtn.addEventListener('click', function() {
+                const days = parseInt(daysInput.value);
+                
+                if (!days || days <= 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Missing Information',
+                        text: 'Please enter a valid number of days to extend.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return;
+                }
+                
+                // Show loading state
+                extensionPreview.style.display = 'block';
+                extensionPreviewLoading.style.display = 'block';
+                extensionPreviewContent.style.display = 'none';
+                proceedBtn.style.display = 'none';
+                
+                // Send request to check availability and calculate price
+                fetch("{% url 'mainapp:check_extension' booking.booking_id %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({
+                        days: days
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    extensionPreviewLoading.style.display = 'none';
+                    
+                    if (data.status === 'success' && data.is_available) {
+                        // Update preview with data from server
+                        document.getElementById('additional-days').textContent = data.days;
+                        document.getElementById('extension-cost').textContent = data.extension_amount.toFixed(2);
+                        document.getElementById('new-end-date').textContent = new Date(data.new_end_date).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                        });
+                        
+                        extensionPreviewContent.style.display = 'block';
+                        proceedBtn.style.display = 'inline-block';
+                    } else {
+                        // Show error message
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Extension Not Available',
+                            text: data.message || 'The vehicle is not available for extension for the selected duration.',
+                            confirmButtonColor: '#3085d6'
+                        });
+                        extensionPreview.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while checking availability. Please try again.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    extensionPreview.style.display = 'none';
+                });
+            });
+        }
+        
+        // Handle proceed to payment button
+        if (proceedBtn) {
+            proceedBtn.addEventListener('click', function() {
+                const days = parseInt(daysInput.value);
+                
+                if (!days || days <= 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Missing Information',
+                        text: 'Please enter a valid number of days to extend.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    return;
+                }
+                
+                // Show loading state
+                proceedBtn.disabled = true;
+                proceedBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                
+                // Send request to process extension and get payment session
+                fetch("{% url 'mainapp:process_extension' booking.booking_id %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({
+                        days: days
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Redirect to Stripe checkout
+                        const stripe = Stripe(data.stripe_public_key);
+                        stripe.redirectToCheckout({
+                            sessionId: data.session_id
+                        }).then(function(result) {
+                            // If `redirectToCheckout` fails due to a browser or network
+                            // error, display the localized error message to your customer
+                            if (result.error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Payment Error',
+                                    text: result.error.message,
+                                    confirmButtonColor: '#3085d6'
+                                });
+                                proceedBtn.disabled = false;
+                                proceedBtn.innerHTML = 'Proceed to Payment';
+                            }
+                        });
+                    } else {
+                        // Show error message
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'An error occurred while processing your request.',
+                            confirmButtonColor: '#3085d6'
+                        });
+                        proceedBtn.disabled = false;
+                        proceedBtn.innerHTML = 'Proceed to Payment';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while processing your request. Please try again.',
+                        confirmButtonColor: '#3085d6'
+                    });
+                    proceedBtn.disabled = false;
+                    proceedBtn.innerHTML = 'Proceed to Payment';
+                });
+            });
+        }
+    });
+</script>
+<!-- Stripe.js -->
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock %} 

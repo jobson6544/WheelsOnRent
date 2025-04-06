@@ -1218,30 +1218,43 @@ def vehicle_location(request, booking_id):
         # If that doesn't work, try direct SQL query by booking_id
         if not latest_location:
             print(f"No location found through relation, trying direct query by booking_id")
-            from django.db import connection
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT id, latitude, longitude, timestamp FROM mainapp_locationshare WHERE booking_id = %s ORDER BY timestamp DESC LIMIT 1",
-                    [booking.id]
-                )
-                row = cursor.fetchone()
-                
-                if row:
-                    print(f"Found location through direct query: {row}")
-                    # Manually create a location object
-                    class TempLocation:
-                        def __init__(self, id, lat, lng, timestamp):
-                            self.id = id
-                            self.latitude = lat
-                            self.longitude = lng
-                            self.timestamp = timestamp
+            try:
+                from django.db import connection
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT id, latitude, longitude, timestamp, is_live_tracking, accuracy FROM mainapp_locationshare WHERE booking_id = %s ORDER BY timestamp DESC LIMIT 1",
+                        [booking_id]
+                    )
+                    row = cursor.fetchone()
                     
-                    latest_location = TempLocation(row[0], row[1], row[2], row[3])
+                    if row:
+                        print(f"Found location through direct query: {row}")
+                        # Manually create a location object
+                        class TempLocation:
+                            def __init__(self, id, lat, lng, timestamp, is_live_tracking=False, accuracy=None):
+                                self.id = id
+                                self.latitude = lat
+                                self.longitude = lng
+                                self.timestamp = timestamp
+                                self.is_live_tracking = is_live_tracking
+                                self.accuracy = accuracy
+                        
+                        # Note: Adjust indices based on the query fields
+                        latest_location = TempLocation(
+                            row[0],  # id
+                            row[1],  # lat
+                            row[2],  # lng
+                            row[3],  # timestamp
+                            row[4] if len(row) > 4 else False,  # is_live_tracking
+                            row[5] if len(row) > 5 else None    # accuracy
+                        )
+            except Exception as e:
+                print(f"Error in direct SQL query: {str(e)}")
         
         # Third attempt: check if any customer shared their location
         if not latest_location:
             print(f"Still no location found, checking ALL customer locations")
-            # Normally this wouldn't be appropriate but this is for debugging
+            # Show the last 5 locations for debugging
             all_locations = LocationShare.objects.all().order_by('-timestamp')[:5]
             for loc in all_locations:
                 print(f"Recent location: booking_id={loc.booking.booking_id}, lat={loc.latitude}, lng={loc.longitude}")
@@ -1256,13 +1269,26 @@ def vehicle_location(request, booking_id):
             # Format the timestamp in a readable format
             formatted_timestamp = latest_location.timestamp.strftime('%b %d, %Y at %I:%M %p')
             
+            # Check if this is live tracking
+            is_live_tracking = hasattr(latest_location, 'is_live_tracking') and latest_location.is_live_tracking
+            
+            # Get accuracy if available
+            accuracy = None
+            if hasattr(latest_location, 'accuracy') and latest_location.accuracy is not None:
+                accuracy = latest_location.accuracy
+            
             location_data = {
                 'latitude': latest_location.latitude,
                 'longitude': latest_location.longitude,
                 'timestamp': formatted_timestamp,
                 'is_recent': is_recent,
+                'is_live_tracking': is_live_tracking,
                 'age_minutes': int((timezone.now() - latest_location.timestamp).total_seconds() / 60)
             }
+            
+            # Add accuracy if available
+            if accuracy is not None:
+                location_data['accuracy'] = round(accuracy, 2)
             
             # Get customer's phone number if available
             phone_number = "N/A"
@@ -1307,6 +1333,7 @@ def vehicle_location(request, booking_id):
         return JsonResponse({
             'status': 'error',
             'message': f'Error retrieving location: {str(e)}',
+            'detail': traceback.format_exc()
         }, status=500)
 
 @never_cache

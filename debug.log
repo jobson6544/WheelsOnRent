@@ -827,3 +827,433 @@ INFO 2025-04-06 02:26:20,420 views 14360 21580 Valid coordinates: lat=9.17504, l
 INFO 2025-04-06 02:26:20,427 views 14360 21580 Booking found: Booking for Figo (2010) - KL34A6544 by jobson, status: confirmed
 INFO 2025-04-06 02:26:20,432 views 14360 21580 Location share created: 33 with timestamp: 2025-04-05 20:56:20.427090+00:00
 INFO 2025-04-06 10:49:39,261 views 3492 2968 Booking view called for vehicle id: 2
+INFO 2025-04-06 21:46:48,069 views 3348 6688 Booking view called for vehicle id: 3
+INFO 2025-04-06 21:46:56,238 views 3348 6688 Booking view called for vehicle id: 3
+INFO 2025-04-06 21:46:56,239 views 3348 6688 POST request received
+INFO 2025-04-06 21:46:56,240 views 3348 6688 Start date: 2025-04-07, End date: 2025-04-07
+INFO 2025-04-06 21:46:56,244 views 3348 6688 Adjusted dates - Start: 2025-04-07 00:00:00+00:00, End: 2025-04-08 23:59:59.999999+00:00
+INFO 2025-04-06 21:46:56,244 models 3348 6688 Checking availability for vehicle 3 from 2025-04-07 00:00:00+00:00 to 2025-04-08 23:59:59.999999+00:00
+INFO 2025-04-06 21:46:56,246 models 3348 6688 Overlapping bookings found: 0
+INFO 2025-04-06 21:46:56,247 models 3348 6688 Is vehicle available: True
+INFO 2025-04-06 21:46:56,247 views 3348 6688 Vehicle is available for the selected dates.
+INFO 2025-04-06 21:46:56,254 views 3348 6688 Booking created successfully: 8
+INFO 2025-04-06 21:47:35,854 views 3348 6688 Confirmation email sent for booking 8
+INFO 2025-04-06 21:53:22,370 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 21:53:22,371 views 3348 6688 Request method: POST
+INFO 2025-04-06 21:53:22,371 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:23:22.363Z, live_tracking=True
+INFO 2025-04-06 21:53:22,372 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 21:53:22,376 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 21:53:22,376 views 3348 6688 Using client timestamp: 2025-04-06 16:23:22.363000+00:00
+INFO 2025-04-06 21:53:22,379 views 3348 6688 Location share created: 34 with timestamp: 2025-04-06 16:23:22.363000+00:00, live_tracking: True
+INFO 2025-04-06 21:53:33,876 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 21:53:33,877 views 3348 6688 Request method: POST
+INFO 2025-04-06 21:53:33,877 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:23:33.869Z, live_tracking=False
+INFO 2025-04-06 21:53:33,878 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 21:53:33,882 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 21:53:33,882 views 3348 6688 Using client timestamp: 2025-04-06 16:23:33.869000+00:00
+INFO 2025-04-06 21:53:33,885 views 3348 6688 Location share created: 35 with timestamp: 2025-04-06 16:23:33.869000+00:00, live_tracking: False
+INFO 2025-04-06 21:53:52,369 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 21:53:52,370 views 3348 6688 Request method: POST
+INFO 2025-04-06 21:53:52,370 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:23:52.360Z, live_tracking=True
+INFO 2025-04-06 21:53:52,371 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 21:53:52,375 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 21:53:52,375 views 3348 6688 Using client timestamp: 2025-04-06 16:23:52.360000+00:00
+INFO 2025-04-06 21:53:52,379 views 3348 6688 Location share created: 36 with timestamp: 2025-04-06 16:23:52.360000+00:00, live_tracking: True
+INFO 2025-04-06 21:53:56,897 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 21:53:56,899 views 3348 6688 Request method: POST
+INFO 2025-04-06 21:53:56,899 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=None, live_tracking=False
+INFO 2025-04-06 21:53:56,900 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 21:53:56,904 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 21:53:56,909 views 3348 6688 Location share created: 37 with timestamp: 2025-04-06 16:23:56.905754+00:00, live_tracking: False
+INFO 2025-04-06 21:54:00,557 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 21:54:00,557 views 3348 6688 Request method: POST
+INFO 2025-04-06 21:54:00,558 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:24:00.552Z, live_tracking=False
+INFO 2025-04-06 21:54:00,558 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 21:54:00,559 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 21:54:00,559 views 3348 6688 Using client timestamp: 2025-04-06 16:24:00.552000+00:00
+INFO 2025-04-06 21:54:00,565 views 3348 6688 Location share created: 38 with timestamp: 2025-04-06 16:24:00.552000+00:00, live_tracking: False
+INFO 2025-04-06 21:54:31,376 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 21:54:31,377 views 3348 6688 Request method: POST
+INFO 2025-04-06 21:54:31,377 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:24:31.367Z, live_tracking=True
+INFO 2025-04-06 21:54:31,378 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 21:54:31,381 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 21:54:31,382 views 3348 6688 Using client timestamp: 2025-04-06 16:24:31.367000+00:00
+INFO 2025-04-06 21:54:31,384 views 3348 6688 Location share created: 39 with timestamp: 2025-04-06 16:24:31.367000+00:00, live_tracking: True
+INFO 2025-04-06 21:54:49,375 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 21:54:49,376 views 3348 6688 Request method: POST
+INFO 2025-04-06 21:54:49,376 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=None, live_tracking=False
+INFO 2025-04-06 21:54:49,376 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 21:54:49,379 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 21:54:49,385 views 3348 6688 Location share created: 40 with timestamp: 2025-04-06 16:24:49.380946+00:00, live_tracking: False
+INFO 2025-04-06 21:59:48,046 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 21:59:48,047 views 3348 6688 Request method: POST
+INFO 2025-04-06 21:59:48,047 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=None, live_tracking=False
+INFO 2025-04-06 21:59:48,048 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 21:59:48,055 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 21:59:48,061 views 3348 6688 Location share created: 41 with timestamp: 2025-04-06 16:29:48.056977+00:00, live_tracking: False
+INFO 2025-04-06 21:59:52,954 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 21:59:52,954 views 3348 6688 Request method: POST
+INFO 2025-04-06 21:59:52,954 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:29:52.949Z, live_tracking=True
+INFO 2025-04-06 21:59:52,954 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 21:59:52,954 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 21:59:52,954 views 3348 6688 Using client timestamp: 2025-04-06 16:29:52.949000+00:00
+INFO 2025-04-06 21:59:52,961 views 3348 6688 Location share created: 42 with timestamp: 2025-04-06 16:29:52.949000+00:00, live_tracking: True
+INFO 2025-04-06 22:00:04,050 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 22:00:04,051 views 3348 6688 Request method: POST
+INFO 2025-04-06 22:00:04,051 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:30:04.038Z, live_tracking=False
+INFO 2025-04-06 22:00:04,052 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:00:04,056 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:00:04,056 views 3348 6688 Using client timestamp: 2025-04-06 16:30:04.038000+00:00
+INFO 2025-04-06 22:00:04,060 views 3348 6688 Location share created: 43 with timestamp: 2025-04-06 16:30:04.038000+00:00, live_tracking: False
+INFO 2025-04-06 22:00:22,976 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 22:00:22,976 views 3348 6688 Request method: POST
+INFO 2025-04-06 22:00:22,976 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:30:22.969Z, live_tracking=True
+INFO 2025-04-06 22:00:22,977 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:00:22,981 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:00:22,981 views 3348 6688 Using client timestamp: 2025-04-06 16:30:22.969000+00:00
+INFO 2025-04-06 22:00:22,986 views 3348 6688 Location share created: 44 with timestamp: 2025-04-06 16:30:22.969000+00:00, live_tracking: True
+INFO 2025-04-06 22:00:52,982 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 22:00:52,983 views 3348 6688 Request method: POST
+INFO 2025-04-06 22:00:52,983 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:30:52.975Z, live_tracking=True
+INFO 2025-04-06 22:00:52,983 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:00:52,988 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:00:52,988 views 3348 6688 Using client timestamp: 2025-04-06 16:30:52.975000+00:00
+INFO 2025-04-06 22:00:52,995 views 3348 6688 Location share created: 45 with timestamp: 2025-04-06 16:30:52.975000+00:00, live_tracking: True
+INFO 2025-04-06 22:01:22,985 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 22:01:22,986 views 3348 6688 Request method: POST
+INFO 2025-04-06 22:01:22,986 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:31:22.979Z, live_tracking=True
+INFO 2025-04-06 22:01:22,986 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:01:22,989 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:01:22,990 views 3348 6688 Using client timestamp: 2025-04-06 16:31:22.979000+00:00
+INFO 2025-04-06 22:01:22,994 views 3348 6688 Location share created: 46 with timestamp: 2025-04-06 16:31:22.979000+00:00, live_tracking: True
+INFO 2025-04-06 22:01:33,317 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 22:01:33,318 views 3348 6688 Request method: POST
+INFO 2025-04-06 22:01:33,318 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:31:33.307Z, live_tracking=False
+INFO 2025-04-06 22:01:33,319 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:01:33,323 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:01:33,323 views 3348 6688 Using client timestamp: 2025-04-06 16:31:33.307000+00:00
+INFO 2025-04-06 22:01:33,329 views 3348 6688 Location share created: 47 with timestamp: 2025-04-06 16:31:33.307000+00:00, live_tracking: False
+INFO 2025-04-06 22:04:37,030 views 3348 6688 Location share called for booking 8
+INFO 2025-04-06 22:04:37,032 views 3348 6688 Request method: POST
+INFO 2025-04-06 22:04:37,034 views 3348 6688 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:34:37.015Z, live_tracking=True
+INFO 2025-04-06 22:04:37,034 views 3348 6688 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:04:37,036 views 3348 13548 Location share called for booking 8
+INFO 2025-04-06 22:04:37,038 views 3348 13548 Request method: POST
+INFO 2025-04-06 22:04:37,039 views 3348 13548 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:34:37.016Z, live_tracking=True
+INFO 2025-04-06 22:04:37,039 views 3348 1828 Location share called for booking 8
+INFO 2025-04-06 22:04:37,041 views 3348 7944 Location share called for booking 8
+INFO 2025-04-06 22:04:37,041 views 3348 13548 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:04:37,041 views 3348 1828 Request method: POST
+INFO 2025-04-06 22:04:37,042 views 3348 7944 Request method: POST
+INFO 2025-04-06 22:04:37,046 views 3348 1828 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:34:37.016Z, live_tracking=True
+INFO 2025-04-06 22:04:37,046 views 3348 6688 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:04:37,048 views 3348 7944 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:34:37.017Z, live_tracking=True
+INFO 2025-04-06 22:04:37,048 views 3348 1828 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:04:37,050 views 3348 6688 Using client timestamp: 2025-04-06 16:34:37.015000+00:00
+INFO 2025-04-06 22:04:37,050 views 3348 7944 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:04:37,056 views 3348 13548 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:04:37,058 views 3348 13548 Using client timestamp: 2025-04-06 16:34:37.016000+00:00
+INFO 2025-04-06 22:04:37,070 views 3348 6688 Location share created: 48 with timestamp: 2025-04-06 16:34:37.015000+00:00, live_tracking: True
+INFO 2025-04-06 22:04:37,086 views 3348 1828 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:04:37,087 views 3348 1828 Using client timestamp: 2025-04-06 16:34:37.016000+00:00
+INFO 2025-04-06 22:04:37,092 views 3348 1828 Location share created: 49 with timestamp: 2025-04-06 16:34:37.016000+00:00, live_tracking: True
+INFO 2025-04-06 22:04:37,101 views 3348 13548 Location share created: 50 with timestamp: 2025-04-06 16:34:37.016000+00:00, live_tracking: True
+INFO 2025-04-06 22:04:37,117 views 3348 7944 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:04:37,118 views 3348 7944 Using client timestamp: 2025-04-06 16:34:37.017000+00:00
+INFO 2025-04-06 22:04:37,123 views 3348 7944 Location share created: 51 with timestamp: 2025-04-06 16:34:37.017000+00:00, live_tracking: True
+INFO 2025-04-06 22:04:42,416 views 3348 7944 Location share called for booking 8
+INFO 2025-04-06 22:04:42,417 views 3348 7944 Request method: POST
+INFO 2025-04-06 22:04:42,417 views 3348 7944 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:34:42.409Z, live_tracking=False
+INFO 2025-04-06 22:04:42,418 views 3348 7944 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:04:42,422 views 3348 7944 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:04:42,423 views 3348 7944 Using client timestamp: 2025-04-06 16:34:42.409000+00:00
+INFO 2025-04-06 22:04:42,428 views 3348 7944 Location share created: 52 with timestamp: 2025-04-06 16:34:42.409000+00:00, live_tracking: False
+INFO 2025-04-06 22:04:44,534 views 3348 7944 Location share called for booking 8
+INFO 2025-04-06 22:04:44,534 views 3348 7944 Request method: POST
+INFO 2025-04-06 22:04:44,534 views 3348 7944 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:34:44.529Z, live_tracking=True
+INFO 2025-04-06 22:04:44,534 views 3348 7944 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:04:44,541 views 3348 7944 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:04:44,541 views 3348 7944 Using client timestamp: 2025-04-06 16:34:44.529000+00:00
+INFO 2025-04-06 22:04:44,548 views 3348 7944 Location share created: 53 with timestamp: 2025-04-06 16:34:44.529000+00:00, live_tracking: True
+INFO 2025-04-06 22:04:46,157 views 3348 7944 Location share called for booking 8
+INFO 2025-04-06 22:04:46,158 views 3348 7944 Request method: POST
+INFO 2025-04-06 22:04:46,158 views 3348 7944 Received coordinates: lat=9.5618, lng=76.4905, timestamp=None, live_tracking=False
+INFO 2025-04-06 22:04:46,159 views 3348 7944 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:04:46,164 views 3348 7944 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:04:46,171 views 3348 7944 Location share created: 54 with timestamp: 2025-04-06 16:34:46.165979+00:00, live_tracking: False
+INFO 2025-04-06 22:04:57,650 views 3348 7944 Location share called for booking 8
+INFO 2025-04-06 22:04:57,650 views 3348 7944 Request method: POST
+INFO 2025-04-06 22:04:57,650 views 3348 7944 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:34:57.644Z, live_tracking=False
+INFO 2025-04-06 22:04:57,651 views 3348 7944 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:04:57,656 views 3348 7944 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:04:57,657 views 3348 7944 Using client timestamp: 2025-04-06 16:34:57.644000+00:00
+INFO 2025-04-06 22:04:57,662 views 3348 7944 Location share created: 55 with timestamp: 2025-04-06 16:34:57.644000+00:00, live_tracking: False
+INFO 2025-04-06 22:07:00,400 views 3348 10084 Location share called for booking 8
+INFO 2025-04-06 22:07:00,401 views 3348 10084 Request method: POST
+INFO 2025-04-06 22:07:00,401 views 3348 10084 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:37:00.394Z, live_tracking=False
+INFO 2025-04-06 22:07:00,402 views 3348 10084 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:07:00,406 views 3348 10084 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:07:00,407 views 3348 10084 Using client timestamp: 2025-04-06 16:37:00.394000+00:00
+INFO 2025-04-06 22:07:00,414 views 3348 10084 Location share created: 56 with timestamp: 2025-04-06 16:37:00.394000+00:00, live_tracking: False
+INFO 2025-04-06 22:15:22,644 views 4548 22224 Location share called for booking 8
+INFO 2025-04-06 22:15:22,645 views 4548 22224 Request method: POST
+INFO 2025-04-06 22:15:22,645 views 4548 22224 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:44:52.846Z, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:15:22,646 views 4548 22224 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:15:22,650 views 4548 22224 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:15:22,651 views 4548 22224 Using client timestamp: 2025-04-06 16:44:52.846000+00:00
+INFO 2025-04-06 22:15:22,655 views 4548 22224 Location share created: 57 with timestamp: 2025-04-06 16:44:52.846000+00:00, live_tracking: False, accuracy: 65206m
+INFO 2025-04-06 22:15:25,735 views 4548 22224 Location share called for booking 8
+INFO 2025-04-06 22:15:25,736 views 4548 22224 Request method: POST
+INFO 2025-04-06 22:15:25,736 views 4548 22224 Received coordinates: lat=9.5618, lng=76.4905, timestamp=None, live_tracking=False, accuracy=Nonem
+INFO 2025-04-06 22:15:25,736 views 4548 22224 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:15:25,740 views 4548 22224 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:15:25,748 views 4548 22224 Location share created: 58 with timestamp: 2025-04-06 16:45:25.741383+00:00, live_tracking: False, accuracy: Nonem
+INFO 2025-04-06 22:15:29,428 views 4548 22224 Location share called for booking 8
+INFO 2025-04-06 22:15:29,428 views 4548 22224 Request method: POST
+INFO 2025-04-06 22:15:29,428 views 4548 22224 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:45:29.424Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 22:15:29,428 views 4548 22224 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:15:29,428 views 4548 22224 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:15:29,435 views 4548 22224 Using client timestamp: 2025-04-06 16:45:29.424000+00:00
+INFO 2025-04-06 22:15:29,439 views 4548 22224 Location share created: 59 with timestamp: 2025-04-06 16:45:29.424000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 22:17:36,938 views 22948 12124 Location share called for booking 8
+INFO 2025-04-06 22:17:36,938 views 22948 6712 Location share called for booking 8
+INFO 2025-04-06 22:17:36,939 views 22948 12124 Request method: POST
+INFO 2025-04-06 22:17:36,940 views 22948 6712 Request method: POST
+INFO 2025-04-06 22:17:36,941 views 22948 12124 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:47:36.915Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 22:17:36,941 views 22948 6712 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:47:36.914Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 22:17:36,941 views 22948 3356 Location share called for booking 8
+INFO 2025-04-06 22:17:36,941 views 22948 12124 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:17:36,945 views 22948 22504 Location share called for booking 8
+INFO 2025-04-06 22:17:36,945 views 22948 6712 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:17:36,945 views 22948 3356 Request method: POST
+INFO 2025-04-06 22:17:36,948 views 22948 22504 Request method: POST
+INFO 2025-04-06 22:17:36,950 views 22948 3356 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:47:36.916Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 22:17:36,953 views 22948 22504 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:47:36.915Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 22:17:36,953 views 22948 3356 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:17:36,955 views 22948 22504 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:17:36,961 views 22948 12124 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:17:36,962 views 22948 12124 Using client timestamp: 2025-04-06 16:47:36.915000+00:00
+INFO 2025-04-06 22:17:36,968 views 22948 6712 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:17:36,974 views 22948 6712 Using client timestamp: 2025-04-06 16:47:36.914000+00:00
+INFO 2025-04-06 22:17:36,983 views 22948 12124 Location share created: 60 with timestamp: 2025-04-06 16:47:36.915000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 22:17:36,989 views 22948 22504 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:17:36,990 views 22948 3356 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:17:36,990 views 22948 22504 Using client timestamp: 2025-04-06 16:47:36.915000+00:00
+INFO 2025-04-06 22:17:36,990 views 22948 3356 Using client timestamp: 2025-04-06 16:47:36.916000+00:00
+INFO 2025-04-06 22:17:37,006 views 22948 6712 Location share created: 61 with timestamp: 2025-04-06 16:47:36.914000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 22:17:37,015 views 22948 22504 Location share created: 62 with timestamp: 2025-04-06 16:47:36.915000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 22:17:37,023 views 22948 3356 Location share created: 63 with timestamp: 2025-04-06 16:47:36.916000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 22:27:53,280 views 22948 11096 Location share called for booking 8
+INFO 2025-04-06 22:27:53,280 views 22948 11096 Request method: POST
+INFO 2025-04-06 22:27:53,280 views 22948 11096 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:57:53.267Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 22:27:53,283 views 22948 11096 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:27:53,283 views 22948 11096 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:27:53,283 views 22948 11096 Using client timestamp: 2025-04-06 16:57:53.267000+00:00
+INFO 2025-04-06 22:27:53,290 views 22948 11096 Location share created: 64 with timestamp: 2025-04-06 16:57:53.267000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 22:28:07,602 views 22948 11096 Location share called for booking 8
+INFO 2025-04-06 22:28:07,603 views 22948 11096 Request method: POST
+INFO 2025-04-06 22:28:07,603 views 22948 11096 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T16:58:06.084Z, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:28:07,603 views 22948 11096 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:28:07,603 views 22948 11096 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:28:07,603 views 22948 11096 Using client timestamp: 2025-04-06 16:58:06.084000+00:00
+INFO 2025-04-06 22:28:07,612 views 22948 11096 Location share created: 65 with timestamp: 2025-04-06 16:58:06.084000+00:00, live_tracking: False, accuracy: 65206m
+INFO 2025-04-06 22:28:14,647 views 22948 11096 Location share called for booking 8
+INFO 2025-04-06 22:28:14,647 views 22948 11096 Request method: POST
+INFO 2025-04-06 22:28:14,648 views 22948 11096 Received coordinates: lat=9.5618, lng=76.4905, timestamp=None, live_tracking=False, accuracy=Nonem
+INFO 2025-04-06 22:28:14,648 views 22948 11096 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:28:14,652 views 22948 11096 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:28:14,659 views 22948 11096 Location share created: 66 with timestamp: 2025-04-06 16:58:14.652542+00:00, live_tracking: False, accuracy: Nonem
+INFO 2025-04-06 22:30:37,628 views 22948 11096 Location share called for booking 8
+INFO 2025-04-06 22:30:37,628 views 22948 11096 Request method: POST
+INFO 2025-04-06 22:30:37,629 views 22948 11096 Received coordinates: lat=9.5618, lng=76.4905, timestamp=None, live_tracking=False, accuracy=Nonem
+INFO 2025-04-06 22:30:37,629 views 22948 11096 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:30:37,633 views 22948 11096 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:30:37,641 views 22948 11096 Location share created: 67 with timestamp: 2025-04-06 17:00:37.634203+00:00, live_tracking: False, accuracy: Nonem
+INFO 2025-04-06 22:30:45,620 views 22948 11096 Location share called for booking 8
+INFO 2025-04-06 22:30:45,620 views 22948 11096 Request method: POST
+INFO 2025-04-06 22:30:45,621 views 22948 11096 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:00:44.483Z, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:30:45,621 views 22948 11096 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:30:45,625 views 22948 11096 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:30:45,626 views 22948 11096 Using client timestamp: 2025-04-06 17:00:44.483000+00:00
+INFO 2025-04-06 22:30:45,631 views 22948 11096 Location share created: 68 with timestamp: 2025-04-06 17:00:44.483000+00:00, live_tracking: False, accuracy: 65206m
+INFO 2025-04-06 22:30:48,499 views 22948 11096 Location share called for booking 8
+INFO 2025-04-06 22:30:48,499 views 22948 11096 Request method: POST
+INFO 2025-04-06 22:30:48,499 views 22948 11096 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:00:48.495Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 22:30:48,499 views 22948 11096 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:30:48,506 views 22948 11096 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:30:48,506 views 22948 11096 Using client timestamp: 2025-04-06 17:00:48.495000+00:00
+INFO 2025-04-06 22:30:48,506 views 22948 11096 Location share created: 69 with timestamp: 2025-04-06 17:00:48.495000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 22:41:48,109 views 4780 19448 Location share called for booking 8
+INFO 2025-04-06 22:41:48,109 views 4780 19448 Request method: POST
+INFO 2025-04-06 22:41:48,110 views 4780 19448 Received coordinates: lat=9.5618, lng=76.4905, timestamp=None, live_tracking=False, accuracy=Nonem
+INFO 2025-04-06 22:41:48,110 views 4780 19448 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:41:48,116 views 4780 19448 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:41:48,123 views 4780 19448 Location share created: 70 with timestamp: 2025-04-06 17:11:48.117718+00:00, live_tracking: False, accuracy: Nonem
+INFO 2025-04-06 22:41:57,420 views 4780 19448 Location share called for booking 8
+INFO 2025-04-06 22:41:57,421 views 4780 19448 Request method: POST
+INFO 2025-04-06 22:41:57,421 views 4780 19448 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:11:55.696Z, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:41:57,422 views 4780 19448 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:41:57,424 views 4780 19448 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:41:57,425 views 4780 19448 Using client timestamp: 2025-04-06 17:11:55.696000+00:00
+INFO 2025-04-06 22:41:57,431 views 4780 19448 Location share created: 71 with timestamp: 2025-04-06 17:11:55.696000+00:00, live_tracking: False, accuracy: 65206m
+INFO 2025-04-06 22:48:07,381 views 4780 19448 Location share called for booking 8
+INFO 2025-04-06 22:48:07,381 views 4780 19448 Request method: POST
+INFO 2025-04-06 22:48:07,382 views 4780 19448 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:18:05.710Z, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:48:07,382 views 4780 19448 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:48:07,387 views 4780 19448 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:48:07,388 views 4780 19448 Using client timestamp: 2025-04-06 17:18:05.710000+00:00
+INFO 2025-04-06 22:48:07,395 views 4780 19448 Location share created: 72 with timestamp: 2025-04-06 17:18:05.710000+00:00, live_tracking: False, accuracy: 65206m
+INFO 2025-04-06 22:52:27,560 views 10620 22368 Location share called for booking 8
+INFO 2025-04-06 22:52:27,561 views 10620 22368 Request method: POST
+INFO 2025-04-06 22:52:27,561 views 10620 22368 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:22:26.010Z, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:52:27,562 views 10620 22368 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:52:27,565 views 10620 22368 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:52:27,566 views 10620 22368 Using client timestamp: 2025-04-06 17:22:26.010000+00:00
+INFO 2025-04-06 22:52:27,572 views 10620 22368 Location share created: 73 with timestamp: 2025-04-06 17:22:26.010000+00:00, live_tracking: False, accuracy: 65206m
+INFO 2025-04-06 22:52:53,237 views 10620 22368 Location share called for booking 8
+INFO 2025-04-06 22:52:53,238 views 10620 22368 Request method: POST
+INFO 2025-04-06 22:52:53,238 views 10620 22368 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:22:50.766Z, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:52:53,239 views 10620 22368 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:52:53,243 views 10620 22368 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 22:52:53,244 views 10620 22368 Using client timestamp: 2025-04-06 17:22:50.766000+00:00
+INFO 2025-04-06 22:52:53,247 views 10620 22368 Location share created: 74 with timestamp: 2025-04-06 17:22:50.766000+00:00, live_tracking: False, accuracy: 65206m
+INFO 2025-04-06 22:57:02,784 views 10304 23440 -------------- LOCATION SHARE DEBUG --------------
+INFO 2025-04-06 22:57:02,785 views 10304 23440 Location share called for booking 8 by user jobson
+INFO 2025-04-06 22:57:02,785 views 10304 23440 Request method: POST
+INFO 2025-04-06 22:57:02,786 views 10304 23440 Content type: application/json
+INFO 2025-04-06 22:57:02,786 views 10304 23440 JSON data received: {'latitude': 19.076, 'longitude': 72.8777, 'timestamp': '2025-04-06T17:27:02.778Z', 'is_live_tracking': False, 'accuracy': 10}
+INFO 2025-04-06 22:57:02,786 views 10304 23440 Processed location data: lat=19.076, lng=72.8777, timestamp=2025-04-06T17:27:02.778Z, live_tracking=False, accuracy=10m
+INFO 2025-04-06 22:57:02,787 views 10304 23440 Validated coordinates: lat=19.076, lng=72.8777
+INFO 2025-04-06 22:57:02,794 views 10304 23440 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up, vehicle: Splender (2017) - KL34F2994
+INFO 2025-04-06 22:57:02,795 views 10304 23440 Using client timestamp: 2025-04-06 17:27:02.778000+00:00
+INFO 2025-04-06 22:57:02,796 views 10304 23440 Creating location share with data: {'booking': <Booking: Booking for Splender (2017) - KL34F2994 by jobson>, 'latitude': 19.076, 'longitude': 72.8777, 'is_live_tracking': False, 'accuracy': 10, 'timestamp': datetime.datetime(2025, 4, 6, 17, 27, 2, 778000, tzinfo=tzutc())}
+INFO 2025-04-06 22:57:02,804 views 10304 23440 Successfully created location share: ID=75, timestamp=2025-04-06 17:27:02.778000+00:00, vendor=RentWithUs
+INFO 2025-04-06 22:57:02,804 views 10304 23440 DB record values: lat=19.076, lng=72.8777, live_tracking=False, accuracy=10m
+INFO 2025-04-06 22:57:02,807 views 10304 23440 Verified location record can be retrieved: Location for Booking 8 at 2025-04-06 17:27:02.778000+00:00, booking_id=8
+INFO 2025-04-06 22:57:02,807 views 10304 23440 Returning JSON success response
+INFO 2025-04-06 22:57:16,771 views 10304 23440 -------------- LOCATION SHARE DEBUG --------------
+INFO 2025-04-06 22:57:16,771 views 10304 23440 Location share called for booking 8 by user jobson
+INFO 2025-04-06 22:57:16,772 views 10304 23440 Request method: POST
+INFO 2025-04-06 22:57:16,772 views 10304 23440 Content type: application/json
+INFO 2025-04-06 22:57:16,773 views 10304 23440 JSON data received: {'latitude': 9.5618, 'longitude': 76.4905, 'timestamp': '2025-04-06T17:27:15.242Z', 'is_live_tracking': False, 'accuracy': 65206}
+INFO 2025-04-06 22:57:16,773 views 10304 23440 Processed location data: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:27:15.242Z, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:57:16,773 views 10304 23440 Validated coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:57:16,780 views 10304 23440 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up, vehicle: Splender (2017) - KL34F2994
+INFO 2025-04-06 22:57:16,781 views 10304 23440 Using client timestamp: 2025-04-06 17:27:15.242000+00:00
+INFO 2025-04-06 22:57:16,782 views 10304 23440 Creating location share with data: {'booking': <Booking: Booking for Splender (2017) - KL34F2994 by jobson>, 'latitude': 9.5618, 'longitude': 76.4905, 'is_live_tracking': False, 'accuracy': 65206, 'timestamp': datetime.datetime(2025, 4, 6, 17, 27, 15, 242000, tzinfo=tzutc())}
+INFO 2025-04-06 22:57:16,790 views 10304 23440 Successfully created location share: ID=76, timestamp=2025-04-06 17:27:15.242000+00:00, vendor=RentWithUs
+INFO 2025-04-06 22:57:16,791 views 10304 23440 DB record values: lat=9.5618, lng=76.4905, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:57:16,793 views 10304 23440 Verified location record can be retrieved: Location for Booking 8 at 2025-04-06 17:27:15.242000+00:00, booking_id=8
+INFO 2025-04-06 22:57:16,794 views 10304 23440 Returning JSON success response
+INFO 2025-04-06 22:57:35,626 views 10304 23440 -------------- LOCATION SHARE DEBUG --------------
+INFO 2025-04-06 22:57:35,626 views 10304 23440 Location share called for booking 8 by user jobson
+INFO 2025-04-06 22:57:35,627 views 10304 23440 Request method: POST
+INFO 2025-04-06 22:57:35,627 views 10304 23440 Content type: application/json
+INFO 2025-04-06 22:57:35,627 views 10304 23440 JSON data received: {'latitude': 9.5618, 'longitude': 76.4905, 'timestamp': '2025-04-06T17:27:34.136Z', 'is_live_tracking': False, 'accuracy': 65206}
+INFO 2025-04-06 22:57:35,628 views 10304 23440 Processed location data: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:27:34.136Z, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:57:35,628 views 10304 23440 Validated coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:57:35,633 views 10304 23440 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up, vehicle: Splender (2017) - KL34F2994
+INFO 2025-04-06 22:57:35,633 views 10304 23440 Using client timestamp: 2025-04-06 17:27:34.136000+00:00
+INFO 2025-04-06 22:57:35,634 views 10304 23440 Creating location share with data: {'booking': <Booking: Booking for Splender (2017) - KL34F2994 by jobson>, 'latitude': 9.5618, 'longitude': 76.4905, 'is_live_tracking': False, 'accuracy': 65206, 'timestamp': datetime.datetime(2025, 4, 6, 17, 27, 34, 136000, tzinfo=tzutc())}
+INFO 2025-04-06 22:57:35,641 views 10304 23440 Successfully created location share: ID=77, timestamp=2025-04-06 17:27:34.136000+00:00, vendor=RentWithUs
+INFO 2025-04-06 22:57:35,641 views 10304 23440 DB record values: lat=9.5618, lng=76.4905, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:57:35,644 views 10304 23440 Verified location record can be retrieved: Location for Booking 8 at 2025-04-06 17:27:34.136000+00:00, booking_id=8
+INFO 2025-04-06 22:57:35,645 views 10304 23440 Returning JSON success response
+INFO 2025-04-06 22:57:55,887 views 10304 23440 -------------- LOCATION SHARE DEBUG --------------
+INFO 2025-04-06 22:57:55,888 views 10304 23440 Location share called for booking 8 by user jobson
+INFO 2025-04-06 22:57:55,888 views 10304 23440 Request method: POST
+INFO 2025-04-06 22:57:55,889 views 10304 23440 Content type: application/json
+INFO 2025-04-06 22:57:55,889 views 10304 23440 JSON data received: {'latitude': 9.5618, 'longitude': 76.4905, 'timestamp': '2025-04-06T17:27:54.436Z', 'is_live_tracking': False, 'accuracy': 65206}
+INFO 2025-04-06 22:57:55,889 views 10304 23440 Processed location data: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:27:54.436Z, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:57:55,890 views 10304 23440 Validated coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 22:57:55,894 views 10304 23440 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up, vehicle: Splender (2017) - KL34F2994
+INFO 2025-04-06 22:57:55,895 views 10304 23440 Using client timestamp: 2025-04-06 17:27:54.436000+00:00
+INFO 2025-04-06 22:57:55,896 views 10304 23440 Creating location share with data: {'booking': <Booking: Booking for Splender (2017) - KL34F2994 by jobson>, 'latitude': 9.5618, 'longitude': 76.4905, 'is_live_tracking': False, 'accuracy': 65206, 'timestamp': datetime.datetime(2025, 4, 6, 17, 27, 54, 436000, tzinfo=tzutc())}
+INFO 2025-04-06 22:57:55,903 views 10304 23440 Successfully created location share: ID=78, timestamp=2025-04-06 17:27:54.436000+00:00, vendor=RentWithUs
+INFO 2025-04-06 22:57:55,904 views 10304 23440 DB record values: lat=9.5618, lng=76.4905, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 22:57:55,907 views 10304 23440 Verified location record can be retrieved: Location for Booking 8 at 2025-04-06 17:27:54.436000+00:00, booking_id=8
+INFO 2025-04-06 22:57:55,908 views 10304 23440 Returning JSON success response
+INFO 2025-04-06 22:58:06,193 views 10304 23440 -------------- LOCATION SHARE DEBUG --------------
+INFO 2025-04-06 22:58:06,193 views 10304 23440 Location share called for booking 8 by user jobson
+INFO 2025-04-06 22:58:06,194 views 10304 23440 Request method: POST
+INFO 2025-04-06 22:58:06,194 views 10304 23440 Content type: application/json
+INFO 2025-04-06 22:58:06,194 views 10304 23440 JSON data received: {'latitude': 19.076, 'longitude': 72.8777, 'timestamp': '2025-04-06T17:28:06.182Z', 'is_live_tracking': False, 'accuracy': 10}
+INFO 2025-04-06 22:58:06,195 views 10304 23440 Processed location data: lat=19.076, lng=72.8777, timestamp=2025-04-06T17:28:06.182Z, live_tracking=False, accuracy=10m
+INFO 2025-04-06 22:58:06,195 views 10304 23440 Validated coordinates: lat=19.076, lng=72.8777
+INFO 2025-04-06 22:58:06,200 views 10304 23440 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up, vehicle: Splender (2017) - KL34F2994
+INFO 2025-04-06 22:58:06,202 views 10304 23440 Using client timestamp: 2025-04-06 17:28:06.182000+00:00
+INFO 2025-04-06 22:58:06,202 views 10304 23440 Creating location share with data: {'booking': <Booking: Booking for Splender (2017) - KL34F2994 by jobson>, 'latitude': 19.076, 'longitude': 72.8777, 'is_live_tracking': False, 'accuracy': 10, 'timestamp': datetime.datetime(2025, 4, 6, 17, 28, 6, 182000, tzinfo=tzutc())}
+INFO 2025-04-06 22:58:06,210 views 10304 23440 Successfully created location share: ID=79, timestamp=2025-04-06 17:28:06.182000+00:00, vendor=RentWithUs
+INFO 2025-04-06 22:58:06,211 views 10304 23440 DB record values: lat=19.076, lng=72.8777, live_tracking=False, accuracy=10m
+INFO 2025-04-06 22:58:06,212 views 10304 23440 Verified location record can be retrieved: Location for Booking 8 at 2025-04-06 17:28:06.182000+00:00, booking_id=8
+INFO 2025-04-06 22:58:06,215 views 10304 23440 Returning JSON success response
+INFO 2025-04-06 23:00:29,978 views 21684 16344 Location share called for booking 8
+INFO 2025-04-06 23:00:29,979 views 21684 16344 Request method: POST
+INFO 2025-04-06 23:00:29,980 views 21684 16344 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:30:28.168Z, live_tracking=False, accuracy=65206m
+INFO 2025-04-06 23:00:29,980 views 21684 16344 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 23:00:29,986 views 21684 16344 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 23:00:29,987 views 21684 16344 Using client timestamp: 2025-04-06 17:30:28.168000+00:00
+INFO 2025-04-06 23:00:29,995 views 21684 16344 Location share created: 80 with timestamp: 2025-04-06 17:30:28.168000+00:00, live_tracking: False, accuracy: 65206m
+INFO 2025-04-06 23:00:37,330 views 21684 16344 Location share called for booking 8
+INFO 2025-04-06 23:00:37,330 views 21684 16344 Request method: POST
+INFO 2025-04-06 23:00:37,331 views 21684 16344 Received coordinates: lat=9.5618, lng=76.4905, timestamp=None, live_tracking=False, accuracy=Nonem
+INFO 2025-04-06 23:00:37,331 views 21684 16344 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 23:00:37,336 views 21684 16344 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 23:00:37,342 views 21684 16344 Location share created: 81 with timestamp: 2025-04-06 17:30:37.337696+00:00, live_tracking: False, accuracy: Nonem
+INFO 2025-04-06 23:03:29,435 views 21684 16344 Location share called for booking 8
+INFO 2025-04-06 23:03:29,435 views 21684 16344 Request method: POST
+INFO 2025-04-06 23:03:29,436 views 21684 16344 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:33:29.427Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 23:03:29,436 views 21684 16344 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 23:03:29,443 views 21684 16344 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 23:03:29,444 views 21684 16344 Using client timestamp: 2025-04-06 17:33:29.427000+00:00
+INFO 2025-04-06 23:03:29,450 views 21684 16344 Location share created: 82 with timestamp: 2025-04-06 17:33:29.427000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 23:03:44,713 views 21684 16344 Location share called for booking 8
+INFO 2025-04-06 23:03:44,713 views 21684 16344 Request method: POST
+INFO 2025-04-06 23:03:44,713 views 21684 16344 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:33:44.706Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 23:03:44,714 views 21684 16344 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 23:03:44,718 views 21684 16344 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 23:03:44,719 views 21684 16344 Using client timestamp: 2025-04-06 17:33:44.706000+00:00
+INFO 2025-04-06 23:03:44,726 views 21684 16344 Location share created: 83 with timestamp: 2025-04-06 17:33:44.706000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 23:04:16,175 views 21684 16344 Location share called for booking 8
+INFO 2025-04-06 23:04:16,176 views 21684 16344 Request method: POST
+INFO 2025-04-06 23:04:16,176 views 21684 16344 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:34:16.168Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 23:04:16,176 views 21684 16344 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 23:04:16,181 views 21684 16344 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 23:04:16,182 views 21684 16344 Using client timestamp: 2025-04-06 17:34:16.168000+00:00
+INFO 2025-04-06 23:04:16,187 views 21684 16344 Location share created: 84 with timestamp: 2025-04-06 17:34:16.168000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 23:04:56,815 views 23468 17400 Location share called for booking 8
+INFO 2025-04-06 23:04:56,815 views 23468 17400 Request method: POST
+INFO 2025-04-06 23:04:56,816 views 23468 17400 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:34:56.799Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 23:04:56,816 views 23468 17400 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 23:04:56,822 views 23468 17400 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 23:04:56,823 views 23468 17400 Using client timestamp: 2025-04-06 17:34:56.799000+00:00
+INFO 2025-04-06 23:04:56,830 views 23468 17400 Location share created: 85 with timestamp: 2025-04-06 17:34:56.799000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 23:05:14,545 views 23468 17400 Location share called for booking 8
+INFO 2025-04-06 23:05:14,545 views 23468 17400 Request method: POST
+INFO 2025-04-06 23:05:14,546 views 23468 17400 Received coordinates: lat=9.5618, lng=76.4905, timestamp=2025-04-06T17:35:14.535Z, live_tracking=True, accuracy=65206m
+INFO 2025-04-06 23:05:14,546 views 23468 17400 Valid coordinates: lat=9.5618, lng=76.4905
+INFO 2025-04-06 23:05:14,550 views 23468 17400 Booking found: Booking for Splender (2017) - KL34F2994 by jobson, status: picked_up
+INFO 2025-04-06 23:05:14,550 views 23468 17400 Using client timestamp: 2025-04-06 17:35:14.535000+00:00
+INFO 2025-04-06 23:05:14,556 views 23468 17400 Location share created: 86 with timestamp: 2025-04-06 17:35:14.535000+00:00, live_tracking: True, accuracy: 65206m
+INFO 2025-04-06 23:17:51,741 views 21876 12448 Extension confirmation email sent for booking 8
+INFO 2025-04-06 23:47:38,740 views 21876 23416 Extension confirmation email sent for booking 8
+INFO 2025-04-07 00:00:16,705 views 21768 19428 Booking view called for vehicle id: 3
+INFO 2025-04-07 00:00:25,057 views 21768 19428 Booking view called for vehicle id: 3
+INFO 2025-04-07 00:00:25,058 views 21768 19428 POST request received
+INFO 2025-04-07 00:00:25,058 views 21768 19428 Start date: 2025-04-07, End date: 2025-04-07
+INFO 2025-04-07 00:00:25,061 views 21768 19428 Adjusted dates - Start: 2025-04-07 00:00:00+00:00, End: 2025-04-08 23:59:59.999999+00:00
+INFO 2025-04-07 00:00:25,062 models 21768 19428 Checking availability for vehicle 3 from 2025-04-07 00:00:00+00:00 to 2025-04-08 23:59:59.999999+00:00
+INFO 2025-04-07 00:00:25,063 models 21768 19428 Overlapping bookings found: 0
+INFO 2025-04-07 00:00:25,064 models 21768 19428 Is vehicle available: True
+INFO 2025-04-07 00:00:25,064 views 21768 19428 Vehicle is available for the selected dates.
+INFO 2025-04-07 00:00:25,070 views 21768 19428 Booking created successfully: 9
+INFO 2025-04-07 00:00:30,062 views 21768 2860 Booking view called for vehicle id: 3
+INFO 2025-04-07 00:00:30,064 views 21768 2860 POST request received
+INFO 2025-04-07 00:00:30,064 views 21768 2860 Start date: 2025-04-07, End date: 2025-04-07
+INFO 2025-04-07 00:00:30,065 views 21768 2860 Adjusted dates - Start: 2025-04-07 00:00:00+00:00, End: 2025-04-08 23:59:59.999999+00:00
+INFO 2025-04-07 00:00:30,065 models 21768 2860 Checking availability for vehicle 3 from 2025-04-07 00:00:00+00:00 to 2025-04-08 23:59:59.999999+00:00
+INFO 2025-04-07 00:00:30,067 models 21768 2860 Overlapping bookings found: 1
+INFO 2025-04-07 00:00:30,068 models 21768 2860 Is vehicle available: False
+WARNING 2025-04-07 00:00:30,068 views 21768 2860 Vehicle is not available for the selected dates.
+INFO 2025-04-07 00:00:46,849 views 21768 19428 Confirmation email sent for booking 9
+INFO 2025-04-07 00:02:15,574 views 21768 19428 Extension confirmation email sent for booking 9

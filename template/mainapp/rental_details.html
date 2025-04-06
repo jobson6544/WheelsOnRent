@@ -180,7 +180,13 @@
                                     <p class="small">Share your current location with the vendor</p>
                                     
                                     <!-- Location sharing button container -->
-                                    <div id="shareLocationBtn" data-share-location-booking="{{ booking.booking_id }}"></div>
+                                    <div id="shareLocationBtn" data-share-location-booking="{{ booking.booking_id }}">
+                                        <button id="share-location-btn" class="btn btn-info btn-sm" onclick="shareCurrentLocation()"><i class="bi bi-geo-alt-fill"></i> Share My Location</button>
+                                        <div class="form-check form-switch mt-2">
+                                            <input class="form-check-input" type="checkbox" id="liveTrackingToggle">
+                                            <label class="form-check-label" for="liveTrackingToggle">Enable Live Tracking</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -256,24 +262,53 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="earlyReturnModalLabel">Confirm Early Return</h5>
+                <h5 class="modal-title" id="earlyReturnModalLabel">Early Vehicle Return</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to return this vehicle now? This action cannot be undone.</p>
-                <p><strong>Current Return Date:</strong> {{ booking.end_date|date:"M d, Y" }}</p>
-                <p class="text-info">
-                    <i class="fas fa-info-circle"></i> If you return early, you may be eligible for a partial refund for unused days.
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <form action="{% url 'mainapp:early_return' booking.booking_id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">Confirm Return</button>
-                </form>
+                <div id="early-return-step-1">
+                    <p>Are you sure you want to return this vehicle now? This action cannot be undone.</p>
+                    <p><strong>Current Return Date:</strong> {{ booking.end_date|date:"M d, Y" }}</p>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Returning this vehicle early:
+                        <ul class="mb-0 mt-2">
+                            <li>You'll receive a refund for the unused days, minus a 15% early return fee.</li>
+                            <li>Refunds are processed within 5-7 business days.</li>
+                            <li>The vehicle must be returned in good condition.</li>
+                        </ul>
+                    </div>
+                    <div class="text-right mt-3">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" id="request-otp-btn" class="btn btn-primary">Request OTP</button>
+                    </div>
+                </div>
+                
+                <div id="early-return-step-2" style="display: none;">
+                    <div id="otp-sent-message" class="alert alert-success mb-4" style="display: none;">
+                        <i class="fas fa-check-circle"></i> OTP has been sent to your registered email.
+                    </div>
+                    
+                    <form id="early-return-form" action="{% url 'mainapp:early_return' booking.booking_id %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="early-return-otp">Enter OTP from Email</label>
+                            <input type="text" class="form-control" id="early-return-otp" name="otp" placeholder="Enter 6-digit OTP" maxlength="6" required>
+                            <small class="form-text text-muted">Please check your email for the OTP. It will expire in 10 minutes.</small>
+                        </div>
+                        
+                        <div id="otp-error-message" class="alert alert-danger mt-3" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i> <span id="otp-error-text"></span>
+                        </div>
+                        
+                        <div class="form-group mt-4 text-right">
+                            <button type="button" id="back-to-step-1-btn" class="btn btn-secondary">Back</button>
+                            <button type="button" id="resend-otp-btn" class="btn btn-outline-primary">Resend OTP</button>
+                            <button type="submit" class="btn btn-danger">Confirm Return</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -360,19 +395,164 @@
         
         // Check for shared location
         checkForSharedLocation();
+        
+        // Early Return OTP functionality
+        const requestOtpBtn = document.getElementById('request-otp-btn');
+        const resendOtpBtn = document.getElementById('resend-otp-btn');
+        const backToStep1Btn = document.getElementById('back-to-step-1-btn');
+        const earlyReturnStep1 = document.getElementById('early-return-step-1');
+        const earlyReturnStep2 = document.getElementById('early-return-step-2');
+        const otpSentMessage = document.getElementById('otp-sent-message');
+        const otpErrorMessage = document.getElementById('otp-error-message');
+        const otpErrorText = document.getElementById('otp-error-text');
+        
+        function requestOtp() {
+            // Show loading state
+            if (this.id === 'request-otp-btn') {
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
+            } else {
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Resending...';
+            }
+            this.disabled = true;
+            
+            // Send request to get OTP
+            fetch("{% url 'mainapp:early_return' booking.booking_id %}", {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Reset button state
+                if (this.id === 'request-otp-btn') {
+                    this.innerHTML = 'Request OTP';
+                    // Switch to step 2
+                    earlyReturnStep1.style.display = 'none';
+                    earlyReturnStep2.style.display = 'block';
+                } else {
+                    this.innerHTML = 'Resend OTP';
+                }
+                this.disabled = false;
+                
+                if (data.success) {
+                    // Show success message
+                    otpSentMessage.style.display = 'block';
+                    otpErrorMessage.style.display = 'none';
+                    
+                    // Focus on OTP input
+                    document.getElementById('early-return-otp').focus();
+                } else {
+                    // Show error message
+                    otpSentMessage.style.display = 'none';
+                    otpErrorMessage.style.display = 'block';
+                    otpErrorText.textContent = data.message || 'Failed to send OTP. Please try again.';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Reset button state
+                if (this.id === 'request-otp-btn') {
+                    this.innerHTML = 'Request OTP';
+                } else {
+                    this.innerHTML = 'Resend OTP';
+                }
+                this.disabled = false;
+                
+                // Show error message
+                otpSentMessage.style.display = 'none';
+                otpErrorMessage.style.display = 'block';
+                otpErrorText.textContent = 'Network error. Please try again.';
+            });
+        }
+        
+        if (requestOtpBtn) {
+            requestOtpBtn.addEventListener('click', requestOtp);
+        }
+        
+        if (resendOtpBtn) {
+            resendOtpBtn.addEventListener('click', requestOtp);
+        }
+        
+        if (backToStep1Btn) {
+            backToStep1Btn.addEventListener('click', function() {
+                earlyReturnStep2.style.display = 'none';
+                earlyReturnStep1.style.display = 'block';
+                
+                // Reset OTP input and messages
+                document.getElementById('early-return-otp').value = '';
+                otpSentMessage.style.display = 'none';
+                otpErrorMessage.style.display = 'none';
+            });
+        }
     });
 
-    function shareCurrentLocation() {
+    function shareCurrentLocation(isFromLiveTracking = false) {
         // Get button and show loading state
         const shareButton = document.getElementById('share-location-btn');
+        if (!isFromLiveTracking) {
         shareButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sharing...';
         shareButton.disabled = true;
+        }
         
+        // First, show an informative message about why we need location
+        if (!isFromLiveTracking) {
+            Swal.fire({
+                title: 'Location Permission',
+                text: 'We need to access your current location to share it with the vehicle vendor. Please ensure your GPS is enabled for highest accuracy.',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Allow Location Access',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#4BB543',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Add a short delay before requesting location to allow time for the user to ready their GPS
+                    setTimeout(() => requestLocationPermission(), 500);
+                } else {
+                    // User clicked Cancel
+                    shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
+                    shareButton.disabled = false;
+                }
+            });
+        } else {
+            // If it's from live tracking, proceed directly
+            requestLocationPermission();
+        }
+        
+        function requestLocationPermission() {
         if (navigator.geolocation) {
+                // Set the most accurate geolocation options possible
+                const geoOptions = {
+                    enableHighAccuracy: true, // Request the most accurate position
+                    timeout: 15000,          // Wait longer for a good fix
+                    maximumAge: 0            // Don't use cached position
+                };
+                
+                // Request the current position with high accuracy
             navigator.geolocation.getCurrentPosition(
                 function(position) {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
+                        const accuracy = position.coords.accuracy; // Accuracy in meters
+                        
+                        console.log(`Geolocation obtained with accuracy: ${accuracy} meters`);
+                        
+                        // If accuracy is too low (over 100 meters), warn user but still proceed
+                        let accuracyWarning = '';
+                        if (accuracy > 100) {
+                            accuracyWarning = `
+                                <div class="alert alert-warning mt-2 mb-3">
+                                    <strong>Low GPS Accuracy:</strong> Your location accuracy is ${Math.round(accuracy)} meters.
+                                    For better results, try:
+                                    <ul class="mb-0 mt-1">
+                                        <li>Enable high-accuracy location mode in device settings</li>
+                                        <li>Move to an area with better GPS signal</li>
+                                        <li>Turn off any VPN or proxy services</li>
+                                    </ul>
+                                </div>
+                            `;
+                        }
                     
                     // Get current client timestamp
                     const now = new Date();
@@ -382,12 +562,135 @@
                     const data = {
                         'latitude': lat,
                         'longitude': lng,
-                        'timestamp': timestamp
+                            'timestamp': timestamp,
+                            'is_live_tracking': isFromLiveTracking,
+                            'accuracy': accuracy
                     };
                     
                     // Log location in console for debugging
-                    console.log(`Location obtained: ${lat}, ${lng} at ${timestamp}`);
+                        console.log(`Location obtained: ${lat}, ${lng} at ${timestamp} (live tracking: ${isFromLiveTracking})`);
                     
+                        // If not from live tracking, show the detected location before sending
+                        if (!isFromLiveTracking) {
+                            Swal.fire({
+                                title: 'Detected Location',
+                                html: `
+                                    <p>The following location will be shared with the vendor:</p>
+                                    <p><strong>Latitude:</strong> ${lat.toFixed(6)}</p>
+                                    <p><strong>Longitude:</strong> ${lng.toFixed(6)}</p>
+                                    <p><strong>Accuracy:</strong> ${Math.round(accuracy)} meters</p>
+                                    ${accuracyWarning}
+                                `,
+                                icon: 'info',
+                                showCancelButton: true,
+                                confirmButtonText: 'Share This Location',
+                                cancelButtonText: 'Cancel'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // User confirmed, send to server
+                                    sendLocationToServer(data);
+                                } else {
+                                    // User cancelled
+                                    shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
+                                    shareButton.disabled = false;
+                                }
+                            });
+                        } else {
+                            // If from live tracking, send directly
+                            sendLocationToServer(data);
+                        }
+                    },
+                    function(error) {
+                        console.error("Error getting location:", error);
+                        if (!isFromLiveTracking) {
+                            shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
+                            shareButton.disabled = false;
+                            
+                            // Show appropriate error message based on error code
+                            let errorMessage = 'An error occurred while getting your location.';
+                            let showSettings = false;
+                            
+                            switch(error.code) {
+                                case error.PERMISSION_DENIED:
+                                    errorMessage = 'You denied the request for location access. Please enable location services in your browser settings.';
+                                    showSettings = true;
+                                    break;
+                                case error.POSITION_UNAVAILABLE:
+                                    errorMessage = 'Location information is unavailable. Please check your device GPS or try again later.';
+                                    break;
+                                case error.TIMEOUT:
+                                    errorMessage = 'The request to get your location timed out. Please try again in an area with better GPS signal.';
+                                    break;
+                            }
+                            
+                            Swal.fire({
+                                title: 'Location Error',
+                                text: errorMessage,
+                                icon: 'error',
+                                confirmButtonText: 'OK',
+                                showCancelButton: showSettings,
+                                cancelButtonText: 'Open Settings',
+                            }).then((result) => {
+                                if (result.dismiss === Swal.DismissReason.cancel) {
+                                    // Provide instructions to open browser settings
+                                    Swal.fire({
+                                        title: 'Browser Settings',
+                                        html: `
+                                            <p>To enable location access:</p>
+                                            <ol class="text-left">
+                                                <li>Click the lock/info icon in your address bar</li>
+                                                <li>Find "Location" permissions</li>
+                                                <li>Change the setting to "Allow"</li>
+                                                <li>Refresh this page</li>
+                                            </ol>
+                                        `,
+                                        icon: 'info',
+                                        confirmButtonText: 'Got it'
+                                    });
+                                }
+                            });
+                        } else {
+                            console.log('Error during live tracking location acquisition:', error);
+                            
+                            // If this is a permission denied error during live tracking, stop live tracking
+                            if (error.code === error.PERMISSION_DENIED) {
+                                const trackingToggle = document.getElementById('liveTrackingToggle');
+                                if (trackingToggle && trackingToggle.checked) {
+                                    trackingToggle.checked = false;
+                                    stopLiveTracking();
+                                    
+                                    // Notify user
+                                    Swal.fire({
+                                        title: 'Live Tracking Stopped',
+                                        text: 'Location access was denied. Live tracking has been disabled.',
+                                        icon: 'warning',
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 5000
+                                    });
+                                }
+                            }
+                        }
+                    },
+                    geoOptions
+                );
+            } else {
+                if (!isFromLiveTracking) {
+                    shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
+                    shareButton.disabled = false;
+                    
+                    Swal.fire({
+                        title: 'Not Supported',
+                        text: 'Geolocation is not supported by this browser. Please try using a different browser.',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+        }
+        
+        function sendLocationToServer(data) {
                     // Send to server via fetch API
                     fetch("{% url 'mainapp:share_location' booking.booking_id %}", {
                         method: 'POST',
@@ -399,6 +702,8 @@
                     })
                     .then(response => response.json())
                     .then(data => {
+                // Only update UI if not from live tracking
+                if (!isFromLiveTracking) {
                         // Reset button state
                         shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
                         shareButton.disabled = false;
@@ -410,6 +715,7 @@
                             icon: 'success',
                             confirmButtonText: 'OK'
                         });
+                }
                         
                         // If map isn't visible, show it now with location
                         const mapContainer = document.getElementById('location-map-container');
@@ -417,19 +723,20 @@
                             mapContainer.classList.remove('d-none');
                             
                             // Update map view with new coordinates
-                            window.map.setView([lat, lng], 15);
+                    window.map.setView([data.latitude, data.longitude], 15);
                             
                             // Update or create marker
                             if (window.locationMarker) {
-                                window.locationMarker.setLatLng([lat, lng]);
+                        window.locationMarker.setLatLng([data.latitude, data.longitude]);
                             } else {
-                                window.locationMarker = L.marker([lat, lng]).addTo(window.map)
+                        window.locationMarker = L.marker([data.latitude, data.longitude]).addTo(window.map)
                                     .bindPopup("Your current location").openPopup();
                             }
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
+                if (!isFromLiveTracking) {
                         shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
                         shareButton.disabled = false;
                         
@@ -439,51 +746,96 @@
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });
-                    });
-                },
-                function(error) {
-                    console.error("Error getting location:", error);
-                    shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
-                    shareButton.disabled = false;
-                    
-                    // Show appropriate error message based on error code
-                    let errorMessage = 'An error occurred while getting your location.';
-                    
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            errorMessage = 'You denied the request for location access. Please enable location services in your browser settings.';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            errorMessage = 'Location information is unavailable. Please check your device GPS or try again later.';
-                            break;
-                        case error.TIMEOUT:
-                            errorMessage = 'The request to get your location timed out. Please try again.';
-                            break;
-                    }
-                    
-                    Swal.fire({
-                        title: 'Location Error',
-                        text: errorMessage,
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
+                } else {
+                    console.log('Error during live tracking update:', error);
                 }
-            );
-        } else {
-            shareButton.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Share My Location';
-            shareButton.disabled = false;
-            
-            Swal.fire({
-                title: 'Not Supported',
-                text: 'Geolocation is not supported by this browser. Please try using a different browser.',
-                icon: 'warning',
-                confirmButtonText: 'OK'
             });
+        }
+    }
+    
+    // Live tracking functionality
+    let liveTrackingInterval = null;
+    const LIVE_TRACKING_INTERVAL = 30000; // 30 seconds
+    
+    // Setup live tracking toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const trackingToggle = document.getElementById('liveTrackingToggle');
+        if (trackingToggle) {
+            trackingToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    // Start live tracking
+                    startLiveTracking();
+                    // Display live tracking notification
+                    Swal.fire({
+                        title: 'Live Tracking Enabled',
+                        text: 'Your location will be shared with the vendor every 30 seconds. This will drain battery faster.',
+                        icon: 'info',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 5000
+                    });
+                } else {
+                    // Stop live tracking
+                    stopLiveTracking();
+                    // Display notification
+                    Swal.fire({
+                        title: 'Live Tracking Disabled',
+                        text: 'Your location will no longer be shared automatically.',
+                        icon: 'info',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }
+            });
+        }
+    });
+    
+    function startLiveTracking() {
+        // Clear any existing interval
+        stopLiveTracking();
+        
+        // Share location immediately
+        shareCurrentLocation(true);
+        
+        // Set up interval for future updates
+        liveTrackingInterval = setInterval(function() {
+            shareCurrentLocation(true);
+        }, LIVE_TRACKING_INTERVAL);
+        
+        console.log('Live tracking started');
+        
+        // Add visual indicator for live tracking
+        const locationContainer = document.getElementById('location-map-container');
+        if (locationContainer) {
+            const indicator = document.createElement('div');
+            indicator.id = 'live-tracking-indicator';
+            indicator.className = 'alert alert-danger mt-2';
+            indicator.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <div class="spinner-grow text-danger mr-2" role="status" style="width: 1rem; height: 1rem;">
+                        <span class="sr-only">Live</span>
+                    </div>
+                    <span class="ml-2">LIVE TRACKING ENABLED</span>
+                </div>
+            `;
+            locationContainer.appendChild(indicator);
+        }
+    }
+    
+    function stopLiveTracking() {
+        if (liveTrackingInterval) {
+            clearInterval(liveTrackingInterval);
+            liveTrackingInterval = null;
+            console.log('Live tracking stopped');
+            
+            // Remove visual indicator
+            const indicator = document.getElementById('live-tracking-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
         }
     }
 </script>

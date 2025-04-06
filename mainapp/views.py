@@ -33,6 +33,7 @@ from openai import OpenAI
 import os
 from django.db.models import Avg
 from decimal import Decimal
+import random
 
 User = get_user_model()
 
@@ -979,9 +980,9 @@ def rental_details(request, booking_id):
     return render(request, 'mainapp/rental_details.html', context)
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(["GET", "POST"])
 def early_return(request, booking_id):
-    """Process early return of a vehicle"""
+    """Process early return of a vehicle with OTP verification and refund calculation"""
     booking = get_object_or_404(
         Booking, 
         booking_id=booking_id, 
@@ -989,34 +990,89 @@ def early_return(request, booking_id):
         status='picked_up'
     )
     
-    success, unused_days = booking.process_early_return()
+    # If GET request, generate OTP for early return verification
+    if request.method == "GET":
+        # Generate a random 6-digit OTP
+        otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+        
+        # Save OTP in session with expiration time (10 minutes)
+        request.session['early_return_otp'] = otp
+        request.session['early_return_otp_expires'] = (timezone.now() + timezone.timedelta(minutes=10)).isoformat()
+        
+        # Send OTP to user's email
+        subject = 'OTP for Early Vehicle Return'
+        message = f'Your OTP for early vehicle return is: {otp}. This OTP will expire in 10 minutes.'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [request.user.email]
+        
+        try:
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+            return JsonResponse({'success': True, 'message': 'OTP sent to your email'})
+        except Exception as e:
+            logger.error(f"Failed to send OTP email: {str(e)}")
+            return JsonResponse({'success': False, 'message': 'Failed to send OTP'}, status=500)
     
-    if success:
-        # If there are unused days, calculate potential refund amount
-        refund_amount = 0
-        if unused_days > 0:
-            daily_rate = booking.vehicle.rental_rate
-            refund_amount = daily_rate * unused_days
+    # If POST request, verify OTP and process early return
+    elif request.method == "POST":
+        submitted_otp = request.POST.get('otp')
+        stored_otp = request.session.get('early_return_otp')
+        otp_expires = request.session.get('early_return_otp_expires')
         
-        # Mark vehicle as returned
-        booking.vehicle.mark_as_returned()
+        # Validate OTP
+        if not stored_otp or not otp_expires:
+            messages.error(request, 'No OTP found. Please request a new OTP.')
+            return redirect('mainapp:rental_details', booking_id=booking_id)
         
-        # Send return confirmation email
-        booking.send_return_email()
+        if timezone.now() > timezone.datetime.fromisoformat(otp_expires):
+            messages.error(request, 'OTP has expired. Please request a new OTP.')
+            return redirect('mainapp:rental_details', booking_id=booking_id)
         
-        messages.success(request, f'Vehicle returned successfully. {unused_days} unused days.')
+        if submitted_otp != stored_otp:
+            messages.error(request, 'Invalid OTP. Please try again.')
+            return redirect('mainapp:rental_details', booking_id=booking_id)
         
-        # If refund applicable, show additional message
-        if refund_amount > 0:
-            messages.info(
-                request, 
-                f'A refund of ₹{refund_amount} may be applicable. Our team will process this within 5-7 business days.'
-            )
+        # Clear OTP from session
+        if 'early_return_otp' in request.session:
+            del request.session['early_return_otp']
+        if 'early_return_otp_expires' in request.session:
+            del request.session['early_return_otp_expires']
         
-        return redirect('mainapp:user_booking_history')
-    else:
-        messages.error(request, 'Unable to process early return. Please contact customer support.')
-        return redirect('mainapp:rental_details', booking_id=booking_id)
+        # Process early return
+        success, unused_days = booking.process_early_return()
+        
+        if success:
+            # If there are unused days, calculate refund amount with early return fee
+            refund_amount = 0
+            early_return_fee = 0
+            
+            if unused_days > 0:
+                daily_rate = booking.vehicle.rental_rate
+                total_unused_amount = daily_rate * unused_days
+                
+                # Apply early return fee (15% of the unused amount)
+                # Convert 0.15 to Decimal to avoid type error
+                early_return_fee = round(total_unused_amount * Decimal('0.15'), 2)
+                refund_amount = total_unused_amount - early_return_fee
+            
+            # Mark vehicle as returned
+            booking.vehicle.mark_as_returned()
+            
+            # Send return confirmation email
+            booking.send_return_email()
+            
+            messages.success(request, f'Vehicle returned successfully. {unused_days} unused days.')
+            
+            # If refund applicable, show additional message
+            if refund_amount > 0:
+                messages.info(
+                    request, 
+                    f'A refund of ₹{refund_amount} will be processed (₹{early_return_fee} early return fee has been deducted). Refund will be credited within 5-7 business days.'
+                )
+            
+            return redirect('mainapp:user_booking_history')
+        else:
+            messages.error(request, 'Unable to process early return. Please contact customer support.')
+            return redirect('mainapp:rental_details', booking_id=booking_id)
 
 @login_required
 @require_http_methods(["GET", "POST"])
@@ -1141,6 +1197,8 @@ def share_location(request, booking_id):
                 latitude = data.get('latitude')
                 longitude = data.get('longitude')
                 client_timestamp = data.get('timestamp')  # Get client timestamp if provided
+                is_live_tracking = data.get('is_live_tracking', False)  # Get live tracking status
+                accuracy = data.get('accuracy', None)  # Get location accuracy in meters if provided
             except json.JSONDecodeError:
                 logger.error("Invalid JSON payload")
                 return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
@@ -1149,8 +1207,21 @@ def share_location(request, booking_id):
             latitude = request.POST.get('latitude')
             longitude = request.POST.get('longitude')
             client_timestamp = request.POST.get('timestamp')  # Get client timestamp if provided
+            is_live_tracking = request.POST.get('is_live_tracking', False)  # Get live tracking status
+            accuracy = request.POST.get('accuracy', None)  # Get location accuracy if provided
+            
+            # Convert string 'false'/'true' to boolean
+            if isinstance(is_live_tracking, str):
+                is_live_tracking = is_live_tracking.lower() == 'true'
+                
+            # Convert accuracy to float if present
+            if accuracy and isinstance(accuracy, str):
+                try:
+                    accuracy = float(accuracy)
+                except ValueError:
+                    accuracy = None
         
-        logger.info(f"Received coordinates: lat={latitude}, lng={longitude}, timestamp={client_timestamp}")
+        logger.info(f"Received coordinates: lat={latitude}, lng={longitude}, timestamp={client_timestamp}, live_tracking={is_live_tracking}, accuracy={accuracy}m")
         
         try:
             # Convert to float
@@ -1181,8 +1252,13 @@ def share_location(request, booking_id):
         location_data = {
             "booking": booking,
             "latitude": latitude,
-            "longitude": longitude
+            "longitude": longitude,
+            "is_live_tracking": bool(is_live_tracking)  # Ensure boolean type
         }
+        
+        # Add accuracy if provided
+        if accuracy is not None:
+            location_data["accuracy"] = accuracy
         
         # If client timestamp is provided, parse and use it
         if client_timestamp:
@@ -1198,11 +1274,16 @@ def share_location(request, booking_id):
         
         location_share = LocationShare.objects.create(**location_data)
         
-        logger.info(f"Location share created: {location_share.id} with timestamp: {location_share.timestamp}")
+        logger.info(f"Location share created: {location_share.id} with timestamp: {location_share.timestamp}, live_tracking: {location_share.is_live_tracking}, accuracy: {getattr(location_share, 'accuracy', 'N/A')}m")
         
         # If this is called from AJAX/fetch, return JSON
         if request.content_type == 'application/json':
-            return JsonResponse({'status': 'success', 'message': 'Location shared successfully'})
+            return JsonResponse({
+                'status': 'success', 
+                'message': 'Location shared successfully',
+                'latitude': latitude,
+                'longitude': longitude
+            })
         
         # Otherwise return HTML response for form submissions - ADD LAT/LNG TO REDIRECT URL
         messages.success(request, "Location shared successfully with vendor")
