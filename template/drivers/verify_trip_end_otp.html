@@ -1,0 +1,174 @@
+{% extends "drivers/base.html" %}
+
+{% block title %}Verify OTP to End Trip - WheelsOnRent{% endblock %}
+
+{% block extra_css %}
+<style>
+    .otp-container {
+        max-width: 600px;
+        margin: 30px auto;
+    }
+    
+    .otp-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .otp-header {
+        background-color: #28a745;
+        color: white;
+        padding: 20px;
+    }
+    
+    .otp-body {
+        padding: 30px;
+    }
+    
+    .otp-input {
+        letter-spacing: 12px;
+        font-size: 24px;
+        text-align: center;
+        font-weight: bold;
+    }
+    
+    .info-text {
+        color: #666;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .otp-footer {
+        border-top: 1px solid #eee;
+        padding: 20px;
+        background: #f9f9f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .trip-details {
+        margin-bottom: 25px;
+        padding: 15px;
+        border-radius: 8px;
+        background: #f9f9f9;
+    }
+    
+    .trip-details p {
+        margin-bottom: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="otp-container">
+    <div class="otp-card">
+        <div class="otp-header">
+            <h3 class="mb-0"><i class="fas fa-flag-checkered me-2"></i> Verify OTP to End Trip</h3>
+        </div>
+        
+        <div class="otp-body">
+            <div class="trip-details">
+                <h5>Trip Information</h5>
+                <p><strong>Trip ID:</strong> {{ trip.id }}</p>
+                <p><strong>Customer:</strong> {{ trip.booking.user.get_full_name }}</p>
+                <p><strong>Start Location:</strong> {{ trip.start_location }}</p>
+                <p><strong>End Location:</strong> {{ trip.end_location }}</p>
+                <p><strong>Started At:</strong> {{ trip.start_time|date:"M d, Y H:i" }}</p>
+            </div>
+            
+            <p class="info-text">
+                <i class="fas fa-info-circle me-2"></i> 
+                An OTP has been sent to the customer's email. Ask the customer for the OTP to complete the trip.
+            </p>
+            
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="otpInput" class="form-label">Enter 6-Digit OTP</label>
+                    <input type="text" class="form-control otp-input" id="otpInput" name="otp" maxlength="6" pattern="[0-9]{6}" required>
+                    <div class="form-text">Enter the 6-digit code provided by the customer</div>
+                </div>
+                
+                <!-- Hidden fields for GPS coordinates -->
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+                
+                <div class="mb-3">
+                    <label for="notes" class="form-label">Trip Notes (Optional)</label>
+                    <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Any notes about the trip?"></textarea>
+                </div>
+                
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-success" id="submitBtn">
+                        Verify OTP & Complete Trip
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="otp-footer">
+            <a href="{% url 'drivers:view_active_trip' trip.id %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Back to Trip Details
+            </a>
+            
+            <button type="button" class="btn btn-outline-success" id="resendOtpBtn">
+                <i class="fas fa-sync me-2"></i> Resend OTP
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const submitBtn = document.getElementById('submitBtn');
+        const resendOtpBtn = document.getElementById('resendOtpBtn');
+        
+        // Get GPS coordinates before submitting the form
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (navigator.geolocation) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Getting Location...';
+                submitBtn.disabled = true;
+                
+                navigator.geolocation.getCurrentPosition(
+                    // Success callback
+                    function(position) {
+                        document.getElementById('latitude').value = position.coords.latitude;
+                        document.getElementById('longitude').value = position.coords.longitude;
+                        
+                        // Submit the form
+                        form.submit();
+                    },
+                    // Error callback
+                    function(error) {
+                        console.error("Error getting location:", error);
+                        alert("Could not get your location. Please enable location services and try again.");
+                        submitBtn.innerHTML = 'Verify OTP & Complete Trip';
+                        submitBtn.disabled = false;
+                    },
+                    // Options
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                alert("Geolocation is not supported by this browser.");
+                form.submit(); // Submit anyway
+            }
+        });
+        
+        // Resend OTP button
+        resendOtpBtn.addEventListener('click', function() {
+            window.location.href = "{% url 'drivers:end_trip' trip.id %}";
+        });
+    });
+</script>
+{% endblock %} 

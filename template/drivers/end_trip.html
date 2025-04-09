@@ -1,0 +1,178 @@
+{% extends 'drivers/base.html' %}
+
+{% block title %}End Trip{% endblock %}
+
+{% block content %}
+<Main></Main>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">End Trip</h2>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Trip Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Booking Information</h5>
+                            <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+                            <p><strong>Customer:</strong> {{ booking.user.get_full_name }}</p>
+                            <p><strong>Booking Type:</strong> {{ booking.get_booking_type_display }}</p>
+                            
+                            {% if booking.booking_type == 'specific_date' %}
+                                <p><strong>Date:</strong> {{ booking.booking_date }}</p>
+                                <p><strong>Time:</strong> {{ booking.start_time }} to {{ booking.end_time }}</p>
+                            {% elif booking.booking_type == 'point_to_point' %}
+                                <p><strong>From:</strong> {{ booking.pickup_location }}</p>
+                                <p><strong>To:</strong> {{ booking.drop_location }}</p>
+                                <p><strong>Service Date:</strong> {{ booking.service_date }}</p>
+                            {% else %}
+                                <p><strong>Start Date:</strong> {{ booking.start_date }}</p>
+                                <p><strong>End Date:</strong> {{ booking.end_date }}</p>
+                                {% if booking.vehicle %}
+                                <p><strong>Vehicle:</strong> {{ booking.vehicle.model }}</p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Trip Information</h5>
+                            <p><strong>Trip ID:</strong> {{ trip.id }}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-primary">{{ trip.get_status_display }}</span></p>
+                            <p><strong>Start Time:</strong> {{ trip.start_time }}</p>
+                            <p><strong>Start Location:</strong> {{ trip.start_location }}</p>
+                            {% if trip.distance_covered %}
+                            <p><strong>Distance Covered:</strong> {{ trip.distance_covered|floatformat:2 }} km</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>End Trip</h4>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" id="endTripForm">
+                                {% csrf_token %}
+                                
+                                <div class="mb-3">
+                                    <label for="end_location" class="form-label">End Location</label>
+                                    <input type="text" class="form-control" id="end_location" name="end_location" 
+                                           value="{{ booking.drop_location }}" required>
+                                </div>
+                                
+                                <input type="hidden" id="latitude" name="latitude">
+                                <input type="hidden" id="longitude" name="longitude">
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="confirmCheck" required>
+                                    <label class="form-check-label" for="confirmCheck">
+                                        I confirm that the trip has been completed successfully
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary w-100" id="endTripBtn">
+                                    <i class="fas fa-flag-checkered me-2"></i> End Trip
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Current Location</h4>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="map" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize variables for the map and marker
+    let map;
+    let marker;
+    let currentLat = {{ booking.drop_latitude|default:"null" }};
+    let currentLng = {{ booking.drop_longitude|default:"null" }};
+    
+    // Function to initialize map
+    function initMap() {
+        // Default location (center of India or a relevant location)
+        let defaultLat = 20.5937;
+        let defaultLng = 78.9629;
+        
+        // Create map centered on default location
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: currentLat || defaultLat, lng: currentLng || defaultLng },
+            zoom: 15,
+            mapTypeControl: false,
+            fullscreenControl: false
+        });
+        
+        // Create marker for current location
+        if (currentLat && currentLng) {
+            marker = new google.maps.Marker({
+                position: { lat: currentLat, lng: currentLng },
+                map: map,
+                title: 'End Location'
+            });
+        }
+        
+        // Try to get current geolocation
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    currentLat = position.coords.latitude;
+                    currentLng = position.coords.longitude;
+                    
+                    // Update hidden fields
+                    document.getElementById('latitude').value = currentLat;
+                    document.getElementById('longitude').value = currentLng;
+                    
+                    // Update map and marker
+                    const pos = {
+                        lat: currentLat,
+                        lng: currentLng
+                    };
+                    
+                    map.setCenter(pos);
+                    
+                    if (marker) {
+                        marker.setPosition(pos);
+                    } else {
+                        marker = new google.maps.Marker({
+                            position: pos,
+                            map: map,
+                            title: 'Current Location'
+                        });
+                    }
+                },
+                (error) => {
+                    console.error('Error getting location:', error);
+                }
+            );
+        }
+    }
+    
+    // Load Google Maps and initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        // Dynamically load Google Maps API
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap`;
+        script.defer = true;
+        document.body.appendChild(script);
+    });
+</script>
+{% endblock %} 

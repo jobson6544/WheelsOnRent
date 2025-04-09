@@ -1,0 +1,278 @@
+{% extends 'drivers/base.html' %}
+
+{% block title %} - Customer Bookings{% endblock %}
+
+{% block content %}
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Customer Bookings</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'drivers:dashboard' %}">Home</a></li>
+        <li class="breadcrumb-item active">Customer Bookings</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section">
+    <!-- Ongoing trips section -->
+    {% if has_active_trips %}
+    <div class="row mb-4">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Ongoing Trips <span class="badge bg-success">{{ active_trip_bookings|length }}</span></h5>
+            
+            <div class="row">
+              {% for item in active_trip_bookings %}
+              <div class="col-md-6 mb-4">
+                <div class="card h-100 border-success">
+                  <div class="card-header bg-success text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h5 class="card-title mb-0">
+                        Trip #{{ item.trip.id }}
+                      </h5>
+                      <span class="badge bg-light text-dark">Started: {{ item.trip.start_time|time }}</span>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    {% if item.booking %}
+                    <div class="customer-info mb-3">
+                      <h6>Customer Details:</h6>
+                      <p class="mb-1">
+                        <i class="bi bi-person"></i> {{ item.booking.user.get_full_name }}
+                      </p>
+                      <p class="mb-1">
+                        <i class="bi bi-envelope"></i> {{ item.booking.user.email }}
+                      </p>
+                    </div>
+                    
+                    <div class="booking-details">
+                      <p><strong>Type:</strong> {{ item.booking.get_booking_type_display }}</p>
+                      
+                      {% if item.booking.booking_type == 'specific_date' %}
+                        <p><strong>Date:</strong> {{ item.booking.booking_date }}</p>
+                        <p><strong>Time:</strong> {{ item.booking.start_time }} - {{ item.booking.end_time }}</p>
+                      {% elif item.booking.booking_type == 'point_to_point' %}
+                        <p><strong>Service Date:</strong> {{ item.booking.service_date }}</p>
+                        <p><strong>From:</strong> {{ item.booking.pickup_location }}</p>
+                        <p><strong>To:</strong> {{ item.booking.drop_location }}</p>
+                      {% else %}
+                        <p><strong>Period:</strong> {{ item.booking.start_date|date:"d M Y H:i" }} - {{ item.booking.end_date|date:"d M Y H:i" }}</p>
+                        {% if item.booking.vehicle %}
+                          <p><strong>Vehicle:</strong> {{ item.booking.vehicle.model }}</p>
+                        {% endif %}
+                      {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                      <i class="bi bi-exclamation-triangle-fill"></i> Booking details not available
+                    </div>
+                    {% endif %}
+                    
+                    <div class="trip-info mt-3">
+                      <p><strong>Start Location:</strong> {{ item.trip.start_location }}</p>
+                      <p><strong>Current Status:</strong> <span class="badge bg-primary">{{ item.trip.get_status_display }}</span></p>
+                    </div>
+                    
+                    <div class="trip-actions mt-3 d-flex justify-content-between">
+                      <a href="{% url 'drivers:view_active_trip' item.trip.id %}" class="btn btn-primary">
+                        <i class="bi bi-eye"></i> View Trip Details
+                      </a>
+                      
+                      {% if item.booking and item.trip.status == 'started' %}
+                      <a href="{% url 'drivers:end_trip' item.booking.id %}" class="btn btn-danger">
+                        <i class="bi bi-flag-fill"></i> End Trip
+                      </a>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Upcoming & Ready Bookings</h5>
+            
+            {% if bookings %}
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Type</th>
+                    <th>Details</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in bookings %}
+                  {% with booking=item.booking %}
+                  <tr>
+                    <td>{{ booking.id }}</td>
+                    <td>
+                      {{ booking.user.get_full_name }} <br>
+                      <small class="text-muted">{{ booking.user.email }}</small>
+                    </td>
+                    <td>{{ booking.get_booking_type_display }}</td>
+                    <td>
+                      {% if booking.booking_type == 'specific_date' %}
+                        <strong>Date:</strong> {{ booking.booking_date }} <br>
+                        <strong>Time:</strong> {{ booking.start_time }} - {{ booking.end_time }}
+                      {% elif booking.booking_type == 'point_to_point' %}
+                        <strong>From:</strong> {{ booking.pickup_location }} <br>
+                        <strong>To:</strong> {{ booking.drop_location }} <br>
+                        <strong>Date:</strong> {{ booking.service_date }}
+                      {% else %}
+                        <strong>Duration:</strong> <br>
+                        {{ booking.start_date|date:"M d, Y H:i" }} to <br>
+                        {{ booking.end_date|date:"M d, Y H:i" }}
+                        {% if booking.vehicle %}
+                        <br><strong>Vehicle:</strong> {{ booking.vehicle.model }}
+                        {% endif %}
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if item.is_ready_to_start %}
+                        <span class="badge bg-success">Ready to Start</span>
+                      {% elif item.is_upcoming %}
+                        <span class="badge bg-warning">Upcoming</span>
+                        {% if item.time_until_start %}
+                          <br><small>Starts in {{ item.time_until_start }}</small>
+                        {% endif %}
+                      {% else %}
+                        <span class="badge bg-primary">Confirmed</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if item.is_ready_to_start %}
+                        <a href="{% url 'drivers:start_trip' booking.id %}" class="btn btn-primary btn-sm">
+                          <i class="bi bi-play-fill"></i> Start Trip
+                        </a>
+                      {% else %}
+                        <button class="btn btn-outline-secondary btn-sm" disabled>
+                          <i class="bi bi-clock"></i> Not Ready
+                        </button>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endwith %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle me-1"></i>
+              You don't have any confirmed bookings at the moment.
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Notification Card -->
+    {% if has_upcoming_bookings %}
+    <div class="row mt-3">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Trip Notifications</h5>
+            
+            <div class="alert alert-warning">
+              <h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>Upcoming Trips</h4>
+              <p>You have upcoming trips scheduled within the next 24 hours. Make sure you're prepared and available on time.</p>
+            </div>
+            
+            <!-- Trip Calendar -->
+            <div id="upcoming-trip-calendar" class="mt-4">
+              <h5>Next 3 Days Schedule</h5>
+              <div class="list-group">
+                {% for day, day_bookings in calendar_bookings.items %}
+                <div class="list-group-item">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ day|date:"l, F d" }}</h5>
+                    <span class="badge bg-primary rounded-pill">{{ day_bookings|length }}</span>
+                  </div>
+                  {% for item in day_bookings %}
+                  <div class="d-flex w-100 justify-content-between mt-2">
+                    <p class="mb-1">
+                      {% if item.booking.booking_type == 'specific_date' %}
+                        <strong>{{ item.booking.start_time }}</strong> - {{ item.booking.user.get_full_name }}
+                      {% elif item.booking.booking_type == 'point_to_point' %}
+                        <strong>Point to Point</strong> - {{ item.booking.user.get_full_name }}
+                      {% else %}
+                        <strong>{{ item.booking.start_date|time }}</strong> - {{ item.booking.user.get_full_name }}
+                      {% endif %}
+                    </p>
+                    {% if item.is_ready_to_start %}
+                      <span class="badge bg-success">Ready</span>
+                    {% elif item.is_upcoming %}
+                      <span class="badge bg-warning">Soon</span>
+                    {% endif %}
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </section>
+
+</main><!-- End #main -->
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check for upcoming bookings and show notification
+    {% for item in bookings %}
+      {% if item.is_upcoming %}
+        // Create browser notification if supported
+        if ('Notification' in window) {
+          if (Notification.permission === 'granted') {
+            showNotification();
+          } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(function(permission) {
+              if (permission === 'granted') {
+                showNotification();
+              }
+            });
+          }
+        }
+        
+        // Only need to check once
+        break;
+      {% endif %}
+    {% endfor %}
+    
+    function showNotification() {
+      const notification = new Notification('Upcoming Trip', {
+        body: 'You have an upcoming trip scheduled soon. Check your bookings for details.',
+        icon: '/static/adminapp/assets/img/logo.png'
+      });
+      
+      notification.onclick = function() {
+        window.focus();
+        this.close();
+      };
+    }
+  });
+</script>
+{% endblock %} 

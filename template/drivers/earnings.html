@@ -3,6 +3,7 @@
 {% block title %} - Earnings{% endblock %}
 
 {% block content %}
+<main id="main" class="main">
 <div class="container-fluid">
     <div class="pagetitle mb-4">
         <h1>Earnings</h1>
@@ -17,7 +18,7 @@
     <section class="section dashboard">
         <div class="row">
             <!-- Total Earnings Card -->
-            <div class="col-xl-4 col-md-6">
+            <div class="col-xl-3 col-md-6">
                 <div class="card info-card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Total Earnings</h5>
@@ -32,7 +33,7 @@
             </div>
 
             <!-- This Month's Earnings -->
-            <div class="col-xl-4 col-md-6">
+            <div class="col-xl-3 col-md-6">
                 <div class="card info-card h-100">
                     <div class="card-body">
                         <h5 class="card-title">This Month</h5>
@@ -40,6 +41,36 @@
                             <div class="w-100">
                                 <h6 class="display-6 mb-0">₹{{ monthly_earnings|default:"0" }}</h6>
                                 <span class="text-muted small pt-2">Current month earnings</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Profit Card -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card info-card h-100 border-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Profit</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="w-100">
+                                <h6 class="display-6 mb-0 text-success">₹{{ total_profit|default:"0" }}</h6>
+                                <span class="text-muted small pt-2">Lifetime profit from completed trips</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- This Month's Profit -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card info-card h-100 border-success">
+                    <div class="card-body">
+                        <h5 class="card-title">This Month's Profit</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="w-100">
+                                <h6 class="display-6 mb-0 text-success">₹{{ monthly_profit|default:"0" }}</h6>
+                                <span class="text-muted small pt-2">Current month profit</span>
                             </div>
                         </div>
                     </div>
@@ -61,6 +92,8 @@
                                             <th>Customer</th>
                                             <th>Distance</th>
                                             <th>Amount</th>
+                                            <th>Profit</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -68,9 +101,25 @@
                                         <tr>
                                             <td>#{{ earning.trip.id }}</td>
                                             <td>{{ earning.created_at|date:"M d, Y" }}</td>
-                                            <td>{{ earning.trip.customer.full_name }}</td>
-                                            <td>{{ earning.trip.distance }} km</td>
-                                            <td>₹{{ earning.amount }}</td>
+                                            <td>
+                                                {% if earning.customer %}
+                                                    {{ earning.customer.get_full_name|default:earning.customer.username }}
+                                                {% elif earning.trip.customer %}
+                                                    {{ earning.trip.customer.get_full_name|default:earning.trip.customer.username }}
+                                                {% else %}
+                                                    Unknown
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ earning.trip.distance|default:"0" }} km</td>
+                                            <td>₹{{ earning.amount|floatformat:2 }}</td>
+                                            <td class="text-success">
+                                                ₹{{ earning.profit|floatformat:2 }}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success">
+                                                    {{ earning.trip.get_status_display }}
+                                                </span>
+                                            </td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -88,4 +137,5 @@
         </div>
     </section>
 </div>
+</main>
 {% endblock %} 

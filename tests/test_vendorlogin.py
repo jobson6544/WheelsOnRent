@@ -44,7 +44,7 @@ class TestVendorlogin():
             # Enter email
             email_field = self.driver.find_element(By.ID, "email")
             email_field.click()
-            email_field.send_keys("street-nutcase-opt@duck.com")
+            email_field.send_keys("vendor@gmail.com")
             print("\033[92m✓ Entered email\033[0m")
             
             # Enter password

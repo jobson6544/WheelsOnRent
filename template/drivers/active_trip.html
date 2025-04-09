@@ -1,0 +1,308 @@
+{% extends 'drivers/base.html' %}
+
+{% block title %}Active Trip{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<style>
+    #map-container {
+        height: 400px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .trip-card {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    .trip-header {
+        background: linear-gradient(90deg, #2c3e50, #4ca1af);
+        color: white;
+        padding: 15px;
+    }
+    .status-badge {
+        font-size: 14px;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+    .trip-info {
+        padding: 15px;
+    }
+    .trip-actions {
+        padding: 15px;
+        border-top: 1px solid #eee;
+    }
+    .tracking-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+        background: rgba(255,255,255,0.8);
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .tracking-status.active {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .tracking-status.inactive {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Active Trip</h2>
+                <a href="{% url 'drivers:customer_bookings' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Bookings
+                </a>
+            </div>
+            
+            <div class="trip-card">
+                <div class="trip-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="m-0">Trip #{{ trip.id }}</h3>
+                        <span class="status-badge bg-primary">{{ trip.get_status_display }}</span>
+                    </div>
+                </div>
+                
+                <div class="trip-info">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Customer Information</h4>
+                            {% if booking %}
+                                <p><strong>Name:</strong> {{ booking.user.get_full_name }}</p>
+                                <p><strong>Contact:</strong> {{ booking.user.email }}</p>
+                                
+                                <h4 class="mt-4">Booking Details</h4>
+                                <p><strong>Booking Type:</strong> {{ booking.get_booking_type_display }}</p>
+                                
+                                {% if booking.booking_type == 'specific_date' %}
+                                    <p><strong>Date:</strong> {{ booking.booking_date }}</p>
+                                    <p><strong>Time:</strong> {{ booking.start_time }} to {{ booking.end_time }}</p>
+                                {% elif booking.booking_type == 'point_to_point' %}
+                                    <p><strong>From:</strong> {{ booking.pickup_location }}</p>
+                                    <p><strong>To:</strong> {{ booking.drop_location }}</p>
+                                {% else %}
+                                    <p><strong>Duration:</strong> {{ booking.start_date|date:"M d, Y" }} to {{ booking.end_date|date:"M d, Y" }}</p>
+                                    {% if booking.vehicle %}
+                                    <p><strong>Vehicle:</strong> {{ booking.vehicle.model }}</p>
+                                    {% endif %}
+                                {% endif %}
+                            {% else %}
+                                <p>Booking information not available</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h4>Trip Details</h4>
+                            <p><strong>Start Time:</strong> {{ trip.start_time|date:"M d, Y H:i" }}</p>
+                            <p><strong>Start Location:</strong> {{ trip.start_location }}</p>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <div>
+                                    <h5>Trip Duration</h5>
+                                    <p class="mb-0" id="trip-duration">Calculating...</p>
+                                </div>
+                                <div>
+                                    <h5>Distance</h5>
+                                    <p class="mb-0" id="trip-distance">Calculating...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="trip-actions">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button id="toggle-tracking" class="btn btn-outline-primary">
+                            <i class="fas fa-location-arrow me-1"></i> Toggle Tracking
+                        </button>
+                        
+                        <a href="{% url 'drivers:end_trip' trip.booking_id %}" class="btn btn-danger">
+                            <i class="fas fa-flag-checkered me-1"></i> End Trip
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="position-relative mt-4">
+                <div id="tracking-status" class="tracking-status inactive">
+                    <i class="fas fa-satellite-dish me-1"></i> Tracking: <span id="tracking-status-text">Inactive</span>
+                </div>
+                <div id="map-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="{% static 'js/trip_tracking.js' %}"></script>
+<script>
+    // Trip data
+    const tripId = {{ trip.id }};
+    const startTime = new Date("{{ trip.start_time|date:'c' }}");
+    
+    // Map variables
+    let map;
+    let currentMarker;
+    let polyline;
+    let coordinates = [];
+    
+    // Initialize Leaflet map
+    function initializeMap() {
+        // Default location (center of India)
+        const defaultLat = 20.5937;
+        const defaultLng = 78.9629;
+        
+        // Create map
+        map = L.map('map-container').setView([defaultLat, defaultLng], 15);
+        
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        
+        // Initialize polyline for route
+        polyline = L.polyline([], {
+            color: '#4a89dc',
+            weight: 5,
+            opacity: 0.8
+        }).addTo(map);
+        
+        // Add marker for current position
+        currentMarker = L.marker([defaultLat, defaultLng]).addTo(map);
+        
+        // Try to get initial position
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    updateMapPosition(position.coords.latitude, position.coords.longitude);
+                },
+                (error) => {
+                    console.error('Geolocation error:', error);
+                }
+            );
+        }
+    }
+    
+    // Update map with new position
+    function updateMapPosition(lat, lng) {
+        // Update marker position
+        currentMarker.setLatLng([lat, lng]);
+        
+        // Add to coordinates array and update polyline
+        coordinates.push([lat, lng]);
+        polyline.setLatLngs(coordinates);
+        
+        // Center map on current position
+        map.setView([lat, lng], 15);
+    }
+    
+    // Update trip duration display
+    function updateTripDuration() {
+        const now = new Date();
+        const durationMs = now - startTime;
+        
+        // Convert to hours, minutes, seconds
+        const hours = Math.floor(durationMs / 3600000);
+        const minutes = Math.floor((durationMs % 3600000) / 60000);
+        const seconds = Math.floor((durationMs % 60000) / 1000);
+        
+        // Format as HH:MM:SS
+        const durationStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        document.getElementById('trip-duration').textContent = durationStr;
+    }
+    
+    // Update trip distance display
+    function updateTripDistance() {
+        if (coordinates.length < 2) {
+            document.getElementById('trip-distance').textContent = '0.00 km';
+            return;
+        }
+        
+        // Calculate total distance
+        let totalDistance = 0;
+        for (let i = 1; i < coordinates.length; i++) {
+            const p1 = L.latLng(coordinates[i-1][0], coordinates[i-1][1]);
+            const p2 = L.latLng(coordinates[i][0], coordinates[i][1]);
+            totalDistance += p1.distanceTo(p2);
+        }
+        
+        // Convert to kilometers and format
+        const distanceKm = (totalDistance / 1000).toFixed(2);
+        document.getElementById('trip-distance').textContent = `${distanceKm} km`;
+    }
+    
+    // Initialize trip tracking
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize map
+        initializeMap();
+        
+        // Create trip tracker
+        const tracker = new TripTracker(tripId, {
+            updateUrl: "{% url 'drivers:update_location' trip.id %}",
+            onLocationUpdate: function(location) {
+                updateMapPosition(location.latitude, location.longitude);
+                updateTripDistance();
+            },
+            onError: function(error) {
+                console.error('Trip tracking error:', error);
+                alert(`Location tracking error: ${error}`);
+            }
+        });
+        
+        // Set up toggle button
+        const toggleButton = document.getElementById('toggle-tracking');
+        const statusElement = document.getElementById('tracking-status');
+        const statusTextElement = document.getElementById('tracking-status-text');
+        
+        toggleButton.addEventListener('click', function() {
+            if (tracker.isTracking()) {
+                tracker.stop();
+                statusElement.classList.remove('active');
+                statusElement.classList.add('inactive');
+                statusTextElement.textContent = 'Inactive';
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-outline-primary');
+            } else {
+                tracker.start();
+                statusElement.classList.remove('inactive');
+                statusElement.classList.add('active');
+                statusTextElement.textContent = 'Active';
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-primary');
+            }
+        });
+        
+        // Auto-start tracking
+        if ({{ trip.is_tracking_active|yesno:"true,false" }}) {
+            tracker.start();
+            statusElement.classList.remove('inactive');
+            statusElement.classList.add('active');
+            statusTextElement.textContent = 'Active';
+            toggleButton.classList.remove('btn-outline-primary');
+            toggleButton.classList.add('btn-primary');
+        }
+        
+        // Update trip duration every second
+        setInterval(updateTripDuration, 1000);
+        
+        // Initial update
+        updateTripDuration();
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,134 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+
+{% block title %}Vehicle Return Reports{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+    }
+    .card-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        border-radius: 10px 10px 0 0;
+    }
+    .table th {
+        font-weight: 600;
+        color: #495057;
+    }
+    .badge {
+        padding: 8px 12px;
+        border-radius: 30px;
+        font-weight: 500;
+    }
+    .btn-info {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Vehicle Return Reports</h3>
+                </div>
+                <div class="card-body">
+                    {% if reports %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Booking ID</th>
+                                        <th>Vehicle</th>
+                                        <th>Customer</th>
+                                        <th>Status</th>
+                                        <th>Report Date</th>
+                                        <th>Feedback</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for report in reports %}
+                                    <tr>
+                                        <td>{{ report.booking.booking_id }}</td>
+                                        <td>{{ report.booking.vehicle.model }}</td>
+                                        <td>{{ report.booking.user.full_name }}</td>
+                                        <td>
+                                            {% if report.status == 'all_clear' %}
+                                                <span class="badge bg-success">All Clear</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Has Complaint</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ report.created_at|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            {% if report.feedback %}
+                                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#feedbackModal{{ report.id }}">
+                                                    View Feedback
+                                                </button>
+                                                
+                                                <!-- Feedback Modal -->
+                                                <div class="modal fade" id="feedbackModal{{ report.id }}" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Customer Feedback</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>{{ report.feedback }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">No feedback</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if report.complaint_details %}
+                                                <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#complaintModal{{ report.id }}">
+                                                    View Complaint
+                                                </button>
+                                                
+                                                <!-- Complaint Modal -->
+                                                <div class="modal fade" id="complaintModal{{ report.id }}" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Complaint Details</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>{{ report.complaint_details }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="text-muted">No vehicle reports available yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -22,8 +22,6 @@
   <link href="{%static 'adminapp/assets/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
   <link href="{%static 'adminapp/assets/vendor/bootstrap-icons/bootstrap-icons.css'%}" rel="stylesheet">
   <link href="{%static 'adminapp/assets/vendor/boxicons/css/boxicons.min.css'%}" rel="stylesheet">
-  <link href="{%static 'adminapp/assets/vendor/quill/quill.snow.css'%}" rel="stylesheet">
-  <link href="{%static 'adminapp/assets/vendor/quill/quill.bubble.css'%}" rel="stylesheet">
   <link href="{%static 'adminapp/assets/vendor/remixicon/remixicon.css'%}" rel="stylesheet">
   <link href="{%static 'adminapp/assets/vendor/simple-datatables/style.css'%}" rel="stylesheet">
 
@@ -56,6 +54,32 @@
             <i class="bi bi-search"></i>
           </a>
         </li>
+
+        {% if active_trip %}
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon" href="{% url 'drivers:view_active_trip' active_trip.id %}">
+            <i class="bi bi-broadcast-pin"></i>
+            <span class="badge bg-success badge-number">1</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+            <li class="dropdown-header">
+              Active Trip
+              <a href="{% url 'drivers:view_active_trip' active_trip.id %}"><span class="badge rounded-pill bg-success p-2 ms-2">View</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="notification-item">
+              <i class="bi bi-car-front-fill text-success"></i>
+              <div>
+                <h4>Trip #{{ active_trip.id }} is in progress</h4>
+                <p>Started at {{ active_trip.start_time|time:"H:i" }}</p>
+                <p>{{ active_trip.start_time|date:"M d, Y" }}</p>
+              </div>
+            </li>
+          </ul>
+        </li>
+        {% endif %}
 
         <li class="nav-item dropdown pe-3">
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
@@ -111,20 +135,41 @@
 
       <li class="nav-item">
         <a class="nav-link {% if 'trips' in request.path %}{% else %}collapsed{% endif %}" data-bs-target="#trips-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-car-front"></i><span>My Trips</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-car-front"></i>
+          <span>My Trips</span>
+          {% if active_trip %}
+          <span class="badge bg-success rounded-pill ms-1">ACTIVE</span>
+          {% endif %}
+          <i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="trips-nav" class="nav-content collapse {% if 'trips' in request.path %}show{% endif %}" data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="{% url 'drivers:active_trips' %}" class="{% if request.resolver_match.url_name == 'active_trips' %}active{% endif %}">
-              <i class="bi bi-circle"></i><span>Active Trips</span>
-            </a>
-          </li>
           <li>
             <a href="{% url 'drivers:trips' %}" class="{% if request.resolver_match.url_name == 'trips' %}active{% endif %}">
               <i class="bi bi-circle"></i><span>All Trips</span>
             </a>
           </li>
+          {% if active_trip %}
+          <li>
+            <a href="{% url 'drivers:view_active_trip' active_trip.id %}" class="{% if request.resolver_match.url_name == 'view_active_trip' %}active{% endif %}">
+              <i class="bi bi-broadcast"></i><span>Ongoing Trip</span>
+              <span class="badge bg-success rounded-pill float-end">LIVE</span>
+            </a>
+          </li>
+          {% endif %}
         </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'customer_bookings' %}{% else %}collapsed{% endif %}" href="{% url 'drivers:customer_bookings' %}">
+          <i class="bi bi-calendar-check"></i>
+          <span>Customer Bookings</span>
+          {% if has_upcoming_bookings %}
+            <span class="badge bg-warning ms-2">Upcoming</span>
+          {% endif %}
+          {% if has_active_trips %}
+            <span class="badge bg-success ms-2">Active</span>
+          {% endif %}
+        </a>
       </li>
 
       <li class="nav-item">
@@ -181,7 +226,6 @@
   <script src="{%static 'adminapp/assets/vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
   <script src="{%static 'adminapp/assets/vendor/chart.js/chart.umd.js'%}"></script>
   <script src="{%static 'adminapp/assets/vendor/echarts/echarts.min.js'%}"></script>
-  <script src="{%static 'adminapp/assets/vendor/quill/quill.min.js'%}"></script>
   <script src="{%static 'adminapp/assets/vendor/simple-datatables/simple-datatables.js'%}"></script>
   <script src="{%static 'adminapp/assets/vendor/tinymce/tinymce.min.js'%}"></script>
   <script src="{%static 'adminapp/assets/vendor/php-email-form/validate.js'%}"></script>

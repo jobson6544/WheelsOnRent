@@ -4,111 +4,171 @@
 {% block content %}
 <main id="main" class="main">
     <div class="container mt-4">
-        <h2>Active Trips</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Active Trips</h2>
+        </div>
         
-        {% if not bookings_data %}
-            <div class="alert alert-info">
-                No active bookings found.
-            </div>
-        {% else %}
+        <!-- Ongoing trips section -->
+        {% if has_active_trips %}
+        <section class="mb-5">
+            <h3 class="mb-3">Ongoing Trips <span class="badge bg-success">{{ active_trip_bookings|length }}</span></h3>
+            
             <div class="row">
-                {% for data in bookings_data %}
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100">
-                            <div class="card-header">
+                {% for item in active_trip_bookings %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border-success">
+                        <div class="card-header bg-success text-white">
+                            <div class="d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">
-                                    {{ data.booking.get_booking_type_display }}
-                                    <span class="badge bg-{{ data.booking.status|lower }}">{{ data.booking.get_status_display }}</span>
+                                    Trip #{{ item.trip.id }}
                                 </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="customer-info mb-3">
-                                    <h6>Customer Details:</h6>
-                                    <p class="mb-1">
-                                        <i class="bi bi-person"></i> {{ data.booking.user.get_full_name }}
-                                    </p>
-                                    <p class="mb-1">
-                                        <i class="bi bi-envelope"></i> {{ data.booking.user.email }}
-                                    </p>
-                                </div>
-
-                                <div class="booking-details">
-                                    {% if data.booking.booking_type == 'specific_date' %}
-                                        <p><strong>Date:</strong> {{ data.booking.booking_date }}</p>
-                                        <p><strong>Time:</strong> {{ data.booking.start_time }} - {{ data.booking.end_time }}</p>
-                                    {% elif data.booking.booking_type == 'point_to_point' %}
-                                        <p><strong>Service Date:</strong> {{ data.booking.service_date }}</p>
-                                    {% else %}
-                                        <p><strong>Period:</strong> {{ data.booking.start_date|date:"d M Y H:i" }} - {{ data.booking.end_date|date:"d M Y H:i" }}</p>
-                                        {% if data.booking.vehicle %}
-                                            <p><strong>Vehicle:</strong> {{ data.booking.vehicle.model }}</p>
-                                        {% endif %}
-                                    {% endif %}
-
-                                    {% if data.has_pickup %}
-                                        <div class="location-info mt-3">
-                                            <h6>Pickup Location:</h6>
-                                            <p>{{ data.booking.pickup_location }}</p>
-                                            <button class="btn btn-sm btn-outline-primary navigate-btn" 
-                                                    data-location="{{ data.booking.pickup_location }}"
-                                                    onclick="tripManager.navigateToLocation(this)">
-                                                <i class="bi bi-geo-alt"></i> Navigate
-                                            </button>
-                                        </div>
-                                    {% endif %}
-
-                                    {% if data.booking.booking_type == 'point_to_point' %}
-                                        <div class="location-info mt-3">
-                                            <h6>Drop Location:</h6>
-                                            <p>{{ data.booking.drop_location }}</p>
-                                        </div>
-                                    {% endif %}
-                                </div>
-
-                                <div class="trip-actions mt-3">
-                                    {% if data.can_start %}
-                                        <button class="btn btn-success start-trip-btn" 
-                                                data-booking-id="{{ data.booking.id }}"
-                                                onclick="tripManager.startTrip(this)">
-                                            Start Trip
-                                        </button>
-                                    {% else %}
-                                        <button class="btn btn-secondary" disabled>
-                                            {% if data.start_time %}
-                                                Starts at {{ data.start_time }}
-                                            {% else %}
-                                                Not Ready to Start
-                                            {% endif %}
-                                        </button>
-                                    {% endif %}
-                                </div>
+                                <span class="badge bg-light text-dark">Started: {{ item.trip.start_time|time }}</span>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-
-            <!-- OTP Verification Modal -->
-            <div class="modal fade" id="otpModal" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Enter OTP</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Please enter the OTP sent to the customer's email:</p>
-                            <input type="text" class="form-control" id="otpInput" maxlength="6" placeholder="Enter 6-digit OTP">
-                            <div id="otpError" class="text-danger mt-2" style="display: none;"></div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary" onclick="tripManager.verifyOTP()">Verify & Start Trip</button>
+                        <div class="card-body">
+                            {% if item.booking %}
+                            <div class="customer-info mb-3">
+                                <h6>Customer Details:</h6>
+                                <p class="mb-1">
+                                    <i class="bi bi-person"></i> {{ item.booking.user.get_full_name }}
+                                </p>
+                                <p class="mb-1">
+                                    <i class="bi bi-envelope"></i> {{ item.booking.user.email }}
+                                </p>
+                            </div>
+                            
+                            <div class="booking-details">
+                                <p><strong>Type:</strong> {{ item.booking.get_booking_type_display }}</p>
+                                
+                                {% if item.booking.booking_type == 'specific_date' %}
+                                    <p><strong>Date:</strong> {{ item.booking.booking_date }}</p>
+                                    <p><strong>Time:</strong> {{ item.booking.start_time }} - {{ item.booking.end_time }}</p>
+                                {% elif item.booking.booking_type == 'point_to_point' %}
+                                    <p><strong>Service Date:</strong> {{ item.booking.service_date }}</p>
+                                    <p><strong>From:</strong> {{ item.booking.pickup_location }}</p>
+                                    <p><strong>To:</strong> {{ item.booking.drop_location }}</p>
+                                {% else %}
+                                    <p><strong>Period:</strong> {{ item.booking.start_date|date:"d M Y H:i" }} - {{ item.booking.end_date|date:"d M Y H:i" }}</p>
+                                    {% if item.booking.vehicle %}
+                                        <p><strong>Vehicle:</strong> {{ item.booking.vehicle.model }}</p>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            {% else %}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Booking details not available
+                            </div>
+                            {% endif %}
+                            
+                            <div class="trip-info mt-3">
+                                <p><strong>Start Location:</strong> {{ item.trip.start_location }}</p>
+                                <p><strong>Current Status:</strong> <span class="badge bg-primary">{{ item.trip.get_status_display }}</span></p>
+                            </div>
+                            
+                            <div class="trip-actions mt-3 d-flex justify-content-between">
+                                <a href="{% url 'drivers:view_active_trip' item.trip.id %}" class="btn btn-primary">
+                                    <i class="bi bi-eye"></i> View Trip Details
+                                </a>
+                                
+                                {% if item.booking %}
+                                <a href="{% url 'drivers:end_trip' item.booking.id %}" class="btn btn-danger">
+                                    <i class="bi bi-flag-fill"></i> End Trip
+                                </a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
+        </section>
         {% endif %}
+        
+        <!-- Upcoming bookings section -->
+        <section>
+            <h3 class="mb-3">Upcoming Bookings</h3>
+            
+            {% if not bookings_data %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No upcoming bookings found.
+                </div>
+            {% else %}
+                <div class="row">
+                    {% for data in bookings_data %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        {{ data.booking.get_booking_type_display }}
+                                        <span class="badge bg-{{ data.booking.status|lower }}">{{ data.booking.get_status_display }}</span>
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="customer-info mb-3">
+                                        <h6>Customer Details:</h6>
+                                        <p class="mb-1">
+                                            <i class="bi bi-person"></i> {{ data.booking.user.get_full_name }}
+                                        </p>
+                                        <p class="mb-1">
+                                            <i class="bi bi-envelope"></i> {{ data.booking.user.email }}
+                                        </p>
+                                    </div>
+
+                                    <div class="booking-details">
+                                        {% if data.booking.booking_type == 'specific_date' %}
+                                            <p><strong>Date:</strong> {{ data.booking.booking_date }}</p>
+                                            <p><strong>Time:</strong> {{ data.booking.start_time }} - {{ data.booking.end_time }}</p>
+                                        {% elif data.booking.booking_type == 'point_to_point' %}
+                                            <p><strong>Service Date:</strong> {{ data.booking.service_date }}</p>
+                                        {% else %}
+                                            <p><strong>Period:</strong> {{ data.booking.start_date|date:"d M Y H:i" }} - {{ data.booking.end_date|date:"d M Y H:i" }}</p>
+                                            {% if data.booking.vehicle %}
+                                                <p><strong>Vehicle:</strong> {{ data.booking.vehicle.model }}</p>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if data.has_pickup %}
+                                            <div class="location-info mt-3">
+                                                <h6>Pickup Location:</h6>
+                                                <p>{{ data.booking.pickup_location }}</p>
+                                                <button class="btn btn-sm btn-outline-primary navigate-btn" 
+                                                        data-location="{{ data.booking.pickup_location }}"
+                                                        onclick="tripManager.navigateToLocation(this)">
+                                                    <i class="bi bi-geo-alt"></i> Navigate
+                                                </button>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if data.booking.booking_type == 'point_to_point' %}
+                                            <div class="location-info mt-3">
+                                                <h6>Drop Location:</h6>
+                                                <p>{{ data.booking.drop_location }}</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="trip-actions mt-3">
+                                        {% if data.can_start %}
+                                            <a href="{% url 'drivers:start_trip' data.booking.id %}" class="btn btn-success">
+                                                <i class="bi bi-play-fill"></i> Start Trip
+                                            </a>
+                                        {% else %}
+                                            <button class="btn btn-secondary" disabled>
+                                                {% if data.start_time %}
+                                                    <i class="bi bi-clock"></i> Starts at {{ data.start_time }}
+                                                {% else %}
+                                                    <i class="bi bi-x-circle"></i> Not Ready to Start
+                                                {% endif %}
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
     </div>
 </main>
 
@@ -116,90 +176,6 @@
 <script>
 // Initialize the trip manager as a module to avoid global variables
 const tripManager = {
-    currentBookingId: null,
-    otpModal: null,
-
-    init: function() {
-        // Initialize Bootstrap modal
-        this.otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
-        
-        // Add modal event listener
-        document.getElementById('otpModal').addEventListener('hidden.bs.modal', () => {
-            document.getElementById('otpInput').value = '';
-            document.getElementById('otpError').style.display = 'none';
-        });
-    },
-
-    startTrip: async function(button) {
-        try {
-            const bookingId = button.dataset.bookingId;
-            this.currentBookingId = bookingId;
-            
-            const response = await fetch(`/drivers/start-trip/${bookingId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                this.otpModal.show();
-            } else {
-                alert(data.message || 'Error starting trip');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error starting trip. Please try again.');
-        }
-    },
-
-    verifyOTP: async function() {
-        try {
-            const otp = document.getElementById('otpInput').value;
-            const errorDiv = document.getElementById('otpError');
-            
-            if (!otp || otp.length !== 6) {
-                errorDiv.textContent = 'Please enter a valid 6-digit OTP';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            const response = await fetch(`/drivers/verify-trip-otp/${this.currentBookingId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `otp=${otp}`
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                window.location.href = data.redirect_url;
-            } else {
-                errorDiv.textContent = data.message;
-                errorDiv.style.display = 'block';
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            const errorDiv = document.getElementById('otpError');
-            errorDiv.textContent = 'Error verifying OTP. Please try again.';
-            errorDiv.style.display = 'block';
-        }
-    },
-
     navigateToLocation: function(button) {
         const location = button.dataset.location;
         if (location) {
@@ -211,8 +187,7 @@ const tripManager = {
 
 // Initialize the trip manager when the document is ready
 document.addEventListener('DOMContentLoaded', function() {
-    tripManager.init();
+    // Any init tasks if needed
 });
 </script>
-{% endblock %}
 {% endblock %} 

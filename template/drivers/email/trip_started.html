@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Started</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 150px;
+        }
+        h1 {
+            color: #0066cc;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .trip-details {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fff;
+            border-left: 4px solid #0066cc;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+        .button {
+            display: inline-block;
+            background-color: #0066cc;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://yourdomain.com/logo.png" alt="WheelsOnRent Logo">
+        <h1>Your Trip Has Started</h1>
+    </div>
+    
+    <div class="content">
+        <p>Hello {{ user_name }},</p>
+        
+        <p>Your trip with driver <strong>{{ driver_name }}</strong> has officially begun at {{ start_time }}.</p>
+        
+        <div class="trip-details">
+            <h3>Trip Details:</h3>
+            {% if booking.booking_type == 'specific_date' %}
+                <p><strong>Booking Type:</strong> Single Day Service</p>
+                <p><strong>Date:</strong> {{ booking.booking_date }}</p>
+                <p><strong>Time:</strong> {{ booking.start_time }} to {{ booking.end_time }}</p>
+            {% elif booking.booking_type == 'point_to_point' %}
+                <p><strong>Booking Type:</strong> Point to Point Service</p>
+                <p><strong>From:</strong> {{ booking.pickup_location }}</p>
+                <p><strong>To:</strong> {{ booking.drop_location }}</p>
+            {% else %}
+                <p><strong>Booking Type:</strong> Vehicle with Driver</p>
+                <p><strong>Vehicle:</strong> {{ booking.vehicle.model }}</p>
+                <p><strong>Duration:</strong> {{ booking.start_date|date:"M d, Y" }} to {{ booking.end_date|date:"M d, Y" }}</p>
+            {% endif %}
+        </div>
+        
+        <p>You can track your trip and get updates through our mobile app or website.</p>
+        
+        <p>We hope you have a pleasant journey!</p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated message, please do not reply directly to this email.</p>
+        <p>&copy; {{ current_year }} WheelsOnRent. All rights reserved.</p>
+    </div>
+</body>
+</html> 

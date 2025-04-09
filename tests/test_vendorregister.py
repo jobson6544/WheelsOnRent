@@ -51,17 +51,17 @@ class TestVendorregister():
                 
                 # Fill registration form
                 email_field = self.driver.find_element(By.ID, "id_email")
-                email_field.send_keys("king-designer-ooze@duck.com")
+                email_field.send_keys("testvendor@gmail.com")
                 print("\033[92m✓ Entered email\033[0m")
                 
                 username_field = self.driver.find_element(By.ID, "id_username")
                 username_field.click()
-                username_field.send_keys("testuser")
+                username_field.send_keys("testuser1")
                 print("\033[92m✓ Entered username\033[0m")
                 
                 fullname_field = self.driver.find_element(By.ID, "id_full_name")
                 fullname_field.click()
-                fullname_field.send_keys("test user")
+                fullname_field.send_keys("test user1")
                 print("\033[92m✓ Entered full name\033[0m")
                 
                 password1_field = self.driver.find_element(By.ID, "id_password1")

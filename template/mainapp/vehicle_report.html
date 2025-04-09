@@ -1,0 +1,113 @@
+{% extends 'mainapp/base.html' %}
+{% load static %}
+
+{% block title %}Vehicle Return Report{% endblock %}
+
+{% block extra_css %}
+<style>
+    .complaint-details {
+        display: none;
+        transition: all 0.3s ease;
+    }
+    .btn-lg {
+        padding: 15px;
+        font-size: 1.1rem;
+    }
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .card-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        border-radius: 12px 12px 0 0 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="text-center">Vehicle Return Report</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="reportForm">
+                        {% csrf_token %}
+                        <div class="text-center mb-4">
+                            <h4>How was your experience with the vehicle?</h4>
+                            <p class="text-muted">Please let us know if you encountered any issues with the vehicle during your rental period.</p>
+                        </div>
+                        
+                        <!-- Feedback Section -->
+                        <div class="mb-4">
+                            <label for="feedback" class="form-label">Vehicle Feedback</label>
+                            <textarea name="feedback" id="feedback" class="form-control" rows="3" placeholder="Share your overall experience with the vehicle (optional)"></textarea>
+                            <div class="form-text">Your feedback helps improve our service for future customers.</div>
+                        </div>
+                        
+                        <!-- Vehicle Report Buttons -->
+                        <div class="d-grid gap-3">
+                            <button type="button" id="allClearBtn" class="btn btn-success btn-lg">
+                                <i class="fas fa-check-circle"></i> All Clear
+                            </button>
+                            <button type="button" id="hasComplaintBtn" class="btn btn-warning btn-lg">
+                                <i class="fas fa-exclamation-triangle"></i> Have Complaint
+                            </button>
+                        </div>
+                        
+                        <!-- Complaint Details (Hidden by default) -->
+                        <div class="complaint-details mt-4" id="complaintDetails">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-circle"></i> Please provide details about your complaint below.
+                            </div>
+                            <div class="mb-3">
+                                <label for="complaint_details" class="form-label">Complaint Details</label>
+                                <textarea name="complaint_details" id="complaint_details" class="form-control" rows="5" placeholder="Please describe any issues you encountered with the vehicle"></textarea>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" name="status" value="has_complaint" class="btn btn-danger">
+                                    Submit Complaint
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden input for status -->
+                        <input type="hidden" name="status" id="status_input" value="">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const allClearBtn = document.getElementById('allClearBtn');
+        const hasComplaintBtn = document.getElementById('hasComplaintBtn');
+        const complaintDetails = document.getElementById('complaintDetails');
+        const reportForm = document.getElementById('reportForm');
+        const statusInput = document.getElementById('status_input');
+        
+        // All Clear button handler
+        allClearBtn.addEventListener('click', function() {
+            statusInput.value = 'all_clear';
+            reportForm.submit();
+        });
+        
+        // Have Complaint button handler
+        hasComplaintBtn.addEventListener('click', function() {
+            complaintDetails.style.display = 'block';
+            window.scrollTo({
+                top: complaintDetails.offsetTop,
+                behavior: 'smooth'
+            });
+            statusInput.value = 'has_complaint';
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

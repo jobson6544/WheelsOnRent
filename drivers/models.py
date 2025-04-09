@@ -327,7 +327,7 @@ class DriverBooking(models.Model):
             }
 
     def trip(self):
-        return DriverTrip.objects.filter(booking=self).first()
+        return DriverTrip.objects.filter(booking_id=self.id).first()
 
 class DriverReview(models.Model):
     driver_booking = models.ForeignKey(DriverBooking, on_delete=models.CASCADE, related_name='reviews')
@@ -403,12 +403,16 @@ class DriverTrip(models.Model):
     )
 
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='trips')
-    booking = models.ForeignKey('mainapp.Booking', on_delete=models.CASCADE)
+    booking_id = models.IntegerField(null=True, blank=True)  # Making it nullable temporarily
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
     start_location = models.CharField(max_length=255)
     end_location = models.CharField(max_length=255)
+    start_latitude = models.FloatField(null=True, blank=True)
+    start_longitude = models.FloatField(null=True, blank=True)
+    end_latitude = models.FloatField(null=True, blank=True)
+    end_longitude = models.FloatField(null=True, blank=True)
     distance_covered = models.DecimalField(
         max_digits=10, 
         decimal_places=2, 
@@ -417,6 +421,134 @@ class DriverTrip(models.Model):
     )
     customer_rating = models.IntegerField(null=True, blank=True)
     customer_feedback = models.TextField(blank=True)
+    otp = models.CharField(max_length=6, null=True, blank=True)
+    otp_verified = models.BooleanField(default=False)
+    is_tracking_active = models.BooleanField(default=False)
+    route_data = models.JSONField(null=True, blank=True)  # Store route data as JSON
 
     def __str__(self):
         return f"Trip {self.id} - {self.driver.full_name}"
+        
+    def can_start(self):
+        """Check if trip can be started"""
+        return self.status == 'assigned'
+        
+    def can_end(self):
+        """Check if trip can be ended"""
+        return self.status == 'started'
+        
+    def start(self, start_location=None, lat=None, lng=None):
+        """Start the trip"""
+        if not self.can_start():
+            return False
+            
+        self.status = 'started'
+        self.start_time = timezone.now()
+        
+        if start_location:
+            self.start_location = start_location
+        
+        if lat and lng:
+            self.start_latitude = lat
+            self.start_longitude = lng
+            
+        self.is_tracking_active = True
+        self.save()
+        
+        # Create starting location record
+        if lat and lng:
+            DriverLocation.objects.create(
+                driver=self.driver,
+                trip=self,
+                latitude=lat,
+                longitude=lng
+            )
+            
+        return True
+        
+    def end(self, end_location=None, lat=None, lng=None):
+        """End the trip"""
+        if not self.can_end():
+            return False
+            
+        self.status = 'completed'
+        self.end_time = timezone.now()
+        
+        if end_location:
+            self.end_location = end_location
+            
+        if lat and lng:
+            self.end_latitude = lat
+            self.end_longitude = lng
+            
+        self.is_tracking_active = False
+        
+        # Calculate distance if possible
+        if self.start_latitude and self.start_longitude and lat and lng:
+            from geopy.distance import geodesic
+            start_point = (self.start_latitude, self.start_longitude)
+            end_point = (lat, lng)
+            self.distance_covered = geodesic(start_point, end_point).kilometers
+            
+        self.save()
+        
+        # Create ending location record
+        if lat and lng:
+            DriverLocation.objects.create(
+                driver=self.driver,
+                trip=self,
+                latitude=lat,
+                longitude=lng,
+                is_end_location=True
+            )
+            
+        return True
+        
+    def cancel(self, reason=None):
+        """Cancel the trip"""
+        if self.status in ['completed', 'cancelled']:
+            return False
+            
+        self.status = 'cancelled'
+        self.is_tracking_active = False
+        self.save()
+        
+        return True
+        
+    def get_latest_location(self):
+        """Get the latest location for this trip"""
+        return self.locations.order_by('-timestamp').first()
+        
+    def get_route_data(self):
+        """Get the route data for display on a map"""
+        locations = self.locations.order_by('timestamp')
+        return [
+            {
+                'lat': loc.latitude,
+                'lng': loc.longitude,
+                'time': loc.timestamp.strftime('%H:%M:%S'),
+                'speed': loc.speed,
+                'is_end': loc.is_end_location
+            }
+            for loc in locations
+        ]
+
+class DriverLocation(models.Model):
+    """Model to track driver location during trips"""
+    driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='locations')
+    trip = models.ForeignKey(DriverTrip, on_delete=models.CASCADE, related_name='locations', null=True, blank=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    accuracy = models.FloatField(default=0, help_text='Accuracy in meters')
+    speed = models.FloatField(null=True, blank=True, default=0, help_text='Speed in km/h')
+    heading = models.FloatField(null=True, blank=True, default=0, help_text='Heading in degrees')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_end_location = models.BooleanField(default=False)
+    
+    class Meta:
+        verbose_name = 'Driver Location'
+        verbose_name_plural = 'Driver Locations'
+        ordering = ['-timestamp']
+        
+    def __str__(self):
+        return f"Location for {self.driver.full_name} at {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"

@@ -1,0 +1,131 @@
+{% extends 'drivers/base.html' %}
+
+{% block title %} - Verify OTP{% endblock %}
+
+{% block content %}
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Verify Trip OTP</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'drivers:dashboard' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'drivers:customer_bookings' %}">Customer Bookings</a></li>
+        <li class="breadcrumb-item active">Verify OTP</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Trip OTP Verification</h5>
+            
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle-fill me-2"></i>
+              <strong>OTP has been sent to the customer.</strong> Ask them to check their email and provide you with the 6-digit verification code.
+            </div>
+            
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>Booking Details</h5>
+                  </div>
+                  <div class="card-body">
+                    <p><strong>Customer:</strong> {{ booking.user.get_full_name }}</p>
+                    <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+                    <p><strong>Booking Type:</strong> {{ booking.get_booking_type_display }}</p>
+                    
+                    {% if booking.booking_type == 'specific_date' %}
+                    <p><strong>Date:</strong> {{ booking.booking_date }}</p>
+                    <p><strong>Time:</strong> {{ booking.start_time }} - {{ booking.end_time }}</p>
+                    {% elif booking.booking_type == 'point_to_point' %}
+                    <p><strong>From:</strong> {{ booking.pickup_location }}</p>
+                    <p><strong>To:</strong> {{ booking.drop_location }}</p>
+                    <p><strong>Date:</strong> {{ booking.service_date }}</p>
+                    {% else %}
+                    <p><strong>Start:</strong> {{ booking.start_date }}</p>
+                    <p><strong>End:</strong> {{ booking.end_date }}</p>
+                    {% if booking.vehicle %}
+                    <p><strong>Vehicle:</strong> {{ booking.vehicle.model }}</p>
+                    {% endif %}
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>Enter OTP</h5>
+                  </div>
+                  <div class="card-body">
+                    <form method="post" action="{% url 'drivers:verify_trip_otp' booking.id %}">
+                      {% csrf_token %}
+                      
+                      <div class="mb-3">
+                        <label for="otp" class="form-label">Enter the 6-digit OTP from customer</label>
+                        <input type="text" class="form-control form-control-lg" id="otp" name="otp" 
+                               placeholder="Enter 6-digit OTP" required pattern="[0-9]{6}" maxlength="6">
+                        <div class="form-text">OTP expires in 10 minutes.</div>
+                      </div>
+                      
+                      <input type="hidden" id="latitude" name="latitude">
+                      <input type="hidden" id="longitude" name="longitude">
+                      <input type="hidden" id="accuracy" name="accuracy">
+                      
+                      <button type="submit" class="btn btn-primary w-100 mt-3">
+                        <i class="bi bi-check-circle me-2"></i> Verify & Start Trip
+                      </button>
+                    </form>
+                    
+                    <hr>
+                    
+                    <div class="text-center">
+                      <a href="{% url 'drivers:start_trip' booking.id %}" class="btn btn-outline-secondary mt-3">
+                        <i class="bi bi-arrow-repeat me-2"></i> Resend OTP
+                      </a>
+                      <div class="form-text">If the customer didn't receive the OTP.</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                      <a href="{% url 'drivers:customer_bookings' %}" class="btn btn-outline-danger">
+                        <i class="bi bi-x-circle me-2"></i> Cancel & Go Back
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get location for trip tracking
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          document.getElementById('latitude').value = position.coords.latitude;
+          document.getElementById('longitude').value = position.coords.longitude;
+          document.getElementById('accuracy').value = position.coords.accuracy;
+        },
+        function(error) {
+          console.error('Error getting location:', error);
+        }
+      );
+    }
+    
+    // Focus on OTP input
+    document.getElementById('otp').focus();
+  });
+</script>
+{% endblock %} 

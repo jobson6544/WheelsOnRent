@@ -17,8 +17,8 @@ urlpatterns = [
     
     # Trips URLs
     path('trips/', views.driver_trips, name='trips'),
-    path('trips/active/', views.active_trips, name='active_trips'),
     path('trips/completed/', views.completed_trips, name='completed_trips'),
+    path('trips/<int:trip_id>/', views.view_active_trip, name='view_active_trip'),
     
     # Earnings URLs
     path('earnings/', views.driver_earnings, name='earnings'),
@@ -34,11 +34,12 @@ urlpatterns = [
     path('booking/list/', views.driver_booking_list, name='driver_booking_list'),
     
     # Trip management URLs
-    path('trip/<int:booking_id>/start/', views.start_trip, name='start_trip'),
     path('trip/<int:booking_id>/end/', views.end_trip, name='end_trip'),
     path('check-availability/<int:driver_id>/', views.check_driver_availability, name='check_driver_availability'),
     path('start-trip/<int:booking_id>/', views.start_trip, name='start_trip'),
     path('verify-trip-otp/<int:booking_id>/', views.verify_trip_otp, name='verify_trip_otp'),
+    path('trips/<int:trip_id>/location/update/', views.update_location, name='update_location'),
+    path('customer-bookings/', views.customer_bookings, name='customer_bookings'),
     
     # Other URLs
     path('documents/', views.documents, name='documents'),
