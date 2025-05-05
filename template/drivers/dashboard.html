@@ -80,8 +80,24 @@
                                     <tr>
                                         <th scope="row"><a href="#">#{{ booking.id }}</a></th>
                                         <td>{{ booking.user.get_full_name|default:booking.user.username }}</td>
-                                        <td>{{ booking.start_date|date:"M d, Y H:i" }}</td>
-                                        <td>{{ booking.end_date|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            {% if booking.booking_type == 'specific_date' %}
+                                                {{ booking.booking_date|date:"M d, Y" }} {{ booking.start_time|time:"H:i" }}
+                                            {% elif booking.booking_type == 'point_to_point' %}
+                                                {{ booking.service_date|date:"M d, Y" }}
+                                            {% elif booking.booking_type == 'with_vehicle' %}
+                                                {{ booking.start_date|date:"M d, Y H:i" }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if booking.booking_type == 'specific_date' %}
+                                                {{ booking.booking_date|date:"M d, Y" }} {{ booking.end_time|time:"H:i" }}
+                                            {% elif booking.booking_type == 'point_to_point' %}
+                                                {{ booking.service_date|date:"M d, Y" }}
+                                            {% elif booking.booking_type == 'with_vehicle' %}
+                                                {{ booking.end_date|date:"M d, Y H:i" }}
+                                            {% endif %}
+                                        </td>
                                         <td>
                                             <span class="badge {% if booking.status == 'pending' %}bg-warning{% elif booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-primary{% endif %}">
                                                 {{ booking.get_status_display }}

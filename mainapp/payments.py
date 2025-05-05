@@ -11,7 +11,7 @@ def create_checkout_session(request, amount, booking_id):
             line_items=[
                 {
                     'price_data': {
-                        'currency': 'usd',
+                        'currency': 'inr',
                         'unit_amount': int(amount * 100),  # amount in cents
                         'product_data': {
                             'name': 'Vehicle Rental',

@@ -523,7 +523,7 @@ def calculate_booking_amount(booking):
         return 0  # Return 0 if any required data is missing
     
     # Calculate the number of days
-    num_days = (booking.end_date - booking.start_date).days + 1
+    num_days = (booking.end_date - booking.start_date).days 
     
     # Get the daily rate from the vehicle
     daily_rate = booking.vehicle.rental_rate

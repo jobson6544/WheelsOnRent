@@ -1283,3 +1283,71 @@ DEBUG 2025-04-09 02:37:38,187 views 1824 10568 Accident report values - Location
 DEBUG 2025-04-09 19:29:57,886 views 9088 25704 Google Maps API Key in report_accident view: AIzaS...
 DEBUG 2025-04-09 19:30:08,255 views 9088 25704 Google Maps API Key in report_accident view: AIzaS...
 DEBUG 2025-04-09 19:30:08,255 views 9088 25704 Accident report values - Location: FPVW+WMR, Erathuvadakara, Manimala, Kerala 686543, India, Lat: 10.1234, Long: 76.5678
+DEBUG 2025-04-10 07:08:38,399 views 9088 23696 Google Maps API Key in report_accident view: AIzaS...
+INFO 2025-04-10 16:24:27,657 views 1236 26456 Booking view called for vehicle id: 2
+INFO 2025-04-10 16:24:39,136 views 1236 26456 Booking view called for vehicle id: 2
+INFO 2025-04-10 16:24:39,136 views 1236 26456 POST request received
+INFO 2025-04-10 16:24:39,137 views 1236 26456 Start date: 2025-04-26, End date: 2025-04-26
+INFO 2025-04-10 16:24:39,138 views 1236 26456 Adjusted dates - Start: 2025-04-26 00:00:00+00:00, End: 2025-04-27 23:59:59.999999+00:00
+INFO 2025-04-10 16:24:39,138 models 1236 26456 Checking availability for vehicle 2 from 2025-04-26 00:00:00+00:00 to 2025-04-27 23:59:59.999999+00:00
+INFO 2025-04-10 16:24:39,140 models 1236 26456 Overlapping bookings found: 0
+INFO 2025-04-10 16:24:39,141 models 1236 26456 Is vehicle available: True
+INFO 2025-04-10 16:24:39,141 views 1236 26456 Vehicle is available for the selected dates.
+INFO 2025-04-10 16:24:39,146 views 1236 26456 Booking created successfully: 11
+INFO 2025-04-10 16:25:10,606 views 1236 4624 Confirmation email sent for booking 11
+DEBUG 2025-04-10 16:30:13,359 views 1236 28156 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-10 16:30:59,392 views 1236 28156 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-10 16:30:59,393 views 1236 28156 Accident report values - Location: FPVW+WMR, Erathuvadakara, Manimala, Kerala 686543, India, Lat: 9.4948608, Long: 76.7466378
+INFO 2025-04-10 16:31:34,718 views 1236 28156 Location share called for booking 11
+INFO 2025-04-10 16:31:34,719 views 1236 28156 Request method: POST
+INFO 2025-04-10 16:31:34,719 views 1236 28156 Received coordinates: lat=9.527808456697155, lng=76.82282221732973, timestamp=2025-04-10T11:01:32.249Z, live_tracking=False, accuracy=80m
+INFO 2025-04-10 16:31:34,719 views 1236 28156 Valid coordinates: lat=9.527808456697155, lng=76.82282221732973
+INFO 2025-04-10 16:31:34,722 views 1236 28156 Booking found: Booking for Figo (2010) - KL34A6544 by jobson, status: picked_up
+INFO 2025-04-10 16:31:34,723 views 1236 28156 Using client timestamp: 2025-04-10 11:01:32.249000+00:00
+INFO 2025-04-10 16:31:34,728 views 1236 28156 Location share created: 87 with timestamp: 2025-04-10 11:01:32.249000+00:00, live_tracking: False, accuracy: 80m
+INFO 2025-04-10 16:31:48,239 views 1236 28156 Location share called for booking 11
+INFO 2025-04-10 16:31:48,239 views 1236 28156 Request method: POST
+INFO 2025-04-10 16:31:48,239 views 1236 28156 Received coordinates: lat=9.52783245966281, lng=76.82286377906215, timestamp=2025-04-10T11:01:48.233Z, live_tracking=True, accuracy=80m
+INFO 2025-04-10 16:31:48,240 views 1236 28156 Valid coordinates: lat=9.52783245966281, lng=76.82286377906215
+INFO 2025-04-10 16:31:48,243 views 1236 28156 Booking found: Booking for Figo (2010) - KL34A6544 by jobson, status: picked_up
+INFO 2025-04-10 16:31:48,244 views 1236 28156 Using client timestamp: 2025-04-10 11:01:48.233000+00:00
+INFO 2025-04-10 16:31:48,249 views 1236 28156 Location share created: 88 with timestamp: 2025-04-10 11:01:48.233000+00:00, live_tracking: True, accuracy: 80m
+INFO 2025-04-10 16:32:32,648 views 1236 28156 Location share called for booking 11
+INFO 2025-04-10 16:32:32,648 views 1236 28156 Request method: POST
+INFO 2025-04-10 16:32:32,649 views 1236 28156 Received coordinates: lat=9.52783245966281, lng=76.82286377906215, timestamp=2025-04-10T11:02:31.122Z, live_tracking=False, accuracy=80m
+INFO 2025-04-10 16:32:32,649 views 1236 28156 Valid coordinates: lat=9.52783245966281, lng=76.82286377906215
+INFO 2025-04-10 16:32:32,652 views 1236 28156 Booking found: Booking for Figo (2010) - KL34A6544 by jobson, status: picked_up
+INFO 2025-04-10 16:32:32,653 views 1236 28156 Using client timestamp: 2025-04-10 11:02:31.122000+00:00
+INFO 2025-04-10 16:32:32,658 views 1236 28156 Location share created: 89 with timestamp: 2025-04-10 11:02:31.122000+00:00, live_tracking: False, accuracy: 80m
+INFO 2025-04-11 10:22:27,390 views 29648 2444 Booking view called for vehicle id: 2
+INFO 2025-04-11 10:22:45,928 views 29648 2444 Booking view called for vehicle id: 2
+INFO 2025-04-11 10:22:45,930 views 29648 2444 POST request received
+INFO 2025-04-11 10:22:45,930 views 29648 2444 Start date: 2025-04-11, End date: 2025-04-11
+INFO 2025-04-11 10:22:45,946 views 29648 2444 Adjusted dates - Start: 2025-04-11 00:00:00+00:00, End: 2025-04-12 23:59:59.999999+00:00
+INFO 2025-04-11 10:22:45,947 models 29648 2444 Checking availability for vehicle 2 from 2025-04-11 00:00:00+00:00 to 2025-04-12 23:59:59.999999+00:00
+INFO 2025-04-11 10:22:45,948 models 29648 2444 Overlapping bookings found: 0
+INFO 2025-04-11 10:22:45,949 models 29648 2444 Is vehicle available: True
+INFO 2025-04-11 10:22:45,949 views 29648 2444 Vehicle is available for the selected dates.
+INFO 2025-04-11 10:22:45,956 views 29648 2444 Booking created successfully: 12
+INFO 2025-04-11 10:23:06,027 views 29648 2444 Confirmation email sent for booking 12
+DEBUG 2025-04-11 10:31:26,213 views 1184 29644 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-11 10:32:03,893 views 1184 29644 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-04-11 10:32:03,894 views 1184 29644 Accident report values - Location: FPVW+WMR, Erathuvadakara, Manimala, Kerala 686543, India, Lat: 9.4948608, Long: 76.7466378
+INFO 2025-04-11 10:32:17,093 views 1184 29644 Location share called for booking 12
+INFO 2025-04-11 10:32:17,093 views 1184 29644 Request method: POST
+INFO 2025-04-11 10:32:17,094 views 1184 29644 Received coordinates: lat=9.527850731800182, lng=76.8222620657935, timestamp=2025-04-11T05:02:14.275Z, live_tracking=False, accuracy=63m
+INFO 2025-04-11 10:32:17,094 views 1184 29644 Valid coordinates: lat=9.527850731800182, lng=76.8222620657935
+INFO 2025-04-11 10:32:17,096 views 1184 29644 Booking found: Booking for Figo (2010) - KL34A6544 by jobson, status: picked_up
+INFO 2025-04-11 10:32:17,096 views 1184 29644 Using client timestamp: 2025-04-11 05:02:14.275000+00:00
+INFO 2025-04-11 10:32:17,100 views 1184 29644 Location share created: 90 with timestamp: 2025-04-11 05:02:14.275000+00:00, live_tracking: False, accuracy: 63m
+INFO 2025-04-11 10:54:39,445 views 1184 27696 Booking view called for vehicle id: 3
+INFO 2025-04-11 10:54:54,223 views 1184 27696 Booking view called for vehicle id: 3
+INFO 2025-04-11 10:54:54,224 views 1184 27696 POST request received
+INFO 2025-04-11 10:54:54,225 views 1184 27696 Start date: 2025-04-19, End date: 2025-04-19
+INFO 2025-04-11 10:54:54,226 views 1184 27696 Adjusted dates - Start: 2025-04-19 00:00:00+00:00, End: 2025-04-20 23:59:59.999999+00:00
+INFO 2025-04-11 10:54:54,227 models 1184 27696 Checking availability for vehicle 3 from 2025-04-19 00:00:00+00:00 to 2025-04-20 23:59:59.999999+00:00
+INFO 2025-04-11 10:54:54,230 models 1184 27696 Overlapping bookings found: 0
+INFO 2025-04-11 10:54:54,230 models 1184 27696 Is vehicle available: True
+INFO 2025-04-11 10:54:54,230 views 1184 27696 Vehicle is available for the selected dates.
+INFO 2025-04-11 10:54:54,238 views 1184 27696 Booking created successfully: 13
+INFO 2025-04-11 10:56:18,829 views 1184 27696 Confirmation email sent for booking 13

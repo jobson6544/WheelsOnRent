@@ -1,0 +1,125 @@
+@startuml WheelsOnRent Use Case Diagram
+
+' Define actors
+actor "Customer" as User
+actor "Vendor" as Vendor
+actor "Driver" as Driver
+actor "Admin" as Admin
+
+' Define system boundary
+rectangle "WheelsOnRent System" {
+  ' Customer use cases
+  usecase "Register Account" as UC1
+  usecase "Login" as UC2
+  usecase "Update Profile" as UC3
+  usecase "Browse Vehicles" as UC4
+  usecase "Book Vehicle" as UC5
+  usecase "Pay for Booking" as UC6
+  usecase "Cancel Booking" as UC7
+  usecase "View Booking History" as UC8
+  usecase "Submit Feedback" as UC9
+  usecase "Contact Customer Support" as UC10
+  usecase "Report Accident" as UC11
+  usecase "Extend Booking" as UC12
+  usecase "Share Location" as UC13
+  usecase "Hire Driver" as UC14
+  usecase "Return Vehicle" as UC15
+
+  ' Vendor use cases
+  usecase "Register as Vendor" as VC1
+  usecase "Manage Vehicles" as VC2
+  usecase "Add/Update Vehicle Details" as VC3
+  usecase "View Booking Requests" as VC4
+  usecase "Manage Vehicle Documents" as VC5
+  usecase "Generate Reports" as VC6
+  usecase "Track Vehicle Status" as VC7
+  usecase "Price Prediction" as VC8
+  usecase "View Revenue" as VC9
+  usecase "Process Vehicle Returns" as VC10
+
+  ' Driver use cases
+  usecase "Register as Driver" as DC1
+  usecase "Upload Documents" as DC2
+  usecase "View Booking Assignments" as DC3
+  usecase "Update Availability" as DC4
+  usecase "Start Trip" as DC5
+  usecase "End Trip" as DC6
+  usecase "Share Live Location" as DC7
+  usecase "View Earnings" as DC8
+  usecase "View Schedule" as DC9
+
+  ' Admin use cases
+  usecase "Approve/Reject Vendors" as AC1
+  usecase "Approve/Reject Drivers" as AC2
+  usecase "Verify Documents" as AC3
+  usecase "Monitor System" as AC4
+  usecase "Manage User Accounts" as AC5
+  usecase "View Reports" as AC6
+  usecase "Handle Disputes" as AC7
+  usecase "Manage Platform Settings" as AC8
+}
+
+' Customer relationships
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+User --> UC7
+User --> UC8
+User --> UC9
+User --> UC10
+User --> UC11
+User --> UC12
+User --> UC13
+User --> UC14
+User --> UC15
+
+' Vendor relationships
+Vendor --> VC1
+Vendor --> UC2
+Vendor --> VC2
+Vendor --> VC3
+Vendor --> VC4
+Vendor --> VC5
+Vendor --> VC6
+Vendor --> VC7
+Vendor --> VC8
+Vendor --> VC9
+Vendor --> VC10
+
+' Driver relationships
+Driver --> DC1
+Driver --> UC2
+Driver --> DC2
+Driver --> DC3
+Driver --> DC4
+Driver --> DC5
+Driver --> DC6
+Driver --> DC7
+Driver --> DC8
+Driver --> DC9
+
+' Admin relationships
+Admin --> UC2
+Admin --> AC1
+Admin --> AC2
+Admin --> AC3
+Admin --> AC4
+Admin --> AC5
+Admin --> AC6
+Admin --> AC7
+Admin --> AC8
+
+' Include/extend relationships
+UC5 .> UC6 : <<include>>
+UC5 .> UC14 : <<extend>>
+UC12 .> UC6 : <<include>>
+UC11 .> UC13 : <<include>>
+VC2 .> VC3 : <<include>>
+DC3 .> DC5 : <<include>>
+DC5 .> DC7 : <<include>>
+DC5 .> DC6 : <<include>>
+
+@enduml 
