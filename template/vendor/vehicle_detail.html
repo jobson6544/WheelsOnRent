@@ -53,8 +53,8 @@
                             <button type="submit" name="update_price" class="btn btn-primary animate-pulse">Update to Predicted Price</button>
                         </form>
                     {% else %}
-                        <p class="card-text">No predicted price available.</p>
-                        <a href="{% url 'vendor:predict_price' vehicle.id %}" class="btn btn-secondary">Predict Price</a>
+                        <!-- <p class="card-text">No predicted price available.</p> -->
+                        <a href="{% url 'vendor:predict_price' vehicle.id %}" class="btn btn-warning">Predict Price</a>
                     {% endif %}
                 </div>
             </div>

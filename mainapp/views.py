@@ -285,7 +285,7 @@ def book_vehicle(request, id):
             logger.info("Vehicle is available for the selected dates.")
 
             # Calculate the total amount
-            duration = (end_date.date() - start_date.date()).days + 1  # Duration in days (inclusive)
+            duration = (end_date.date() - start_date.date()).days+1  # Duration in days (inclusive)
             total_amount = duration * vehicle.rental_rate
 
             # Create the booking
@@ -523,7 +523,7 @@ def calculate_booking_amount(booking):
         return 0  # Return 0 if any required data is missing
     
     # Calculate the number of days
-    num_days = (booking.end_date - booking.start_date).days 
+    num_days = (booking.end_date - booking.start_date).days+1
     
     # Get the daily rate from the vehicle
     daily_rate = booking.vehicle.rental_rate

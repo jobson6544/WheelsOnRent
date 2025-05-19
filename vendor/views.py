@@ -19,6 +19,7 @@ from django.conf import settings  # Add this import
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from mainapp.models import Booking, User, AccidentReport, LocationShare
+from mainapp.constants import PLATFORM_FEE_PERCENTAGE
 import qrcode
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -46,6 +47,7 @@ from datetime import datetime, timedelta
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import Spacer, Paragraph
 import os
+import pandas as pd
 
 Booking = apps.get_model('mainapp', 'Booking')
 User = get_user_model()
@@ -273,9 +275,9 @@ def vendor_vehicles(request):
 @never_cache
 @vendor_required
 def update_vehicle(request, vehicle_id):
-    vehicle = get_object_or_404(Vehicle, id=vehicle_id)
+    vehicle = get_object_or_404(Vehicle, id=vehicle_id, vendor=request.user.vendor)
     if request.method == 'POST':
-        form = VehicleForm(request.POST, request.FILES, instance=vehicle)
+        form = VehicleForm(request.POST, request.FILES, instance=vehicle, vendor=request.user.vendor)
         if form.is_valid():
             try:
                 with transaction.atomic():
@@ -286,6 +288,18 @@ def update_vehicle(request, vehicle_id):
                     vehicle.registration.registration_date = form.cleaned_data['registration_date']
                     vehicle.registration.registration_end_date = form.cleaned_data['registration_end_date']
                     vehicle.registration.save()
+
+                    # Update insurance if it exists
+                    if vehicle.insurance:
+                        vehicle.insurance.policy_number = form.cleaned_data['policy_number']
+                        vehicle.insurance.policy_provider = form.cleaned_data['policy_provider']
+                        vehicle.insurance.coverage_type = form.cleaned_data['coverage_type']
+                        vehicle.insurance.start_date = form.cleaned_data['insurance_start_date']
+                        vehicle.insurance.end_date = form.cleaned_data['insurance_end_date']
+                        vehicle.insurance.road_tax_details = form.cleaned_data['road_tax_details']
+                        vehicle.insurance.fitness_expiry_date = form.cleaned_data['fitness_expiry_date']
+                        vehicle.insurance.puc_expiry_date = form.cleaned_data['puc_expiry_date']
+                        vehicle.insurance.save()
 
                     vehicle.save()
                     form.save_m2m()  # Save many-to-many relationships
@@ -302,6 +316,7 @@ def update_vehicle(request, vehicle_id):
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
     else:
+        # Comprehensive initial data
         initial_data = {
             'vehicle_type': vehicle.model.sub_category.category.category_id,
             'vehicle_company': vehicle.model.sub_category.sub_category_id,
@@ -309,15 +324,30 @@ def update_vehicle(request, vehicle_id):
             'registration_date': vehicle.registration.registration_date,
             'registration_end_date': vehicle.registration.registration_end_date,
         }
-        form = VehicleForm(instance=vehicle, initial=initial_data)
+        
+        # Add insurance data if available
+        if hasattr(vehicle, 'insurance') and vehicle.insurance:
+            initial_data.update({
+                'policy_number': vehicle.insurance.policy_number,
+                'policy_provider': vehicle.insurance.policy_provider,
+                'coverage_type': vehicle.insurance.coverage_type,
+                'insurance_start_date': vehicle.insurance.start_date,
+                'insurance_end_date': vehicle.insurance.end_date,
+                'road_tax_details': vehicle.insurance.road_tax_details,
+                'fitness_expiry_date': vehicle.insurance.fitness_expiry_date,
+                'puc_expiry_date': vehicle.insurance.puc_expiry_date,
+            })
+            
+        form = VehicleForm(instance=vehicle, initial=initial_data, vendor=request.user.vendor)
     
     return render(request, 'vendor/update_vehicle.html', {'form': form, 'vehicle': vehicle})
 
 @never_cache
 @vendor_required
 def delete_vehicle(request, vehicle_id):
-    vehicle = get_object_or_404(Vehicle, id=vehicle_id)
-    vehicle.status = 0
+    vehicle = get_object_or_404(Vehicle, id=vehicle_id, vendor=request.user.vendor)
+    vehicle.status = 'unavailable'  # Update to use the status choices from the model
+    vehicle.availability = False
     vehicle.save()
     messages.success(request, 'Vehicle has been successfully deleted.')
     return redirect('vendor:vendor_vehicles')
@@ -736,33 +766,38 @@ def predict_price(request, vehicle_id):
     try:
         vehicle = get_object_or_404(Vehicle, id=vehicle_id, vendor=request.user.vendor)
         
-        # Prepare features for prediction
-        features = np.array([[
-            float(vehicle.year),
-            float(vehicle.mileage),
-            float(vehicle.seating_capacity),
-            1.0 if vehicle.transmission == 'automatic' else 0.0,
-            1.0 if vehicle.air_conditioning else 0.0,
-            float(vehicle.fuel_efficiency),
-            float(vehicle.model.model_year),
-            float(vehicle.features.count()),
-            float({'petrol': 0, 'diesel': 1, 'electric': 2, 'hybrid': 3, 'cng': 4, 'lpg': 5}.get(vehicle.fuel_type, 0)),
-            float(vehicle.rental_rate),
-            float({'available': 1, 'booked': 2, 'maintenance': 3, 'unavailable': 0}.get(vehicle.status, 0)),
-            float(vehicle.created_at.year),
-            float(vehicle.created_at.month),
-            float(vehicle.created_at.day),
-            float(vehicle.updated_at.year),
-            float(vehicle.updated_at.month),
-            float(vehicle.updated_at.day),
-            float(vehicle.vendor.vendor_id),
-            float(vehicle.model.model_id),
-            float(vehicle.registration.id)
-        ]])
+        try:
+            # Prepare features for prediction
+            features = pd.DataFrame({
+                'year': [float(vehicle.year)],
+                'mileage': [float(vehicle.mileage)],
+                'seating_capacity': [float(vehicle.seating_capacity)],
+                'air_conditioning': [1.0 if vehicle.air_conditioning else 0.0],
+                'fuel_efficiency': [float(vehicle.fuel_efficiency)],
+                'model_year': [float(vehicle.model.model_year)],
+                'num_features': [float(vehicle.features.count())],
+                'transmission_manual': [0.0 if vehicle.transmission == 'automatic' else 1.0],
+                'fuel_type_diesel': [1.0 if vehicle.fuel_type == 'diesel' else 0.0],
+                'fuel_type_electric': [1.0 if vehicle.fuel_type == 'electric' else 0.0],
+                'fuel_type_hybrid': [1.0 if vehicle.fuel_type == 'hybrid' else 0.0],
+                'fuel_type_lpg': [1.0 if vehicle.fuel_type == 'lpg' else 0.0],
+                'fuel_type_petrol': [1.0 if vehicle.fuel_type == 'petrol' else 0.0],
+                'vehicle_type_luxury': [1.0 if vehicle.model.sub_category.category.category_name.lower() == 'luxury' else 0.0],
+                'vehicle_type_sedan': [1.0 if vehicle.model.sub_category.category.category_name.lower() == 'sedan' else 0.0],
+                'vehicle_type_suv': [1.0 if vehicle.model.sub_category.category.category_name.lower() == 'suv' else 0.0],
+                'vehicle_type_van': [1.0 if vehicle.model.sub_category.category.category_name.lower() == 'van' else 0.0],
+                'brand_tier_luxury': [1.0 if vehicle.model.sub_category.company_name.lower() == 'luxury' else 0.0],
+                'brand_tier_mid-range': [1.0 if vehicle.model.sub_category.company_name.lower() == 'mid-range' else 0.0],
+                'brand_tier_premium': [1.0 if vehicle.model.sub_category.company_name.lower() == 'premium' else 0.0],
+            })
+        except AttributeError as e:
+            logger.error(f"Attribute error while preparing features: {str(e)}")
+            messages.error(request, f"Error preparing vehicle data: {str(e)}. Please ensure all vehicle details are complete.")
+            return redirect('vendor:vendor_vehicles')
 
         try:
             # Load the model
-            model_path = os.path.join(settings.BASE_DIR, 'vendor', 'ml_models', 'rental_price_model.joblib')
+            model_path = os.path.join(settings.BASE_DIR, 'trained_rental_price_model.joblib')
             model = joblib.load(model_path)
             
             # Make prediction
@@ -782,14 +817,14 @@ def predict_price(request, vehicle_id):
                 'vehicle': vehicle,
                 'predicted_price': final_price,
                 'current_price': vehicle.rental_rate,
-                'vehicle_types': vehicle.model.sub_category.category.all()
+                'vehicle_types': [vehicle.model.sub_category.category]
             }
             
             return render(request, 'vendor/predict_price.html', context)
             
         except FileNotFoundError:
-            logger.error("ML model file not found at path: %s", model_path)
-            messages.warning(request, "Using fallback price prediction method.")
+            logger.error(f"ML model file not found at path: {model_path}")
+            messages.warning(request, "Using fallback price prediction method (model file not found).")
             # Fallback calculation
             base_price = float(vehicle.rental_rate) if vehicle.rental_rate else 50.0
             predicted_price = base_price * (1 + (vehicle.features.count() * 0.05))
@@ -797,12 +832,20 @@ def predict_price(request, vehicle_id):
                 'vehicle': vehicle,
                 'predicted_price': round(predicted_price, 2),
                 'current_price': vehicle.rental_rate,
-                'vehicle_types': vehicle.model.sub_category.category.all()
+                'vehicle_types': [vehicle.model.sub_category.category]
             })
+        except KeyError as e:
+            logger.error(f"KeyError in predict_price: {str(e)}. Feature mismatch between model and input data.")
+            messages.error(request, f"Model feature mismatch: {str(e)}. Please retrain the model.")
+            return redirect('vendor:vendor_vehicles')
+        except Exception as e:
+            logger.error(f"Error loading or using ML model: {str(e)}", exc_info=True)
+            messages.error(request, f"Error with price prediction model: {str(e)}.")
+            return redirect('vendor:vendor_vehicles')
             
     except Exception as e:
         logger.error(f"Error in predict_price view for vehicle {vehicle_id}: {str(e)}", exc_info=True)
-        messages.error(request, "An error occurred while predicting the price.")
+        messages.error(request, f"An error occurred while predicting the price: {str(e)}")
         return redirect('vendor:vendor_vehicles')
 
 @require_http_methods(["GET", "POST"])
@@ -1057,13 +1100,16 @@ def generate_report(request):
             end_date = datetime.strptime(end_date, '%Y-%m-%d')
             start_date = start_date.replace(hour=0, minute=0, second=0)
             end_date = end_date.replace(hour=23, minute=59, second=59)
+            date_range_text = f"Period: {start_date.strftime('%d %b %Y')} to {end_date.strftime('%d %b %Y')}"
+        else:
+            date_range_text = "All Time"
 
         # Get data based on report type
         if report_type == 'booking':
             headers = ['Booking ID', 'Customer', 'Vehicle', 'Start Date', 'End Date', 'Status', 'Amount']
             bookings = Booking.objects.filter(vehicle__vendor=vendor)
             if start_date and end_date:
-                bookings = bookings.filter(created_at__range=[start_date, end_date])
+                bookings = bookings.filter(start_date__range=[start_date, end_date])
             
             table_data = [[
                 booking.booking_id,
@@ -1076,56 +1122,164 @@ def generate_report(request):
             ] for booking in bookings]
 
         elif report_type == 'revenue':
-            headers = ['Month', 'Total Bookings', 'Total Revenue']
-            # Add revenue report logic here
-            pass
+            headers = ['Month', 'Total Bookings', 'Completed Bookings', 'Total Revenue']
+            
+            # Initialize result dict to store data by month
+            result_by_month = {}
+            
+            # Get all bookings for this vendor
+            bookings = Booking.objects.filter(vehicle__vendor=vendor)
+            if start_date and end_date:
+                bookings = bookings.filter(start_date__range=[start_date, end_date])
+            
+            # Group by month
+            for booking in bookings:
+                month_key = booking.start_date.strftime('%Y-%m')
+                month_display = booking.start_date.strftime('%b %Y')
+                
+                if month_key not in result_by_month:
+                    result_by_month[month_key] = {
+                        'month': month_display,
+                        'total_bookings': 0,
+                        'completed_bookings': 0,
+                        'revenue': 0
+                    }
+                
+                result_by_month[month_key]['total_bookings'] += 1
+                
+                if booking.status == 'returned':
+                    result_by_month[month_key]['completed_bookings'] += 1
+                    result_by_month[month_key]['revenue'] += float(booking.total_amount)
+            
+            # Convert to table data
+            table_data = [
+                [
+                    data['month'],
+                    data['total_bookings'],
+                    data['completed_bookings'],
+                    f"₹{data['revenue']:.2f}"
+                ]
+                for month_key, data in sorted(result_by_month.items())
+            ]
+            
+            # Add totals row
+            total_bookings = sum(data['total_bookings'] for data in result_by_month.values())
+            total_completed = sum(data['completed_bookings'] for data in result_by_month.values())
+            total_revenue = sum(data['revenue'] for data in result_by_month.values())
+            
+            table_data.append(['TOTAL', total_bookings, total_completed, f"₹{total_revenue:.2f}"])
 
         elif report_type == 'vehicle':
-            headers = ['Vehicle', 'Total Bookings', 'Revenue Generated', 'Average Rating']
-            # Add vehicle report logic here
-            pass
+            headers = ['Vehicle', 'Registration', 'Total Bookings', 'Revenue Generated', 'Average Rating']
+            
+            # Get all vehicles for this vendor
+            vehicles = Vehicle.objects.filter(vendor=vendor)
+            
+            # Prepare data for each vehicle
+            table_data = []
+            for vehicle in vehicles:
+                # Get bookings for this vehicle
+                vehicle_bookings = Booking.objects.filter(vehicle=vehicle)
+                if start_date and end_date:
+                    vehicle_bookings = vehicle_bookings.filter(start_date__range=[start_date, end_date])
+                
+                # Calculate metrics
+                total_bookings = vehicle_bookings.count()
+                completed_bookings = vehicle_bookings.filter(status='returned')
+                revenue = completed_bookings.aggregate(total=Sum('total_amount'))['total'] or 0
+                avg_rating = completed_bookings.filter(feedback__isnull=False).aggregate(
+                    avg=Avg('feedback__rating'))['avg'] or 0
+                
+                # Add to table data
+                table_data.append([
+                    f"{vehicle.model}",
+                    f"{vehicle.registration.registration_number}",
+                    total_bookings,
+                    f"₹{revenue:.2f}",
+                    f"{avg_rating:.1f}" if avg_rating > 0 else "No ratings"
+                ])
+            
+            # Add totals row
+            total_bookings = sum(row[2] for row in table_data)
+            total_revenue = sum(float(row[3].replace('₹', '')) for row in table_data)
+            
+            table_data.append(['TOTAL', '', total_bookings, f"₹{total_revenue:.2f}", ''])
 
-        elif report_type == 'feedback':
-            headers = ['Booking ID', 'Customer', 'Vehicle', 'Rating', 'Comment', 'Date']
-            # Add feedback report logic here
-            pass
-
-        # Calculate column widths
+        # Calculate column widths more intelligently
         col_widths = []
         for i in range(len(headers)):
-            max_width = len(headers[i])
+            max_width = len(headers[i]) * 10  # Base width on header
             for row in table_data:
-                max_width = max(max_width, len(str(row[i])))
-            col_widths.append(max_width * 7)  # Multiply by 7 for better readability
+                if i < len(row):  # Check if the index exists in the row
+                    max_width = max(max_width, len(str(row[i])) * 10)
+            col_widths.append(max_width)
 
         # Generate report based on format
         if file_format == 'pdf':
             buffer = BytesIO()
-            doc = SimpleDocTemplate(buffer, pagesize=letter)
+            doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
             elements = []
             
-            # Add title
-            title = f"{report_type.title()} Report"
-            elements.append(Paragraph(title, getSampleStyleSheet()['Heading1']))
+            # Add title and date range
+            title_style = getSampleStyleSheet()['Heading1']
+            title_style.alignment = 1  # Center alignment
             
-            # Create table
+            subtitle_style = getSampleStyleSheet()['Normal']
+            subtitle_style.alignment = 1
+            
+            elements.append(Paragraph(f"{report_type.title()} Report", title_style))
+            elements.append(Paragraph(date_range_text, subtitle_style))
+            elements.append(Spacer(1, 20))
+            
+            # Create the table with proper styling
             table = Table([headers] + table_data, colWidths=col_widths)
-            table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            
+            # Style the table more professionally
+            table_style = TableStyle([
+                # Headers
+                ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                 ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, 0), 14),
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                
+                # Data rows - striped for better readability
+                ('BACKGROUND', (0, 1), (-1, -2), colors.white),
                 ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
                 ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-                ('FONTSIZE', (0, 1), (-1, -1), 12),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black)
-            ]))
+                ('FONTSIZE', (0, 1), (-1, -1), 10),
+                ('ALIGN', (0, 1), (0, -1), 'LEFT'),  # First column left aligned
+                ('ALIGN', (1, 1), (-1, -1), 'CENTER'),  # Other columns centered
+                
+                # Total row at the bottom
+                ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),
+                ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+                
+                # Borders
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+                ('BOX', (0, 0), (-1, -1), 1, colors.black),
+                ('LINEABOVE', (0, -1), (-1, -1), 1, colors.black),  # Thicker line above totals
+            ])
+            
+            # Add alternating row colors for better readability
+            for i in range(1, len(table_data)):
+                if i % 2 == 0:
+                    table_style.add('BACKGROUND', (0, i), (-1, i), colors.lightgrey)
+            
+            table.setStyle(table_style)
             elements.append(table)
             
+            # Add footer with date and vendor information
+            footer_text = f"Generated for: {vendor.business_name} on {datetime.now().strftime('%d %b %Y, %H:%M')}"
+            footer_style = getSampleStyleSheet()['Normal']
+            footer_style.alignment = 1  # Center alignment
+            footer_style.fontSize = 8
+            
+            elements.append(Spacer(1, 20))
+            elements.append(Paragraph(footer_text, footer_style))
+            
+            # Build the PDF document
             doc.build(elements)
             pdf = buffer.getvalue()
             buffer.close()
@@ -1136,21 +1290,77 @@ def generate_report(request):
             return response
 
         elif file_format == 'excel':
-            response = HttpResponse(content_type='application/ms-excel')
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = f'attachment; filename="{report_type}_report.xlsx"'
             
-            wb = Workbook()
-            ws = wb.active
-            ws.title = f"{report_type.title()} Report"
+            wb = xlsxwriter.Workbook(response, {'in_memory': True})
+            ws = wb.add_worksheet(f"{report_type.title()} Report")
             
-            # Write headers
-            ws.append(headers)
+            # Add title and date range
+            title_format = wb.add_format({'bold': True, 'font_size': 16, 'align': 'center'})
+            subtitle_format = wb.add_format({'align': 'center', 'font_size': 12})
             
-            # Write data
-            for row in table_data:
-                ws.append(row)
+            ws.merge_range(0, 0, 0, len(headers) - 1, f"{report_type.title()} Report", title_format)
+            ws.merge_range(1, 0, 1, len(headers) - 1, date_range_text, subtitle_format)
             
-            wb.save(response)
+            # Format headers
+            header_format = wb.add_format({
+                'bold': True, 
+                'bg_color': '#0066cc', 
+                'font_color': 'white',
+                'align': 'center',
+                'valign': 'vcenter',
+                'border': 1
+            })
+            
+            # Set column headers
+            for col, header in enumerate(headers):
+                ws.write(3, col, header, header_format)
+                ws.set_column(col, col, max(15, len(header) * 1.2))  # Dynamic width
+            
+            # Format for data rows
+            cell_format = wb.add_format({'align': 'center', 'valign': 'vcenter', 'border': 1})
+            alt_row_format = wb.add_format({'align': 'center', 'valign': 'vcenter', 'bg_color': '#f2f2f2', 'border': 1})
+            
+            # Special formatting for first column (left align) and currency columns
+            left_align = wb.add_format({'align': 'left', 'valign': 'vcenter', 'border': 1})
+            alt_left_align = wb.add_format({'align': 'left', 'valign': 'vcenter', 'bg_color': '#f2f2f2', 'border': 1})
+            currency_format = wb.add_format({'align': 'center', 'valign': 'vcenter', 'border': 1, 'num_format': '₹#,##0.00'})
+            alt_currency_format = wb.add_format({'align': 'center', 'valign': 'vcenter', 'bg_color': '#f2f2f2', 'border': 1, 'num_format': '₹#,##0.00'})
+            
+            # Write data rows
+            for row_idx, row_data in enumerate(table_data):
+                # Determine if this is the totals row
+                is_total_row = row_idx == len(table_data) - 1
+                row_format = wb.add_format({
+                    'bold': is_total_row,
+                    'bg_color': '#e6e6e6' if is_total_row else ('#f2f2f2' if row_idx % 2 == 1 else 'white'),
+                    'align': 'center',
+                    'valign': 'vcenter',
+                    'border': 1,
+                    'top': 2 if is_total_row else 1  # Thicker top border for total row
+                })
+                
+                for col_idx, cell_data in enumerate(row_data):
+                    # Specific formatting for different column types
+                    if col_idx == 0:  # First column (vehicle or month)
+                        ws.write(row_idx + 4, col_idx, cell_data, row_format)
+                    elif 'Revenue' in headers[col_idx] or 'Amount' in headers[col_idx]:  # Money columns
+                        # Extract numeric value from currency string if needed
+                        if isinstance(cell_data, str) and cell_data.startswith('₹'):
+                            value = float(cell_data.replace('₹', '').replace(',', ''))
+                            ws.write_number(row_idx + 4, col_idx, value, row_format)
+                        else:
+                            ws.write(row_idx + 4, col_idx, cell_data, row_format)
+                    else:
+                        ws.write(row_idx + 4, col_idx, cell_data, row_format)
+            
+            # Add footer
+            footer_format = wb.add_format({'align': 'center', 'font_size': 10, 'italic': True})
+            footer_text = f"Generated for: {vendor.business_name} on {datetime.now().strftime('%d %b %Y, %H:%M')}"
+            ws.merge_range(len(table_data) + 5, 0, len(table_data) + 5, len(headers) - 1, footer_text, footer_format)
+            
+            wb.close()
             return response
 
         elif file_format == 'csv':
@@ -1158,13 +1368,16 @@ def generate_report(request):
             response['Content-Disposition'] = f'attachment; filename="{report_type}_report.csv"'
             
             writer = csv.writer(response)
+            writer.writerow([f"{report_type.title()} Report"])
+            writer.writerow([date_range_text])
+            writer.writerow([])  # Empty row as spacer
             writer.writerow(headers)
             writer.writerows(table_data)
             
             return response
 
     except Exception as e:
-        logger.error(f"Error generating {report_type} report: {str(e)}")
+        logger.error(f"Error generating {report_type} report: {str(e)}", exc_info=True)
         messages.error(request, f"Error generating report: {str(e)}")
         return redirect('vendor:reports_dashboard')
 

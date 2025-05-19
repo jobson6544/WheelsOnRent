@@ -166,16 +166,17 @@
                                 <select name="format" id="format" class="form-control" required>
                                     <option value="pdf">PDF</option>
                                     <option value="excel">Excel</option>
+                                    <option value="csv">CSV</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3 date-fields" style="display: none;">
+                        <div class="col-md-3 date-fields">
                             <div class="form-group">
                                 <label for="start_date">Start Date</label>
                                 <input type="date" name="start_date" id="start_date" class="form-control">
                             </div>
                         </div>
-                        <div class="col-md-3 date-fields" style="display: none;">
+                        <div class="col-md-3 date-fields">
                             <div class="form-group">
                                 <label for="end_date">End Date</label>
                                 <input type="date" name="end_date" id="end_date" class="form-control">
@@ -214,6 +215,26 @@ document.addEventListener('DOMContentLoaded', function() {
     reportTypeSelect.addEventListener('change', toggleDateFields);
     // Run once on page load
     toggleDateFields();
+    
+    // Handle form submission
+    const reportForm = document.getElementById('reportForm');
+    
+    reportForm.addEventListener('submit', function(e) {
+        const fileFormat = document.getElementById('format').value;
+        const reportType = document.getElementById('type').value;
+        
+        // Add loading indicator
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+        
+        // For pdf, excel and csv formats, allow normal form submission (will trigger file download)
+        // No need to prevent default or use fetch
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Generate Report';
+        }, 3000);  // Re-enable after 3 seconds regardless
+    });
 });
 </script>
 
@@ -353,45 +374,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
-</script>
-
-<script>
-document.getElementById('type').addEventListener('change', function() {
-    const dateFields = document.querySelector('.date-fields');
-    if (this.value === 'vehicle') {
-        dateFields.style.display = 'none';
-    } else {
-        dateFields.style.display = 'block';
-    }
-});
-
-document.getElementById('reportForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    
-    // Add loading indicator
-    const submitBtn = this.querySelector('button[type="submit"]');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = 'Generating...';
-    
-    // Submit form
-    fetch(this.action + '?' + new URLSearchParams(formData))
-        .then(response => response.blob())
-        .then(blob => {
-            // Create download link
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `report.${formData.get('format')}`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Generate Report';
-        });
 });
 </script>
 {% endblock %}

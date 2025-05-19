@@ -4,138 +4,214 @@
 
 {% block content %}
 
-  <main id="main" class="main">
-  
+<main id="main" class="main">
   <div class="container mt-5 mb-5" style="margin-top: 8rem;">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center">Add New Vehicle</h2>
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="text-center">Update Vehicle</h2>
+          </div>
+          <div class="card-body">
+            <form method="post" enctype="multipart/form-data" id="vehicleForm">
+              {% csrf_token %}
+              {{ form.non_field_errors }}
+              
+              <!-- Vehicle Type -->
+              <div class="mb-3 row justify-content-center">
+                <label for="{{ form.vehicle_type.id_for_label }}" class="col-sm-3 col-form-label text-end">Vehicle Type</label>
+                <div class="col-sm-6">
+                  {{ form.vehicle_type|add_class:"form-select" }}
+                  {% if form.vehicle_type.errors %}
+                    <div class="text-danger">
+                      {% for error in form.vehicle_type.errors %}
+                        {{ error }}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                 </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" id="vehicleForm">
-                        {% csrf_token %}
-                        {{ form.non_field_errors }}
-                        
-                        <!-- Vehicle Type -->
-                        <div class="mb-3 row justify-content-center">
-                            <label for="{{ form.vehicle_type.id_for_label }}" class="col-sm-3 col-form-label text-end">Vehicle Type</label>
-                            <div class="col-sm-6">
-                                {{ form.vehicle_type|add_class:"form-select" }}
-                                {% if form.vehicle_type.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.vehicle_type.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
+              </div>
 
-                        <!-- Vehicle Company -->
-                        <div class="mb-3 row justify-content-center">
-                            <label for="{{ form.vehicle_company.id_for_label }}" class="col-sm-3 col-form-label text-end">Vehicle Company</label>
-                            <div class="col-sm-6">
-                                {{ form.vehicle_company|add_class:"form-select" }}
-                                {% if form.vehicle_company.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.vehicle_company.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- Model -->
-                        <div class="mb-3 row justify-content-center">
-                            <label for="{{ form.model.id_for_label }}" class="col-sm-3 col-form-label text-end">Model</label>
-                            <div class="col-sm-6">
-                                {{ form.model|add_class:"form-select" }}
-                                {% if form.model.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.model.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- Rental Rate -->
-                        <div class="mb-3 row justify-content-center">
-                            <label for="{{ form.rental_rate.id_for_label }}" class="col-sm-3 col-form-label text-end">Rental Rate</label>
-                            <div class="col-sm-6">
-                                {{ form.rental_rate|add_class:"form-control" }}
-                                {% if form.rental_rate.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.rental_rate.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- Remaining Fields -->
-                        {% for field in form %}
-                            {% if field.name not in 'vehicle_type,vehicle_company,model,rental_rate,features,is_available' %}
-                                <div class="mb-3 row justify-content-center">
-                                    <label for="{{ field.id_for_label }}" class="col-sm-3 col-form-label text-end">{{ field.label }}</label>
-                                    <div class="col-sm-6">
-                                        {% if field.name == 'image' %}
-                                            <input type="file" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control">
-                                        {% else %}
-                                            {{ field|add_class:"form-control" }}
-                                        {% endif %}
-                                        {% if field.errors %}
-                                            <div class="text-danger">
-                                                {% for error in field.errors %}
-                                                    {{ error }}
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-
-                        <!-- Features -->
-                        <div class="mb-3 row justify-content-center">
-                            <label class="col-sm-3 col-form-label text-end">Features</label>
-                            <div class="col-sm-6">
-                                {% for value, text in form.features.field.choices %}
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="{{ form.features.name }}" value="{{ value }}" id="id_features_{{ forloop.counter }}" {% if value in form.features.value %}checked{% endif %}>
-                                        <label class="form-check-label" for="id_features_{{ forloop.counter }}">
-                                            {{ text }}
-                                        </label>
-                                    </div>
-                                {% endfor %}
-                                {% if form.features.errors %}
-                                    <div class="text-danger">
-                                        {% for error in form.features.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-              <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary">Add Vehicle</button>
-                            <a href="{% url 'vendor:vendor_vehicles' %}" class="btn btn-secondary">Cancel</a>
-                        </div>
-                    </form>
+              <!-- Vehicle Company -->
+              <div class="mb-3 row justify-content-center">
+                <label for="{{ form.vehicle_company.id_for_label }}" class="col-sm-3 col-form-label text-end">Vehicle Company</label>
+                <div class="col-sm-6">
+                  {{ form.vehicle_company|add_class:"form-select" }}
+                  {% if form.vehicle_company.errors %}
+                    <div class="text-danger">
+                      {% for error in form.vehicle_company.errors %}
+                        {{ error }}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                 </div>
-            </div>
+              </div>
+
+              <!-- Model -->
+              <div class="mb-3 row justify-content-center">
+                <label for="{{ form.model.id_for_label }}" class="col-sm-3 col-form-label text-end">Model</label>
+                <div class="col-sm-6">
+                  {{ form.model|add_class:"form-select" }}
+                  {% if form.model.errors %}
+                    <div class="text-danger">
+                      {% for error in form.model.errors %}
+                        {{ error }}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Rental Rate -->
+              <div class="mb-3 row justify-content-center">
+                <label for="{{ form.rental_rate.id_for_label }}" class="col-sm-3 col-form-label text-end">Rental Rate</label>
+                <div class="col-sm-6">
+                  {{ form.rental_rate|add_class:"form-control" }}
+                  {% if form.rental_rate.errors %}
+                    <div class="text-danger">
+                      {% for error in form.rental_rate.errors %}
+                        {{ error }}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Transmission field special handling -->
+              <div class="mb-3 row justify-content-center">
+                <label for="{{ form.transmission.id_for_label }}" class="col-sm-3 col-form-label text-end">Transmission</label>
+                <div class="col-sm-6">
+                  {{ form.transmission }}
+                  {% if form.transmission.errors %}
+                    <div class="text-danger">
+                      {% for error in form.transmission.errors %}
+                        {{ error }}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Air conditioning field special handling -->
+              <div class="mb-3 row justify-content-center">
+                <label for="{{ form.air_conditioning.id_for_label }}" class="col-sm-3 col-form-label text-end">Air Conditioning</label>
+                <div class="col-sm-6">
+                  <div class="form-check mt-2">
+                    {{ form.air_conditioning }}
+                    <label class="form-check-label" for="{{ form.air_conditioning.id_for_label }}">
+                      Vehicle has air conditioning
+                    </label>
+                  </div>
+                  {% if form.air_conditioning.errors %}
+                    <div class="text-danger">
+                      {% for error in form.air_conditioning.errors %}
+                        {{ error }}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Availability field special handling -->
+              <div class="mb-3 row justify-content-center">
+                <label for="{{ form.availability.id_for_label }}" class="col-sm-3 col-form-label text-end">Availability</label>
+                <div class="col-sm-6">
+                  <div class="form-check mt-2">
+                    {{ form.availability }}
+                    <label class="form-check-label" for="{{ form.availability.id_for_label }}">
+                      Vehicle is available for rent
+                    </label>
+                  </div>
+                  {% if form.availability.errors %}
+                    <div class="text-danger">
+                      {% for error in form.availability.errors %}
+                        {{ error }}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Image field special handling -->
+              <div class="mb-3 row justify-content-center">
+                <label for="{{ form.image.id_for_label }}" class="col-sm-3 col-form-label text-end">Vehicle Image</label>
+                <div class="col-sm-6">
+                  {% if vehicle.image %}
+                    <div class="mb-2">
+                      <img src="{{ vehicle.image.url }}" alt="Current vehicle image" class="img-thumbnail" style="max-height: 150px;">
+                      <p class="small text-muted">Current image</p>
+                    </div>
+                  {% endif %}
+                  <input type="file" name="image" id="{{ form.image.id_for_label }}" class="form-control">
+                  <small class="form-text text-muted">Upload a new image to replace the current one (optional)</small>
+                  {% if form.image.errors %}
+                    <div class="text-danger">
+                      {% for error in form.image.errors %}
+                        {{ error }}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Remaining Fields -->
+              {% for field in form %}
+                {% if field.name not in 'vehicle_type,vehicle_company,model,rental_rate,features,is_available,air_conditioning,transmission,availability,image' %}
+                  <div class="mb-3 row justify-content-center">
+                    <label for="{{ field.id_for_label }}" class="col-sm-3 col-form-label text-end">{{ field.label }}</label>
+                    <div class="col-sm-6">
+                      {% if field.name == 'image' %}
+                        <input type="file" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control">
+                      {% else %}
+                        {{ field|add_class:"form-control" }}
+                      {% endif %}
+                      {% if field.errors %}
+                        <div class="text-danger">
+                          {% for error in field.errors %}
+                            {{ error }}
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+
+              <!-- Features -->
+              <div class="mb-3 row justify-content-center">
+                <label class="col-sm-3 col-form-label text-end">Features</label>
+                <div class="col-sm-6">
+                  {% for value, text in form.features.field.choices %}
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="{{ form.features.name }}" value="{{ value }}" id="id_features_{{ forloop.counter }}" {% if value in form.features.value %}checked{% endif %}>
+                      <label class="form-check-label" for="id_features_{{ forloop.counter }}">
+                        {{ text }}
+                      </label>
+                    </div>
+                  {% endfor %}
+                  {% if form.features.errors %}
+                    <div class="text-danger">
+                      {% for error in form.features.errors %}
+                        {{ error }}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Submit Buttons -->
+              <div class="row justify-content-center mt-4">
+                <div class="col-sm-9 text-center">
+                  <button type="submit" class="btn btn-primary">Update Vehicle</button>
+                  <a href="{% url 'vendor:vendor_vehicles' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-
-</div>
-</section>
-
+  </div>
 </main><!-- End #main -->
 
 <script>

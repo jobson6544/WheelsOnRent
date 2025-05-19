@@ -26,7 +26,7 @@
                 <li class="active"><a href="{% url 'index' %}" class="nav-link font-weight-bold">Home</a></li>
                 <li><a href="{% url 'mainapp:user_login' %}" class="nav-link font-weight-bold">Login</a></li>
                 <li><a href="{% url 'mainapp:vendor_benefits' %}" class="nav-link font-weight-bold">Vendor Benefits</a></li>
-                <li><a href="{% url 'drivers:register_driver' %}" class="nav-link font-weight-bold">Driver Register</a></li>
+                <li><a href="{% url 'drivers:driver_login' %}" class="nav-link font-weight-bold">Driver Login</a></li>
                 <li><a href="{% url 'vendor:vendor_login' %}" class="nav-link font-weight-bold">Vendor Login</a></li>
                 <li><a href="#" class="nav-link font-weight-bold">Contact</a></li>
                 {% if user.is_authenticated %}

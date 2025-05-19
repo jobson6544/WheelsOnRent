@@ -1351,3 +1351,145 @@ INFO 2025-04-11 10:54:54,230 models 1184 27696 Is vehicle available: True
 INFO 2025-04-11 10:54:54,230 views 1184 27696 Vehicle is available for the selected dates.
 INFO 2025-04-11 10:54:54,238 views 1184 27696 Booking created successfully: 13
 INFO 2025-04-11 10:56:18,829 views 1184 27696 Confirmation email sent for booking 13
+INFO 2025-05-05 11:39:47,420 views 9300 9528 Booking view called for vehicle id: 2
+INFO 2025-05-05 11:39:58,047 views 9300 9528 Booking view called for vehicle id: 2
+INFO 2025-05-05 11:39:58,048 views 9300 9528 POST request received
+INFO 2025-05-05 11:39:58,049 views 9300 9528 Start date: 2025-06-01, End date: 2025-06-01
+INFO 2025-05-05 11:39:58,052 views 9300 9528 Adjusted dates - Start: 2025-06-01 00:00:00+00:00, End: 2025-06-02 23:59:59.999999+00:00
+INFO 2025-05-05 11:39:58,052 models 9300 9528 Checking availability for vehicle 2 from 2025-06-01 00:00:00+00:00 to 2025-06-02 23:59:59.999999+00:00
+INFO 2025-05-05 11:39:58,055 models 9300 9528 Overlapping bookings found: 0
+INFO 2025-05-05 11:39:58,055 models 9300 9528 Is vehicle available: True
+INFO 2025-05-05 11:39:58,056 views 9300 9528 Vehicle is available for the selected dates.
+INFO 2025-05-05 11:39:58,061 views 9300 9528 Booking created successfully: 16
+INFO 2025-05-05 11:40:15,441 views 9300 9528 Confirmation email sent for booking 16
+INFO 2025-05-05 11:44:40,129 views 22648 848 Booking view called for vehicle id: 2
+INFO 2025-05-09 10:31:03,752 views 12876 13236 Booking view called for vehicle id: 2
+INFO 2025-05-09 10:31:16,727 views 12876 13236 Booking view called for vehicle id: 2
+INFO 2025-05-09 10:31:16,728 views 12876 13236 POST request received
+INFO 2025-05-09 10:31:16,729 views 12876 13236 Start date: 2025-06-14, End date: 2025-06-14
+INFO 2025-05-09 10:31:16,742 views 12876 13236 Adjusted dates - Start: 2025-06-14 00:00:00+00:00, End: 2025-06-15 23:59:59.999999+00:00
+INFO 2025-05-09 10:31:16,742 models 12876 13236 Checking availability for vehicle 2 from 2025-06-14 00:00:00+00:00 to 2025-06-15 23:59:59.999999+00:00
+INFO 2025-05-09 10:31:16,745 models 12876 13236 Overlapping bookings found: 0
+INFO 2025-05-09 10:31:16,745 models 12876 13236 Is vehicle available: True
+INFO 2025-05-09 10:31:16,746 views 12876 13236 Vehicle is available for the selected dates.
+INFO 2025-05-09 10:31:16,750 views 12876 13236 Booking created successfully: 17
+INFO 2025-05-09 10:36:01,171 views 4072 5916 Booking view called for vehicle id: 2
+INFO 2025-05-09 10:36:11,596 views 4072 5916 Booking view called for vehicle id: 2
+INFO 2025-05-09 10:36:11,597 views 4072 5916 POST request received
+INFO 2025-05-09 10:36:11,598 views 4072 5916 Start date: 2025-06-13, End date: 2025-06-13
+INFO 2025-05-09 10:36:11,598 views 4072 5916 Adjusted dates - Start: 2025-06-13 00:00:00+00:00, End: 2025-06-14 23:59:59.999999+00:00
+INFO 2025-05-09 10:36:11,599 models 4072 5916 Checking availability for vehicle 2 from 2025-06-13 00:00:00+00:00 to 2025-06-14 23:59:59.999999+00:00
+INFO 2025-05-09 10:36:11,600 models 4072 5916 Overlapping bookings found: 1
+INFO 2025-05-09 10:36:11,600 models 4072 5916 Is vehicle available: False
+WARNING 2025-05-09 10:36:11,601 views 4072 5916 Vehicle is not available for the selected dates.
+INFO 2025-05-09 10:36:20,772 views 4072 5916 Booking view called for vehicle id: 2
+INFO 2025-05-09 10:36:20,773 views 4072 5916 POST request received
+INFO 2025-05-09 10:36:20,774 views 4072 5916 Start date: 2025-06-10, End date: 2025-06-10
+INFO 2025-05-09 10:36:20,774 views 4072 5916 Adjusted dates - Start: 2025-06-10 00:00:00+00:00, End: 2025-06-11 23:59:59.999999+00:00
+INFO 2025-05-09 10:36:20,774 models 4072 5916 Checking availability for vehicle 2 from 2025-06-10 00:00:00+00:00 to 2025-06-11 23:59:59.999999+00:00
+INFO 2025-05-09 10:36:20,776 models 4072 5916 Overlapping bookings found: 0
+INFO 2025-05-09 10:36:20,776 models 4072 5916 Is vehicle available: True
+INFO 2025-05-09 10:36:20,777 views 4072 5916 Vehicle is available for the selected dates.
+INFO 2025-05-09 10:36:20,782 views 4072 5916 Booking created successfully: 18
+INFO 2025-05-09 10:38:30,183 views 4072 5916 Confirmation email sent for booking 18
+INFO 2025-05-09 10:44:12,486 views 22316 7144 Booking view called for vehicle id: 3
+INFO 2025-05-09 10:44:21,346 views 22316 7144 Booking view called for vehicle id: 3
+INFO 2025-05-09 10:44:21,348 views 22316 7144 POST request received
+INFO 2025-05-09 10:44:21,348 views 22316 7144 Start date: 2025-05-17, End date: 2025-05-17
+INFO 2025-05-09 10:44:21,351 views 22316 7144 Adjusted dates - Start: 2025-05-17 00:00:00+00:00, End: 2025-05-18 23:59:59.999999+00:00
+INFO 2025-05-09 10:44:21,352 models 22316 7144 Checking availability for vehicle 3 from 2025-05-17 00:00:00+00:00 to 2025-05-18 23:59:59.999999+00:00
+INFO 2025-05-09 10:44:21,354 models 22316 7144 Overlapping bookings found: 0
+INFO 2025-05-09 10:44:21,354 models 22316 7144 Is vehicle available: True
+INFO 2025-05-09 10:44:21,355 views 22316 7144 Vehicle is available for the selected dates.
+INFO 2025-05-09 10:44:21,355 views 22316 7144 Calculated duration: 2 days
+INFO 2025-05-09 10:44:21,355 views 22316 7144 Daily rate: 250.00
+INFO 2025-05-09 10:44:21,355 views 22316 7144 Total amount: 500.00
+INFO 2025-05-09 10:44:21,360 views 22316 7144 Booking created successfully: 19
+INFO 2025-05-09 10:45:15,901 views 22316 7144 Booking view called for vehicle id: 3
+INFO 2025-05-09 10:45:15,902 views 22316 7144 POST request received
+INFO 2025-05-09 10:45:15,903 views 22316 7144 Start date: 2025-05-17, End date: 2025-05-17
+INFO 2025-05-09 10:45:15,903 views 22316 7144 Adjusted dates - Start: 2025-05-17 00:00:00+00:00, End: 2025-05-18 23:59:59.999999+00:00
+INFO 2025-05-09 10:45:15,903 models 22316 7144 Checking availability for vehicle 3 from 2025-05-17 00:00:00+00:00 to 2025-05-18 23:59:59.999999+00:00
+INFO 2025-05-09 10:45:15,905 models 22316 7144 Overlapping bookings found: 1
+INFO 2025-05-09 10:45:15,906 models 22316 7144 Is vehicle available: False
+WARNING 2025-05-09 10:45:15,906 views 22316 7144 Vehicle is not available for the selected dates.
+INFO 2025-05-09 14:18:16,241 views 20084 2660 Booking view called for vehicle id: 3
+INFO 2025-05-09 14:18:28,004 views 20084 2660 Booking view called for vehicle id: 3
+INFO 2025-05-09 14:18:28,005 views 20084 2660 POST request received
+INFO 2025-05-09 14:18:28,005 views 20084 2660 Start date: 2025-05-27, End date: 2025-05-27
+INFO 2025-05-09 14:18:28,013 views 20084 2660 Adjusted dates - Start: 2025-05-27 00:00:00+00:00, End: 2025-05-28 23:59:59.999999+00:00
+INFO 2025-05-09 14:18:28,013 models 20084 2660 Checking availability for vehicle 3 from 2025-05-27 00:00:00+00:00 to 2025-05-28 23:59:59.999999+00:00
+INFO 2025-05-09 14:18:28,016 models 20084 2660 Overlapping bookings found: 0
+INFO 2025-05-09 14:18:28,017 models 20084 2660 Is vehicle available: True
+INFO 2025-05-09 14:18:28,017 views 20084 2660 Vehicle is available for the selected dates.
+INFO 2025-05-09 14:18:28,026 views 20084 2660 Booking created successfully: 20
+INFO 2025-05-09 14:18:58,613 views 20084 2660 Confirmation email sent for booking 20
+INFO 2025-05-09 14:22:25,816 views 22580 24664 Booking view called for vehicle id: 3
+INFO 2025-05-09 14:22:37,796 views 22580 24664 Booking view called for vehicle id: 3
+INFO 2025-05-09 14:22:37,797 views 22580 24664 POST request received
+INFO 2025-05-09 14:22:37,798 views 22580 24664 Start date: 2025-05-13, End date: 2025-05-13
+INFO 2025-05-09 14:22:37,801 views 22580 24664 Adjusted dates - Start: 2025-05-13 00:00:00+00:00, End: 2025-05-14 23:59:59.999999+00:00
+INFO 2025-05-09 14:22:37,802 models 22580 24664 Checking availability for vehicle 3 from 2025-05-13 00:00:00+00:00 to 2025-05-14 23:59:59.999999+00:00
+INFO 2025-05-09 14:22:37,804 models 22580 24664 Overlapping bookings found: 0
+INFO 2025-05-09 14:22:37,804 models 22580 24664 Is vehicle available: True
+INFO 2025-05-09 14:22:37,804 views 22580 24664 Vehicle is available for the selected dates.
+INFO 2025-05-09 14:22:37,809 views 22580 24664 Booking created successfully: 21
+INFO 2025-05-09 14:22:59,400 views 22580 24664 Confirmation email sent for booking 21
+INFO 2025-05-11 14:09:11,322 views 29372 26384 Booking view called for vehicle id: 2
+INFO 2025-05-11 14:11:40,042 views 29372 26384 Booking view called for vehicle id: 2
+INFO 2025-05-11 14:11:40,043 views 29372 26384 POST request received
+INFO 2025-05-11 14:11:40,044 views 29372 26384 Start date: 2025-06-01, End date: 2025-06-02
+INFO 2025-05-11 14:11:40,064 views 29372 26384 Adjusted dates - Start: 2025-06-01 00:00:00+00:00, End: 2025-06-02 23:59:59.999999+00:00
+INFO 2025-05-11 14:11:40,065 models 29372 26384 Checking availability for vehicle 2 from 2025-06-01 00:00:00+00:00 to 2025-06-02 23:59:59.999999+00:00
+INFO 2025-05-11 14:11:40,068 models 29372 26384 Overlapping bookings found: 1
+INFO 2025-05-11 14:11:40,068 models 29372 26384 Is vehicle available: False
+WARNING 2025-05-11 14:11:40,069 views 29372 26384 Vehicle is not available for the selected dates.
+INFO 2025-05-11 14:12:02,660 views 29372 26384 Booking view called for vehicle id: 2
+INFO 2025-05-11 14:12:02,662 views 29372 26384 POST request received
+INFO 2025-05-11 14:12:02,662 views 29372 26384 Start date: 2025-07-01, End date: 2025-07-02
+INFO 2025-05-11 14:12:02,663 views 29372 26384 Adjusted dates - Start: 2025-07-01 00:00:00+00:00, End: 2025-07-02 23:59:59.999999+00:00
+INFO 2025-05-11 14:12:02,664 models 29372 26384 Checking availability for vehicle 2 from 2025-07-01 00:00:00+00:00 to 2025-07-02 23:59:59.999999+00:00
+INFO 2025-05-11 14:12:02,666 models 29372 26384 Overlapping bookings found: 0
+INFO 2025-05-11 14:12:02,667 models 29372 26384 Is vehicle available: True
+INFO 2025-05-11 14:12:02,667 views 29372 26384 Vehicle is available for the selected dates.
+INFO 2025-05-11 14:12:02,674 views 29372 26384 Booking created successfully: 22
+INFO 2025-05-11 14:12:30,042 views 29372 26384 Confirmation email sent for booking 22
+INFO 2025-05-11 14:12:56,726 views 29372 26384 Booking view called for vehicle id: 2
+INFO 2025-05-11 14:14:26,664 views 9036 31864 Booking view called for vehicle id: 2
+INFO 2025-05-11 14:14:40,190 views 9036 31864 Booking view called for vehicle id: 2
+INFO 2025-05-11 14:14:40,193 views 9036 31864 POST request received
+INFO 2025-05-11 14:14:40,193 views 9036 31864 Start date: 2025-07-03, End date: 2025-07-04
+INFO 2025-05-11 14:14:40,201 views 9036 31864 Adjusted dates - Start: 2025-07-03 00:00:00+00:00, End: 2025-07-04 23:59:59.999999+00:00
+INFO 2025-05-11 14:14:40,202 models 9036 31864 Checking availability for vehicle 2 from 2025-07-03 00:00:00+00:00 to 2025-07-04 23:59:59.999999+00:00
+INFO 2025-05-11 14:14:40,209 models 9036 31864 Overlapping bookings found: 0
+INFO 2025-05-11 14:14:40,209 models 9036 31864 Is vehicle available: True
+INFO 2025-05-11 14:14:40,209 views 9036 31864 Vehicle is available for the selected dates.
+INFO 2025-05-11 14:14:40,218 views 9036 31864 Booking created successfully: 23
+INFO 2025-05-11 14:15:00,913 views 9036 31864 Confirmation email sent for booking 23
+INFO 2025-05-12 07:00:11,639 pipeline 19316 11452 Starting create_user pipeline with details: {'username': 'sinju641', 'email': 'sinju641@gmail.com', 'fullname': 'Sinju', 'first_name': 'Sinju', 'last_name': ''}
+INFO 2025-05-12 07:00:11,641 pipeline 19316 11452 Creating new user with email: sinju641@gmail.com
+INFO 2025-05-12 07:00:11,646 pipeline 19316 11452 Successfully created new user: sinju641@gmail.com
+INFO 2025-05-12 07:03:22,776 pipeline 7092 8772 Starting create_user pipeline with details: {'username': 'sinju641', 'email': 'sinju641@gmail.com', 'fullname': 'Sinju', 'first_name': 'Sinju', 'last_name': ''}
+INFO 2025-05-12 07:03:22,776 pipeline 7092 8772 User already exists in pipeline: sinju641@gmail.com
+INFO 2025-05-12 07:05:59,450 pipeline 7092 23384 Starting create_user pipeline with details: {'username': 'sinju641', 'email': 'sinju641@gmail.com', 'fullname': 'Sinju', 'first_name': 'Sinju', 'last_name': ''}
+INFO 2025-05-12 07:05:59,450 pipeline 7092 23384 User already exists in pipeline: sinju641@gmail.com
+INFO 2025-05-12 08:57:43,036 pipeline 16768 12108 Starting create_user pipeline with details: {'username': 'sinju641', 'email': 'sinju641@gmail.com', 'fullname': 'Sinju', 'first_name': 'Sinju', 'last_name': ''}
+INFO 2025-05-12 08:57:43,037 pipeline 16768 12108 User already exists in pipeline: sinju641@gmail.com
+INFO 2025-05-13 09:54:53,437 views 21776 1444 Booking view called for vehicle id: 1
+INFO 2025-05-13 11:36:18,205 pipeline 21776 10796 Starting create_user pipeline with details: {'username': 'jobsonkmathew', 'email': 'jobsonkmathew@gmail.com', 'fullname': 'Jobson K Mathew', 'first_name': 'Jobson', 'last_name': 'K Mathew'}
+INFO 2025-05-13 11:36:18,206 pipeline 21776 10796 Creating new user with email: jobsonkmathew@gmail.com
+INFO 2025-05-13 11:36:18,212 pipeline 21776 10796 Successfully created new user: jobsonkmathew@gmail.com
+INFO 2025-05-13 11:37:13,829 views 21776 10796 Booking view called for vehicle id: 1
+INFO 2025-05-13 11:37:34,884 views 21776 10796 Booking view called for vehicle id: 1
+INFO 2025-05-13 11:37:34,886 views 21776 10796 POST request received
+INFO 2025-05-13 11:37:34,887 views 21776 10796 Start date: 2025-05-15, End date: 2025-05-17
+INFO 2025-05-13 11:37:34,900 views 21776 10796 Adjusted dates - Start: 2025-05-15 00:00:00+00:00, End: 2025-05-17 23:59:59.999999+00:00
+INFO 2025-05-13 11:37:34,901 models 21776 10796 Checking availability for vehicle 1 from 2025-05-15 00:00:00+00:00 to 2025-05-17 23:59:59.999999+00:00
+INFO 2025-05-13 11:37:34,903 models 21776 10796 Overlapping bookings found: 0
+INFO 2025-05-13 11:37:34,904 models 21776 10796 Is vehicle available: True
+INFO 2025-05-13 11:37:34,904 views 21776 10796 Vehicle is available for the selected dates.
+INFO 2025-05-13 11:37:34,909 views 21776 10796 Booking created successfully: 1
+INFO 2025-05-13 11:38:05,276 views 21776 10796 Confirmation email sent for booking 1
+DEBUG 2025-05-13 11:41:09,541 views 21776 4424 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-05-13 11:41:47,126 views 21776 4424 Google Maps API Key in report_accident view: AIzaS...
+DEBUG 2025-05-13 11:41:47,127 views 21776 4424 Accident report values - Location: 686001, Kottayam, Kerala 686001, India, Lat: 9.591566799999999, Long: 76.5221531

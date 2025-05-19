@@ -63,7 +63,7 @@
                         <div class="card-body text-center">
                             <h5 class="card-title text-primary mb-3"><i class="fas fa-id-card me-2"></i>License Front</h5>
                             {% if profile.license_front %}
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#licenseFrontModal">
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#licenseFrontModal">
                                     <i class="fas fa-eye me-2"></i>View License Front
                                 </button>
                             {% else %}
@@ -80,7 +80,7 @@
                         <div class="card-body text-center">
                             <h5 class="card-title text-primary mb-3"><i class="fas fa-id-card me-2"></i>License Back</h5>
                             {% if profile.license_back %}
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#licenseBackModal">
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#licenseBackModal">
                                     <i class="fas fa-eye me-2"></i>View License Back
                                 </button>
                             {% else %}
@@ -98,12 +98,14 @@
 </div>
 
 <!-- License Front Modal -->
-<div class="modal fade" id="licenseFrontModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="licenseFrontModal" tabindex="-1" role="dialog" aria-labelledby="licenseFrontModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">License Front</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="licenseFrontModalLabel">License Front</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body text-center">
                 <img src="{{ profile.license_front.url }}" alt="License Front" class="img-fluid rounded">
@@ -113,12 +115,14 @@
 </div>
 
 <!-- License Back Modal -->
-<div class="modal fade" id="licenseBackModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="licenseBackModal" tabindex="-1" role="dialog" aria-labelledby="licenseBackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">License Back</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="licenseBackModalLabel">License Back</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body text-center">
                 <img src="{{ profile.license_back.url }}" alt="License Back" class="img-fluid rounded">

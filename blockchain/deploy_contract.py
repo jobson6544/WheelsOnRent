@@ -1,171 +1,117 @@
 from web3 import Web3
-import json
+from solcx import compile_source
 import os
-from pathlib import Path
-from dotenv import load_dotenv
 import sys
+import json
+from django.conf import settings
+
+# Add the project directory to path so Django settings can be imported
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "wheelsonrent.settings")
+
+import django
+django.setup()
+
+# Driver verification contract
+DRIVER_CONTRACT_SOURCE = '''
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract DriverVerification {
+    struct Driver {
+        string hash;
+        uint256 timestamp;
+    }
+    
+    mapping(string => Driver) public drivers;
+    
+    event DriverRegistered(string driverId, uint256 timestamp);
+    
+    function registerDriver(string memory driverId, string memory driverHash) public {
+        drivers[driverId] = Driver(driverHash, block.timestamp);
+        emit DriverRegistered(driverId, block.timestamp);
+    }
+    
+    function verifyDriver(string memory driverId, string memory driverHash) public view returns (bool) {
+        return (keccak256(abi.encodePacked(drivers[driverId].hash)) == 
+                keccak256(abi.encodePacked(driverHash))) && drivers[driverId].timestamp > 0;
+    }
+}
+'''
 
 def deploy_contract():
     try:
-        # Load environment variables
-        load_dotenv()
+        # Connect to Ethereum network
+        w3 = Web3(Web3.HTTPProvider(settings.ETHEREUM_NODE_URL))
         
-        print("Starting contract deployment process...")
-        
-        # Connect to local Ethereum network
-        w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:7545'))
-        
-        # Check connection
+        # Verify connection
         if not w3.is_connected():
-            raise Exception("Could not connect to Ethereum network")
+            print("Failed to connect to Ethereum network")
+            return
         
-        print("Connected to Ethereum network")
+        print(f"Connected to Ethereum network at {settings.ETHEREUM_NODE_URL}")
         
-        # Set default account
-        account_address = os.getenv('ETHEREUM_ACCOUNT_ADDRESS')
-        private_key = os.getenv('ETHEREUM_PRIVATE_KEY')
+        # Account setup
+        account_address = settings.ETHEREUM_ACCOUNT_ADDRESS
+        private_key = settings.ETHEREUM_PRIVATE_KEY
         
-        if not account_address or not private_key:
-            raise Exception("Missing ETHEREUM_ACCOUNT_ADDRESS or ETHEREUM_PRIVATE_KEY in .env")
-            
-        print(f"Using account: {account_address}")
-        
-        # Check account balance
-        balance = w3.eth.get_balance(account_address)
-        print(f"Account balance: {w3.from_wei(balance, 'ether')} ETH")
-        
-        if balance == 0:
-            raise Exception("Account has no ETH balance")
-        
-        # Get the absolute path of the current script
-        current_dir = Path(__file__).resolve().parent
-        contract_path = current_dir / 'contracts' / 'DriverVerification.sol'
-        abi_path = current_dir / 'contracts' / 'DriverVerification.abi'
-        
-        print(f"Contract path: {contract_path}")
-        print(f"ABI path: {abi_path}")
-        
-        if not contract_path.exists():
-            raise Exception(f"Contract file not found at {contract_path}")
-        if not abi_path.exists():
-            raise Exception(f"ABI file not found at {abi_path}")
-        
-        # Read the Solidity contract file
-        with open(contract_path, 'r') as file:
-            contract_source = file.read()
-            
-        # Read the ABI file
-        with open(abi_path, 'r') as file:
-            contract_abi = json.load(file)
-            
-        print("Contract files loaded successfully")
-        
-        # Compile the contract using solcx
-        from solcx import compile_source, install_solc, get_installed_solc_versions
-        
-        # Install specific Solidity version if not already installed
-        print("Checking Solidity compiler...")
-        if '0.8.0' not in [str(v) for v in get_installed_solc_versions()]:
-            print("Installing Solidity compiler 0.8.0...")
-            install_solc('0.8.0')
-        
-        # Compile the contract
+        # Compile contract
         print("Compiling contract...")
-        compiled_sol = compile_source(
-            contract_source,
-            output_values=['abi', 'bin'],
-            solc_version='0.8.0'
-        )
-        
+        compiled_sol = compile_source(DRIVER_CONTRACT_SOURCE, output_values=['abi', 'bin'])
         contract_id, contract_interface = compiled_sol.popitem()
+        
         bytecode = contract_interface['bin']
         abi = contract_interface['abi']
         
-        print("Contract compiled successfully")
+        # Deploy contract
+        print(f"Deploying contract from address: {account_address}")
         
-        # Deploy the contract
-        print("Deploying contract...")
-        Contract = w3.eth.contract(abi=abi, bytecode=bytecode)
+        # Get contract factory
+        DriverVerification = w3.eth.contract(abi=abi, bytecode=bytecode)
         
         # Get nonce
         nonce = w3.eth.get_transaction_count(account_address)
         
-        # Estimate gas
-        gas_estimate = Contract.constructor().estimate_gas({'from': account_address})
-        gas_price = w3.eth.gas_price
-        
-        print(f"Estimated gas: {gas_estimate}")
-        print(f"Gas price: {gas_price}")
-        print(f"Total cost: {w3.from_wei(gas_estimate * gas_price, 'ether')} ETH")
-        
-        # Build the transaction
-        transaction = Contract.constructor().build_transaction({
-            'chainId': 1337,  # Default Ganache chainId
-            'gas': gas_estimate,
-            'gasPrice': gas_price,
+        # Build transaction
+        transaction = DriverVerification.constructor().build_transaction({
+            'chainId': 1337,
+            'gas': 2000000,
+            'gasPrice': w3.eth.gas_price,
             'nonce': nonce,
             'from': account_address
         })
         
-        # Sign the transaction
-        signed_txn = w3.eth.account.sign_transaction(
-            transaction,
-            private_key
-        )
+        # Sign transaction
+        signed_txn = w3.eth.account.sign_transaction(transaction, private_key)
         
-        print("Sending transaction...")
         # Send transaction
         tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+        print(f"Transaction sent: {tx_hash.hex()}")
         
-        # Wait for the transaction to be mined
-        print("Waiting for contract deployment...")
+        # Wait for transaction receipt
         tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+        contract_address = tx_receipt['contractAddress']
         
-        print(f"Contract deployed successfully!")
-        print(f"Contract address: {tx_receipt.contractAddress}")
+        print(f"Contract deployed at address: {contract_address}")
+        print("\nUpdate the DRIVER_CONTRACT_ADDRESS in settings.py with this address.")
         
-        # Update .env file with contract address
-        env_path = current_dir.parent / '.env'
-        if not env_path.exists():
-            raise Exception(f".env file not found at {env_path}")
-            
-        with open(env_path, 'r') as file:
-            env_content = file.read()
+        # Save ABI to a file for later use
+        abi_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'contract_abi.json')
+        with open(abi_path, 'w') as f:
+            json.dump(abi, f)
         
-        # Update contract address
-        if 'DRIVER_CONTRACT_ADDRESS' in env_content:
-            # Replace existing value
-            start = env_content.find('DRIVER_CONTRACT_ADDRESS=')
-            end = env_content.find('\n', start)
-            if end == -1:  # If it's the last line
-                end = len(env_content)
-            env_content = env_content[:start] + f'DRIVER_CONTRACT_ADDRESS={tx_receipt.contractAddress}' + env_content[end:]
-        else:
-            # Add new value
-            env_content += f'\nDRIVER_CONTRACT_ADDRESS={tx_receipt.contractAddress}'
+        print(f"Contract ABI saved to {abi_path}")
         
-        with open(env_path, 'w') as file:
-            file.write(env_content)
-        
-        print("Updated .env file with contract address")
-        
-        return tx_receipt.contractAddress
+        return contract_address, abi
         
     except Exception as e:
-        print(f"\nError during deployment:")
-        print(f"Type: {type(e).__name__}")
-        print(f"Message: {str(e)}")
-        print("\nStack trace:")
-        import traceback
-        traceback.print_exc()
-        raise
+        print(f"Error deploying contract: {str(e)}")
+        return None, None
 
-if __name__ == '__main__':
-    try:
-        contract_address = deploy_contract()
-        print(f"\nDeployment successful! Contract address: {contract_address}")
-        print("\nNext steps:")
-        print("1. Make sure Ganache is still running")
-        print("2. Run 'python manage.py register_drivers' to register existing drivers")
-    except Exception as e:
-        print("\nDeployment failed. Please check the error messages above.") 
+if __name__ == "__main__":
+    print("Deploying Driver Verification Contract...")
+    contract_address, abi = deploy_contract()
+    if contract_address:
+        print("\nDeployment successful!")
+    else:
+        print("\nDeployment failed.") 

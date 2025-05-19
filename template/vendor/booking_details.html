@@ -17,7 +17,7 @@
             <p class="card-text"><strong>Start Date:</strong> {{ booking.start_date }}</p>
             <p class="card-text"><strong>End Date:</strong> {{ booking.end_date }}</p>
             <p class="card-text"><strong>Status:</strong> {{ booking.get_status_display }}</p>
-            <p class="card-text"><strong>Total Price:</strong> ${{ booking.total_amount|floatformat:2 }}</p>
+            <p class="card-text"><strong>Total Price:</strong> ₹{{ booking.total_amount|floatformat:2 }}</p>
             {% if booking.status == 'confirmed' %}
                 <button id="sendPickupOTP" class="btn btn-primary" data-booking-id="{{ booking.booking_id }}">Send Pickup OTP</button>
                 <div id="pickupOTPForm" style="display: none;">

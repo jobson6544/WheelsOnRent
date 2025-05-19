@@ -232,11 +232,11 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 # Update these settings
-LOGIN_REDIRECT_URL = 'complete_profile'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'complete_profile'
+LOGIN_REDIRECT_URL = 'mainapp:complete_profile'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'mainapp:complete_profile'
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
-LOGIN_REDIRECT_URL = 'complete_profile'
+LOGIN_REDIRECT_URL = 'mainapp:complete_profile'
 
 # Redirect to login page if not logged in
 LOGIN_URL = 'user_login'
@@ -324,9 +324,9 @@ DRIVER_LOGIN_URL = 'drivers:driver_login'  # New setting for drivers
 
 # Blockchain settings
 ETHEREUM_NODE_URL = 'http://127.0.0.1:7545'  # Ganache default URL
-ETHEREUM_ACCOUNT_ADDRESS = '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1'  # First account from your Ganache
-ETHEREUM_PRIVATE_KEY = '4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d'  # Private key without 0x prefix
-DRIVER_CONTRACT_ADDRESS = '0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1'  # Your deployed contract address
+ETHEREUM_ACCOUNT_ADDRESS = '0xd9EF134e1d95f93A4BEC31c1cFf7bD27B456b00C'  # First account from your Ganache
+ETHEREUM_PRIVATE_KEY = 'c7bc214c280efa2c9bc1db054ed68c12a9c3e8851f3b65abcfe56b320e37a579'  # Private key without 0x prefix
+DRIVER_CONTRACT_ADDRESS = '0xd9EF134e1d95f93A4BEC31c1cFf7bD27B456b00C'  # Your deployed contract address
 DRIVER_CONTRACT_ABI = [
     {
         "inputs": [

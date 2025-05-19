@@ -73,7 +73,7 @@
                                         <td>{{ customer.full_name }}</td>
                                         <td>{{ customer.email }}</td>
                                         <td>{{ customer.total_bookings }}</td>
-                                        <td>${{ customer.total_spent|floatformat:2 }}</td>
+                                        <td>₹{{ customer.total_spent|floatformat:2 }}</td>
                                         <td>
                                             {% if customer.avg_rating %}
                                                 {{ customer.avg_rating|floatformat:1 }} ★

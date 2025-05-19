@@ -3806,3 +3806,144 @@ DEBUG 2025-04-10 16:34:29,584 views 1236 8532 Driver ID in session: 3
 DEBUG 2025-04-10 16:34:36,950 views 1236 8532 Checking driver_login_required for /drivers/customer-bookings/
 DEBUG 2025-04-10 16:34:36,951 views 1236 8532 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
 DEBUG 2025-04-10 16:34:36,951 views 1236 8532 Driver ID in session: 3
+DEBUG 2025-05-11 17:52:12,128 views 9036 16032 POST data received: <QueryDict: {'csrfmiddlewaretoken': ['XGlHZvTZL9oHhsTZslKcA4xcOnXfJxpKuzeQ6zmsYD5bbsRIQxqrUaI1F067ugGj'], 'booking_type': ['specific_date'], 'booking_date': ['2025-05-11'], 'start_time': ['08:00'], 'end_time': ['14:00'], 'pickup_location': ['Manimala, Kerala, India'], 'drop_location': ['Kottayam, Kerala, India']}>
+DEBUG 2025-05-11 17:52:12,128 views 9036 16032 Specific date booking data: date=2025-05-11, start=08:00, end=14:00
+DEBUG 2025-05-12 12:04:37,029 views 3620 11936 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-12 12:04:37,030 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:04:37,031 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:04:44,413 views 3620 11936 Checking driver_login_required for /drivers/trips/
+DEBUG 2025-05-12 12:04:44,414 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:04:44,415 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:04:48,541 views 3620 11936 Checking driver_login_required for /drivers/customer-bookings/
+DEBUG 2025-05-12 12:04:48,542 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:04:48,544 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:04:56,146 views 3620 11936 Checking driver_login_required for /drivers/earnings/
+DEBUG 2025-05-12 12:04:56,148 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:04:56,148 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:08,353 views 3620 11936 Checking driver_login_required for /drivers/documents/
+DEBUG 2025-05-12 12:05:08,354 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:08,354 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:10,607 views 3620 11936 Checking driver_login_required for /drivers/profile/
+DEBUG 2025-05-12 12:05:10,608 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:10,608 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:19,245 views 3620 11936 Checking driver_login_required for /drivers/settings/
+DEBUG 2025-05-12 12:05:19,245 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:19,246 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:23,736 views 3620 11936 Checking driver_login_required for /drivers/support/
+DEBUG 2025-05-12 12:05:23,737 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:23,737 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:29,197 views 3620 11936 Checking driver_login_required for /drivers/profile/
+DEBUG 2025-05-12 12:05:29,198 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:29,198 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:30,618 views 3620 11936 Checking driver_login_required for /drivers/documents/
+DEBUG 2025-05-12 12:05:30,620 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:30,621 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:33,626 views 3620 11936 Checking driver_login_required for /drivers/earnings/
+DEBUG 2025-05-12 12:05:33,627 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:33,627 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:38,211 views 3620 11936 Checking driver_login_required for /drivers/customer-bookings/
+DEBUG 2025-05-12 12:05:38,212 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:38,213 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:39,584 views 3620 11936 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-12 12:05:39,585 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:39,585 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:52,701 views 3620 11936 Checking driver_login_required for /drivers/trips/
+DEBUG 2025-05-12 12:05:52,702 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:52,703 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:55,774 views 3620 11936 Checking driver_login_required for /drivers/customer-bookings/
+DEBUG 2025-05-12 12:05:55,775 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:55,776 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:05:57,723 views 3620 11936 Session data in start_trip: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com')])
+DEBUG 2025-05-12 12:05:57,724 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:06:02,926 views 3620 11936 Session data in verify_trip_otp: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0})])
+DEBUG 2025-05-12 12:06:02,927 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:09:45,588 views 3620 11936 Checking driver_login_required for /drivers/customer-bookings/
+DEBUG 2025-05-12 12:09:45,589 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0})])
+DEBUG 2025-05-12 12:09:45,589 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:09:57,746 views 3620 11936 Checking driver_login_required for /drivers/profile/
+DEBUG 2025-05-12 12:09:57,747 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0})])
+DEBUG 2025-05-12 12:09:57,747 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:10:01,011 views 3620 11936 Checking driver_login_required for /drivers/earnings/
+DEBUG 2025-05-12 12:10:01,012 views 3620 11936 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0})])
+DEBUG 2025-05-12 12:10:01,012 views 3620 11936 Driver ID in session: 3
+DEBUG 2025-05-12 12:11:49,847 views 3620 20112 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-12 12:11:49,847 views 3620 20112 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0})])
+DEBUG 2025-05-12 12:11:49,848 views 3620 20112 Driver ID in session: 3
+DEBUG 2025-05-12 12:12:17,902 views 3620 20112 Checking driver_login_required for /drivers/update-status/
+DEBUG 2025-05-12 12:12:17,902 views 3620 20112 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0})])
+DEBUG 2025-05-12 12:12:17,903 views 3620 20112 Driver ID in session: 3
+DEBUG 2025-05-12 12:12:17,925 views 3620 20112 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-12 12:12:17,926 views 3620 20112 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0})])
+DEBUG 2025-05-12 12:12:17,926 views 3620 20112 Driver ID in session: 3
+DEBUG 2025-05-12 12:12:21,745 views 3620 20112 Checking driver_login_required for /drivers/update-status/
+DEBUG 2025-05-12 12:12:21,746 views 3620 20112 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0})])
+DEBUG 2025-05-12 12:12:21,746 views 3620 20112 Driver ID in session: 3
+DEBUG 2025-05-12 12:12:21,763 views 3620 20112 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-12 12:12:21,764 views 3620 20112 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0})])
+DEBUG 2025-05-12 12:12:21,764 views 3620 20112 Driver ID in session: 3
+DEBUG 2025-05-12 12:12:25,835 views 3620 20112 Session data in start_trip: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0})])
+DEBUG 2025-05-12 12:12:25,836 views 3620 20112 Driver ID in session: 3
+DEBUG 2025-05-12 12:12:26,712 views 3620 6668 Session data in start_trip: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0})])
+DEBUG 2025-05-12 12:12:26,713 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:12:31,793 views 3620 6668 Session data in verify_trip_otp: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:12:31,795 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:12:37,067 views 3620 6668 Checking driver_login_required for /drivers/customer-bookings/
+DEBUG 2025-05-12 12:12:37,069 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:12:37,071 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:12:56,540 views 3620 6668 Checking driver_login_required for /drivers/profile/
+DEBUG 2025-05-12 12:12:56,541 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:12:56,542 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:13:09,011 views 3620 6668 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-12 12:13:09,012 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:13:09,012 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:17:40,050 views 3620 6668 Checking driver_login_required for /drivers/trips/
+DEBUG 2025-05-12 12:17:40,051 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:17:40,051 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:19:36,969 views 3620 6668 Checking driver_login_required for /drivers/documents/
+DEBUG 2025-05-12 12:19:36,969 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:19:36,970 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:21:45,358 views 3620 6668 Checking driver_login_required for /drivers/earnings/
+DEBUG 2025-05-12 12:21:45,359 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:21:45,359 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:21:58,675 views 3620 6668 Checking driver_login_required for /drivers/settings/
+DEBUG 2025-05-12 12:21:58,676 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:21:58,677 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:22:01,147 views 3620 6668 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-12 12:22:01,148 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:22:01,148 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:22:54,083 views 3620 6668 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-12 12:22:54,083 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:22:54,084 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:22:58,589 views 3620 6668 Checking driver_login_required for /drivers/trips/
+DEBUG 2025-05-12 12:22:58,589 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:22:58,590 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:24:33,384 views 3620 6668 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-12 12:24:33,384 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:24:33,384 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-12 12:24:37,336 views 3620 6668 Checking driver_login_required for /drivers/earnings/
+DEBUG 2025-05-12 12:24:37,337 views 3620 6668 Session data: dict_items([('driver_id', 3), ('driver_email', 'varshamariyashaji2002@gmail.com'), ('trip_otp_35', {'otp': '898966', 'timestamp': 1747031757.738298, 'attempts': 0}), ('trip_otp_38', {'otp': '321648', 'timestamp': 1747032146.725847, 'attempts': 0})])
+DEBUG 2025-05-12 12:24:37,338 views 3620 6668 Driver ID in session: 3
+DEBUG 2025-05-13 11:46:25,955 views 21776 24448 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-13 11:46:25,956 views 21776 24448 Session data: dict_items([('driver_id', 2), ('driver_email', 'rush-petri-salami@duck.com')])
+DEBUG 2025-05-13 11:46:25,956 views 21776 24448 Driver ID in session: 2
+DEBUG 2025-05-13 11:46:40,566 views 21776 24448 Checking driver_login_required for /drivers/update-status/
+DEBUG 2025-05-13 11:46:40,566 views 21776 24448 Session data: dict_items([('driver_id', 2), ('driver_email', 'rush-petri-salami@duck.com')])
+DEBUG 2025-05-13 11:46:40,567 views 21776 24448 Driver ID in session: 2
+DEBUG 2025-05-13 11:46:40,580 views 21776 24448 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-13 11:46:40,581 views 21776 24448 Session data: dict_items([('driver_id', 2), ('driver_email', 'rush-petri-salami@duck.com')])
+DEBUG 2025-05-13 11:46:40,581 views 21776 24448 Driver ID in session: 2
+DEBUG 2025-05-13 11:46:45,092 views 21776 24448 Checking driver_login_required for /drivers/update-status/
+DEBUG 2025-05-13 11:46:45,093 views 21776 24448 Session data: dict_items([('driver_id', 2), ('driver_email', 'rush-petri-salami@duck.com')])
+DEBUG 2025-05-13 11:46:45,093 views 21776 24448 Driver ID in session: 2
+DEBUG 2025-05-13 11:46:45,106 views 21776 24448 Checking driver_login_required for /drivers/dashboard/
+DEBUG 2025-05-13 11:46:45,107 views 21776 24448 Session data: dict_items([('driver_id', 2), ('driver_email', 'rush-petri-salami@duck.com')])
+DEBUG 2025-05-13 11:46:45,107 views 21776 24448 Driver ID in session: 2
+DEBUG 2025-05-13 11:46:47,890 views 21776 24448 Checking driver_login_required for /drivers/trips/
+DEBUG 2025-05-13 11:46:47,891 views 21776 24448 Session data: dict_items([('driver_id', 2), ('driver_email', 'rush-petri-salami@duck.com')])
+DEBUG 2025-05-13 11:46:47,891 views 21776 24448 Driver ID in session: 2
+DEBUG 2025-05-13 11:47:07,806 views 21776 24448 Checking driver_login_required for /drivers/documents/
+DEBUG 2025-05-13 11:47:07,806 views 21776 24448 Session data: dict_items([('driver_id', 2), ('driver_email', 'rush-petri-salami@duck.com')])
+DEBUG 2025-05-13 11:47:07,807 views 21776 24448 Driver ID in session: 2
+DEBUG 2025-05-13 11:47:14,566 views 21776 24448 Checking driver_login_required for /drivers/customer-bookings/
+DEBUG 2025-05-13 11:47:14,567 views 21776 24448 Session data: dict_items([('driver_id', 2), ('driver_email', 'rush-petri-salami@duck.com')])
+DEBUG 2025-05-13 11:47:14,567 views 21776 24448 Driver ID in session: 2

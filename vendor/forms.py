@@ -60,7 +60,7 @@ class VehicleForm(forms.ModelForm):
     engine_number = forms.CharField(max_length=50)
     chassis_number = forms.CharField(max_length=50)
     rental_rate = forms.DecimalField(max_digits=10, decimal_places=2)
-    availability = forms.BooleanField(required=False)
+    availability = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     image = forms.ImageField(required=False)
 
     # Registration fields
@@ -87,8 +87,11 @@ class VehicleForm(forms.ModelForm):
     year = forms.IntegerField()
     mileage = forms.IntegerField()
     seating_capacity = forms.IntegerField()
-    transmission = forms.CharField(max_length=20)
-    air_conditioning = forms.BooleanField()
+    transmission = forms.ChoiceField(
+        choices=[('manual', 'Manual'), ('automatic', 'Automatic')],
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    air_conditioning = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     fuel_efficiency = forms.FloatField()
 
     class Meta:
@@ -123,19 +126,43 @@ class VehicleForm(forms.ModelForm):
                 pass
         elif self.instance.pk:
             self.fields['model'].queryset = self.instance.model.sub_category.model_set.filter(is_active=True)
+            
+        # Initialize fields from instance if it exists
+        if self.instance.pk:
+            # Set initial values for vehicle type and company
+            self.initial['vehicle_type'] = self.instance.model.sub_category.category.pk
+            self.initial['vehicle_company'] = self.instance.model.sub_category.pk
+            
+            # Set initial values for registration fields if instance has registration
+            if hasattr(self.instance, 'registration'):
+                self.initial['registration_number'] = self.instance.registration.registration_number
+                self.initial['registration_date'] = self.instance.registration.registration_date
+                self.initial['registration_end_date'] = self.instance.registration.registration_end_date
+            
+            # Set initial values for insurance fields if instance has insurance
+            if hasattr(self.instance, 'insurance'):
+                self.initial['policy_number'] = self.instance.insurance.policy_number
+                self.initial['policy_provider'] = self.instance.insurance.policy_provider
+                self.initial['coverage_type'] = self.instance.insurance.coverage_type
+                self.initial['insurance_start_date'] = self.instance.insurance.start_date
+                self.initial['insurance_end_date'] = self.instance.insurance.end_date
+                self.initial['road_tax_details'] = self.instance.insurance.road_tax_details
+                self.initial['fitness_expiry_date'] = self.instance.insurance.fitness_expiry_date
+                self.initial['puc_expiry_date'] = self.instance.insurance.puc_expiry_date
 
     def save(self, commit=True):
         vehicle = super().save(commit=False)
         if self.vendor:
             vehicle.vendor = self.vendor
 
-        # Create Registration
-        registration = Registration.objects.create(
-            registration_number=self.cleaned_data['registration_number'],
-            registration_date=self.cleaned_data['registration_date'],
-            registration_end_date=self.cleaned_data['registration_end_date']
-        )
-        vehicle.registration = registration
+        # For new vehicles, create registration
+        if not vehicle.pk:
+            registration = Registration.objects.create(
+                registration_number=self.cleaned_data['registration_number'],
+                registration_date=self.cleaned_data['registration_date'],
+                registration_end_date=self.cleaned_data['registration_end_date']
+            )
+            vehicle.registration = registration
 
         if commit:
             vehicle.save()
